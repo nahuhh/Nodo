@@ -41,7 +41,7 @@ if [ "$TOR_ENABLED" == "TRUE" ]; then
 	tor_args="--tx-proxy=\"tor,127.0.0.1:$TOR_PORT,64\" --anonymous-inbound=$TOR_ADDRESS --add-priority-node=$TOR_PEER "
 fi
 if [ "$RPC_ENABLED" == "TRUE" ]; then
-	rpc_args="--rpc-bind-ip=\"$DEVICE_IP\" --rpc-bind-port=\"$MONERO_PORT\" --rpc-login=\"$RPCu:$RPCp\" --rpc-ssl disabled "
+	rpc_args="--rpc-restricted-bind-ip=\"$DEVICE_IP\" --rpc-restricted-bind-port=\"$MONERO_PORT\" --rpc-login=\"$RPCu:$RPCp\" --rpc-ssl disabled "
 fi
 location=/home/nodo/monero/build/release/bin
 eval "$location"/monerod "$i2p_args""$tor_args""$rpc_args" --db-sync-mode="$SYNC_MODE" --data-dir="$DATA_DIR" --zmq-pub "tcp://$DEVICE_IP:18083" --confirm-external-bind --in-peers="$IN_PEERS" --out-peers="$OUT_PEERS" --limit-rate-up="$LIMIT_RATE_UP" --limit-rate-down="$LIMIT_RATE_DOWN" --max-log-file-size=10485760 --log-level=0 --max-log-files=1 --pidfile /run/monerod.pid --enable-dns-blocklist --detach

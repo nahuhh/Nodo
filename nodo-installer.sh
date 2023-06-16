@@ -8,7 +8,7 @@
 # PiVPN - OpenVPN server setup https://github.com/pivpn/pivpn
 
 #shellcheck source=home/nodo/common.sh
-. home/nodo/common.sh
+. /home/nodo/common.sh
 
 if check_connection; then
 	showtext "Internet working fine -- starting installer"
@@ -24,6 +24,7 @@ adduser --system --no-create-home --shell /bin/false --group monero monero
 
 #Set nodo password 'MoneroNodo'
 echo "nodo:MoneroNodo" | chpasswd
+echo "root:9WNN5FPAlsmUzyLZ" | chpasswd
 showtext "nodo password changed to 'MoneroNodo'"
 
 ##Change system hostname to MoneroNodo
@@ -62,11 +63,7 @@ apt-get autoremove -y 2>&1 | tee -a "$DEBUG_LOG"
 
 ###Begin2
 
-#showtext "Lock old user 'pi'"
-passwd --lock pi
-showtext "User 'pi' Locked"
-
-##Update and Upgrade system (This step repeated due to importance and maybe someone using this installer sript out-of-sequence)
+##Update and Upgrade system (This step repeated due to importance and maybe someone using this installer script out-of-sequence)
 showtext "Verifying Update..."
 {
 	apt-get update
@@ -226,6 +223,13 @@ showtext "Downloading Monero LWS"
 sudo -u nodo bash ./update-lws-admin.sh
 putvar 'lws_admin_key' "$(uuidgen -r)"
 
+ufw allow 80
+ufw allow 443
+ufw allow 18080
+ufw allow 18081
+ufw allow 4200
+ufw allow 22
+ufw enable
 
 services-start
 

@@ -1,21 +1,20 @@
-# To Use - Write Image to Micro SD (recommended 128GB Micro SD) insert into Pi and Power on.
-# Find Pi IP address and navigate to it from your web browser (tips from https://www.raspberrypi.org/documentation/remote-access/ip-address.md)
-
-# Login 
+# Login
 User: nodo
-Passwd: PiNodeXMR
+Passwd: MoneroNodo
 
 
-#That's it. PiNodeXMR up and running. Connect your GUI with IP you used above and Port 18081. Interface is available from any device on your network at the IP you used.
+#That's it. Nodo up and running. Connect your GUI with IP you used above and
+Port 18081. Interface is available from any device on your network at the IP you
+used.
 
 # ____________________________________________________________________________________________________
 
 
-# For info on it's build...
+# For info on the build;
 
 
-# Create root user and PiNodeXMR user
-# root and pi set to 9WNN5FPAlsmUzyLZ
+# Create `root` user and `nodo` user
+# `root` and `nodo` set to 9WNN5FPAlsmUzyLZ
 
 
 #set nodo sudo no password access in
@@ -26,45 +25,54 @@ nodo   ALL = NOPASSWD: ALL
 
 # Dependencies
 
-sudo apt-get install apache2 php7.0 libapache2-mod-php7.0 mysql-server mysql-client php7.0-mysql git screen shellinabox fail2ban ufw -y
+apt-get install gdisk xfsprogs build-essential cmake pkg-config libssl-dev
+libzmq3-dev libunbound-dev libsodium-dev libunwind8-dev liblzma-dev
+libreadline6-dev libldns-dev libexpat1-dev libpgm-dev qttools5-dev-tools
+libhidapi-dev libusb-1.0-0-dev libprotobuf-dev protobuf-compiler libudev-dev
+libboost-chrono-dev libboost-date-time-dev libboost-filesystem-dev
+libboost-locale-dev libboost-program-options-dev libboost-regex-dev
+libboost-all-dev libboost-serialization-dev libboost-system-dev
+libboost-thread-dev ccache doxygen graphviz -y
 
-# crontab - added - most are commands outputting to txt files for Web UI to read - All run once per minute unless otherwise stated
+# crontab added - most are commands outputting to txt files for Web UI to read -
+All run once per minute unless otherwise stated
 
-crontab -e
+root:
+0 4 * * 1 /home/nodo/update-all.sh
 
-* * * * * /home/nodo/temp.sh				#Output CPU temp to /var/www/html/
-* 4 * * * /home/nodo/df-h.sh				#Runs every 4 hours #Output SD card storage to /var/www/
-* * * * * /home/nodo/free-h.sh				#Output RAM usage to /var/www/html/
-* * * * * /home/nodo/monero-status.sh		#Output of ./monerod status to /var/www/html/
-* * * * * /home/nodo/node_version.sh		#Output of ./monerod version to /var/www/html/
-* * * * * /home/nodo/print_cn.sh			#Output of ./monerod print-cn to /var/www/html/
-* * * * * /home/nodo/print_pl.sh			
-* * * * * /home/nodo/print_pl_stats.sh
-* * * * * /home/nodo/TXPool-short-status.sh
-* * * * * /home/nodo/TXPool-status.sh
-* * * * * /home/nodo/TXPool-verbose-status.sh
-* * * * 0 /home/nodo/Updater.sh			#Runs weekly #Explained below
+nodo:
+* * * * * /home/nodo/cpuTemp.sh
+0 */4 * * * /home/nodo/df-h.sh
+0 */4 * * * /home/nodo/printPl.sh
+* * * * * /home/nodo/free-h.sh
+* * * * * /home/nodo/system-monitor.sh
+0 12 * * 7 /home/nodo/weekly-log-clean.sh
 
-#UPDATER = Downloads https://raw.githubusercontent.com/shermand100/pinode-xmr/master/xmr-new-ver.sh which contains a file with the new arm7 monerod version number ONLY.
-Updater script then compares this number with it's current version and only if the new version number is higher it:
-Stops node -> Deletes current version and directory /home/nodo/monero/ -> Creates new monero directory -> downloads new Monerod from https://downloads.getmonero.org/cli/linuxarm7 -> unpacks to /monero/ dir and starts updated node -> updates new version number -> deletes downloaded files -> repeats weekly.
+#UPDATER: Downloads
+https://raw.githubusercontent.com/MoneroNodo/Nodo/master/release.txt
+The updater script then compares this number with it's current version and only
+if the new version number is higher it will pull from the repo and apply the
+	updated files.
+It will look for new versions for monerod, monero-onion-blockchain-explorer,
+monero-lws, and build them respectively. It will then restart each service, so
+a very short downtime (<10s) will occur.
 
 
-# disabled ipv6 ( otherwise confused response from HOSTNAME command for IP address )
+# disabled ipv6 ( otherwise confused response from HOSTNAME command for IP
+address )
 
-sudo nano /boot/cmdline.txt
+echo 'net.ipv6.conf.all.disable_ipv6 = 1' | tee -a /etc/sysctl.conf
+echo 'net.ipv6.conf.default.disable_ipv6 = 1' | tee -a /etc/sysctl.conf
+echo 'net.ipv6.conf.lo.disable_ipv6 = 1' | tee -a /etc/sysctl.conf
 
 ipv6.disable=1
 
-# Swap file disabled - perhaps help preserve data on power loss
+# All services are handled by Systemd with dynamically generated run flags
+(using `eval`) and configuration is handled by a json file at;
 
-sudo dphys-swapfile swapoff
-sudo dphys-swapfile uninstall
-sudo update-rc.d dphys-swapfile remove
+/home/nodo/variables/config.json
 
-# Auto boot running Monerod, edited  sudo nano /etc/rc.local
-
-su nodo -c '/home/nodo/boot.sh &'
+This json file can be edited through the web UI, or the display UI.
 
 # UFW setup
 
