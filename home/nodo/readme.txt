@@ -14,7 +14,8 @@ used.
 
 
 # Create `root` user and `nodo` user
-# `root` and `nodo` set to 9WNN5FPAlsmUzyLZ
+# `root` set to `9WNN5FPAlsmUzyLZ`
+# `nodo` set to `MoneroNodo`
 
 
 #set nodo sudo no password access in
