@@ -17,6 +17,8 @@ LIMIT_RATE_DOWN=$(getvar "limit_rate_down")
 
 DATA_DIR=$(getvar "data_dir")
 
+TORPROXY_ENABLED=$(getvar "torproxy_enabled")
+
 I2P_ENABLED=$(getvar "i2p_enabled")
 I2P_PEER=$(getvar "add_i2p_peer")
 I2P_PORT=$(getvar "i2p_port")
@@ -34,14 +36,21 @@ DEVICE_IP="0.0.0.0"
 
 putvar "boot_status" "3"
 #Start Monerod
+if [ "$TORPROXY_ENABLED" != "TRUE" ]; then
+	if [ "$I2P_ENABLED" == "TRUE" ]; then
+		cln_flags="--proxy=127.0.0.1:4447 "
+	else
+		cln_flags="--proxy=127.0.0.1:9050 "
+	fi
+fi
 if [ "$I2P_ENABLED" == "TRUE" ]; then
-	i2p_args="--tx-proxy=\"i2p,127.0.0.1:$I2P_PORT,64\" --anonymous-inbound=$I2P_ADDRESS --add-priority-node=$I2P_PEER "
+	i2p_args="--tx-proxy=\"i2p,127.0.0.1:4447,64\" --anonymous-inbound=$I2P_ADDRESS,127.0.0.1:$I2P_PORT --add-priority-node=$I2P_PEER "
 fi
 if [ "$TOR_ENABLED" == "TRUE" ]; then
-	tor_args="--tx-proxy=\"tor,127.0.0.1:$TOR_PORT,64\" --anonymous-inbound=$TOR_ADDRESS --add-priority-node=$TOR_PEER "
+	tor_args="--tx-proxy=\"tor,127.0.0.1:9050,64\" --anonymous-inbound=$TOR_ADDRESS:$TOR_PORT,127.0.0.1:$TOR_PORT --add-priority-node=$TOR_PEER "
 fi
 if [ "$RPC_ENABLED" == "TRUE" ]; then
 	rpc_args="--rpc-restricted-bind-ip=\"$DEVICE_IP\" --rpc-restricted-bind-port=\"$MONERO_PORT\" --rpc-login=\"$RPCu:$RPCp\" --rpc-ssl disabled "
 fi
 location=/home/nodo/monero/build/release/bin
-eval "$location"/monerod "$i2p_args""$tor_args""$rpc_args" --db-sync-mode="$SYNC_MODE" --data-dir="$DATA_DIR" --zmq-pub "tcp://$DEVICE_IP:18083" --confirm-external-bind --in-peers="$IN_PEERS" --out-peers="$OUT_PEERS" --limit-rate-up="$LIMIT_RATE_UP" --limit-rate-down="$LIMIT_RATE_DOWN" --max-log-file-size=10485760 --log-level=0 --max-log-files=1 --pidfile /run/monerod.pid --enable-dns-blocklist --detach
+eval "$location"/monerod "$i2p_args$tor_args$rpc_args$cln_flags" --db-sync-mode="$SYNC_MODE" --data-dir="$DATA_DIR" --zmq-pub "tcp://$DEVICE_IP:18083" --confirm-external-bind --in-peers="$IN_PEERS" --out-peers="$OUT_PEERS" --limit-rate-up="$LIMIT_RATE_UP" --limit-rate-down="$LIMIT_RATE_DOWN" --max-log-file-size=10485760 --log-level=0 --max-log-files=1 --pidfile /run/monerod.pid --enable-dns-blocklist --detach
