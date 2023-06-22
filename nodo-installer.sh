@@ -12,7 +12,7 @@
 _cwd=$(pwd)
 test -z "$_cwd" && exit 1
 
-. "${_cwd}"home/nodo/common.sh
+. "${_cwd}"/home/nodo/common.sh
 if check_connection; then
 	showtext "Internet working fine -- starting installer"
 else
