@@ -4,7 +4,7 @@
 #shellcheck source=home/nodo/common.sh
 . /home/nodo/common.sh
 
-sudo -u nodo bash /home/nodo/update-nodo.sh
+cd /home/nodo && /home/nodo/update-nodo.sh
 sudo -u nodo bash /home/nodo/update-monero.sh
 sudo -u nodo bash /home/nodo/update-monero-lws.sh
 sudo -u nodo bash /home/nodo/update-lws-admin.sh

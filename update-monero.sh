@@ -41,6 +41,7 @@ showtext "Building Monero..."
 	# go to home folder
 	cd || exit 1
 	git clone --recursive -b "$RELEASE" https://github.com/monero-project/monero.git
+	git reset --hard HEAD
 
 	cd monero/ || exit 1
 	git pull

@@ -24,6 +24,12 @@ if [ "$RELEASE" == "$OLD_VERSION_NODO" ]; then
 	exit 0
 fi
 
+_cwd=$(pwd)
+cd "${_cwd}" || exit 1
+
+test -z "$_cwd" && exit 1
+
+git reset --hard HEAD
 git pull
 
 HTMLPASSWORDREQUIRED=$(getvar "htmlpasswordrequired")
@@ -53,74 +59,80 @@ showtext "Checking all other dependencies are installed..."
 apt-get install git mariadb-client mariadb-server screen fail2ban ufw dialog jq libcurl4-openssl-dev libpthread-stubs0-dev exfat-fuse -y 2>&1 | tee -a "$DEBUG_LOG"
 #Download update files
 
+##Clone Nodo to device from git
+showtext "Cloning Nodo to device from git..."
+# Update Link
+cd || exit 1
+git clone --single-branch https://github.com/MoneroNodo/Nodo.git
+cd Nodo || exit 1
+git reset --hard HEAD
+
 ##Replace file /etc/sudoers to set global sudo permissions/rules (required to add  new permissions to www-data user for interface buttons)
 showtext "Downloading and replacing /etc/sudoers file..."
-wget https://raw.githubusercontent.com/monero-ecosystem/Nodo/ubuntuServer-20.04/etc/sudoers -O /home/nodo/sudoers
-chmod 0440 /home/nodo/sudoers
-chown root /home/nodo/sudoers
-mv /home/nodo/sudoers /etc/sudoers
+chmod 0440 home/nodo/sudoers
+chown root home/nodo/sudoers
+cp "${_cwd}"/home/nodo/sudoers /etc/sudoers
 
 #ubuntu /dev/null odd requirment to set permissions
 chmod 777 /dev/null
 showtext "Global permissions changed"
 
-##Clone Nodo to device from git
-showtext "Cloning Nodo to device from git..."
-# Update Link
-git clone -b no-sleep --single-branch https://github.com/MoneroNodo/Nodo.git
-
 #Backup User values
-showtext "Creating backups of any settings you have customised
-*****
-If a setting did not exist on your previous version you may see some errors here for missing files, these can safely be ignored
-*****"
+showtext "Creating backups of any settings you have customised"
 #home dir
 mv /home/nodo/config.json /home/nodo/config_retain.json
 #variables dir
 showtext "User configuration saved"
 #Install Update
 showtext "Installing update..."
+
+showtext "Install home contents"
+cp -afr "${_cwd}"/home/nodo/* /home/nodo/
+cp -afr "${_cwd}"/etc/* /etc/
+cp -afr "${_cwd}"/HTML/* /var/www/html/
+chown httpd:httpd -R /var/www/html
+cp "${_cwd}"/update-*sh /home/nodo/
+chown nodo:nodo -R /home/nodo
+
+cp -f /home/nodo/config_retain.json /home/nodo/config.json
+
 ##Add Nodo systemd services
 showtext "Adding Nodo systemd services..."
 {
-	mv /home/nodo/Nodo/etc/systemd/system/*.service /etc/systemd/system/
+	cp -af "${_cwd}"/etc/systemd/system/*.service /etc/systemd/system/
 	chmod 644 /etc/systemd/system/*.service
 	chown root /etc/systemd/system/*.service
 	systemctl daemon-reload
 	systemctl start moneroStatus.service
 	systemctl enable moneroStatus.service
 } 2>&1 | tee -a "$DEBUG_LOG"
-showtext "Success"
 
 ##Updating Nodo scripts in home directory
 showtext "Updating Nodo scripts in home directory..."
 {
-	cp -afr /home/nodo/Nodo/home/nodo/* /home/nodo/
-	mv /home/nodo/Nodo/home/nodo/.profile /home/nodo/
+	cp -afr "${_cwd}"/home/nodo/* /home/nodo/
+	cp "${_cwd}"/home/nodo/.profile /home/nodo/
 	chmod -R 777 /home/nodo/*
 } 2>&1 | tee -a "$DEBUG_LOG"
-showtext "Success"
 
 #Configure apache server for access to monero log file
 showtext "Configuring apache server for access to Monero log file..."
 {
-	mv /home/nodo/Nodo/etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default.conf
+	cp -af "${_cwd}"/etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 	chmod 777 /etc/apache2/sites-enabled/000-default.conf
 	chown root /etc/apache2/sites-enabled/000-default.conf
 	/etc/init.d/apache2 restart
 } 2>&1 | tee -a "$DEBUG_LOG"
 
-showtext "Success"
 ##Setup local hostname
 showtext "Enabling local hostname nodo.local..."
-mv /home/nodo/Nodo/etc/avahi/avahi-daemon.conf /etc/avahi/avahi-daemon.conf 2>&1 | tee -a "$DEBUG_LOG"
+cp "${_cwd}"/etc/avahi/avahi-daemon.conf /etc/avahi/avahi-daemon.conf 2>&1 | tee -a "$DEBUG_LOG"
 /etc/init.d/avahi-daemon restart 2>&1 | tee -a "$DEBUG_LOG"
-showtext "Success"
 
 ###Update html template
 #showtext "Configuring Web-UI..."
 ##First move hidden file specifically .htaccess file then entire directory
-#mv /home/nodo/Nodo/HTML/.htaccess /var/www/html/ 2>&1 | tee -a "$DEBUG_LOG"
+#mv "${_cwd}"/HTML/.htaccess /var/www/html/ 2>&1 | tee -a "$DEBUG_LOG"
 #rm -R /var/www/html/*.php
 ##Preserve user variables (custom ports, hidden service onion address, miningrpc pay address etc). Updater script overwrites/merges all files, this renames them temporarily to avoid merge.
 #mv /var/www/html/credits.txt /var/www/html/credits_retain.txt 2> >(tee -a "$DEBUG_LOG" >&2)
@@ -137,7 +149,7 @@ showtext "Success"
 #mv /var/www/html/payment-address.txt /var/www/html/payment-address_retain.txt 2> >(tee -a "$DEBUG_LOG" >&2)
 #mv /var/www/html/user-set-custom.txt /var/www/html/user-set-custom_retain.txt 2> >(tee -a "$DEBUG_LOG" >&2)
 ##Overwrite /var/www/html with updated contents
-#rsync -a /home/nodo/Nodo/HTML/* /var/www/html/ 2>&1 | tee -a "$DEBUG_LOG"
+#rsync -a "${_cwd}"/HTML/* /var/www/html/ 2>&1 | tee -a "$DEBUG_LOG"
 #chown www-data -R /var/www/html/ 2>&1 | tee -a "$DEBUG_LOG"
 #chmod 777 -R /var/www/html/ 2>&1 | tee -a "$DEBUG_LOG"
 ##Restore User variables
@@ -158,15 +170,13 @@ showtext "Success"
 
 #Set correct config for if HTML (Web UI) Password is required.
 
-if [ "$HTMLPASSWORDREQUIRED" = TRUE ]
-then
+if [ "$HTMLPASSWORDREQUIRED" = TRUE ]; then
 	cp /home/nodo/variables/000-default-passwordAuthEnabled.conf /etc/apache2/sites-enabled/000-default.conf
 	chown root /etc/apache2/sites-enabled/000-default.conf
 	chmod 777 /etc/apache2/sites-enabled/000-default.conf
 	systemctl restart apache2
 fi
 
-showtext "Success"
 
 #Restore User Values
 showtext "Restoring your personal settings..."
@@ -178,11 +188,9 @@ showtext "User configuration restored"
 ##Set Swappiness lower
 showtext "Decreasing swappiness..."
 sysctl vm.swappiness=10 2> >(tee -a "$DEBUG_LOG" >&2)
-showtext "Success"
 ##Update crontab
 showtext "Updating crontab tasks..."
-crontab /home/nodo/Nodo/var/spool/cron/crontabs/nodo 2> >(tee -a "$DEBUG_LOG" >&2)
-showtext "Success"
+crontab "${_cwd}"/var/spool/cron/crontabs/nodo 2> >(tee -a "$DEBUG_LOG" >&2)
 
 #Attempt update of tor hidden service settings
 {
@@ -202,7 +210,6 @@ showtext "Success"
 #Restart statusOutputs script service for changes to take effect
 systemctl restart moneroStatus.service
 
-
 #Update system version number to new one installed
 {
 	showtext "Updating system version number..."
@@ -213,10 +220,6 @@ systemctl restart moneroStatus.service
 
 #Clean up files
 showtext "Cleaning leftover directories..."
-
-rm -r "/home/nodo/Nodo/"
-rm "/home/nodo/new-ver-pi.sh"
-showtext "Success"
 
 ##End debug log
 showtext "
