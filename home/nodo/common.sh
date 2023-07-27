@@ -5,15 +5,16 @@ DEBUG_LOG=/home/nodo/debug.log
 CONFIG_FILE=/home/nodo/variables/config.json
 
 check_connection() {
-        touse="$(ip r | grep default | cut -d ' ' -f 3)"
-        for f in $touse; do
-                if ping -q -w 1 -c 1 "$f"> /dev/null; then
-                        return 0
-                fi
-        done
-        return 1
+	touse="$(ip r | grep default | cut -d ' ' -f 3)"
+	for f in $touse; do
+		if ping -q -w 1 -c 1 "$f" >/dev/null; then
+			return 0
+		fi
+	done
+	return 1
 }
 
+ENCRYPT_FS="0"
 
 setup_drive() {
 	blockdevice="/dev/$1"
@@ -26,10 +27,17 @@ setup_drive() {
 	#format
 	wipefs --all "/dev/$1"
 	#create table & part
-	parted --script "$blockdevice" mklabel gpt mkpart primary 1MiB 100%;
 	sleep 1
-	#create fs
-	mkfs."$fstype" -f "${blockdevice}p1"
+	if [ "$ENCRYPT_FS" != "0" ]; then
+		true
+		# TODO encrypt
+	else
+		parted --script "$blockdevice" mklabel gpt mkpart primary 1MiB 100%
+		sleep 1
+		#create fs
+		mkfs."$fstype" -f "${blockdevice}p1"
+
+	fi
 	sleep 1
 	#get uuid from block device
 	uuid=$(blkid | grep "$1" | sed 's/.*\sUUID="\([a-z0-9\-]\+\)".*/\1/g')
@@ -64,7 +72,7 @@ putvar() {
 		contents=$(jq --argjson var "\"$2\"" ".config.$1 = \$var" "$CONFIG_FILE")
 	fi
 	if [ -n "$contents" ]; then
-		echo -E "$contents" > "$CONFIG_FILE"
+		echo -E "$contents" >"$CONFIG_FILE"
 	fi
 }
 
@@ -74,7 +82,7 @@ showtext() {
 }
 
 log() {
-	echo "$*" >> "$DEBUG_LOG"
+	echo "$*" >>"$DEBUG_LOG"
 }
 
 services="monerod explorer monero-lws moneroStatus"

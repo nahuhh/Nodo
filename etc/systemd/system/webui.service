@@ -1,0 +1,16 @@
+[Unit]
+Description=Monero Web Interface
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/nodo/webui/webapp.py 127.0.0.1 8081
+WorkingDirectory=/home/nodo/webui/
+Type=forking
+Restart=always
+RestartSec=5
+User=nodo
+StandardOutput=inherit
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target

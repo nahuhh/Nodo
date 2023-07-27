@@ -22,12 +22,12 @@ fi
 
 ##Create new user 'nodo'
 showtext "Creating user 'nodo'..."
-adduser nodo --disabled-password
+adduser nodo --disabled-password --gecos ""
 adduser --system --no-create-home --shell /bin/false --group monero monero
 
 #Set nodo password 'MoneroNodo'
 echo "nodo:MoneroNodo" | chpasswd
-echo "root:9WNN5FPAlsmUzyLZ" | chpasswd
+echo "root:$(openssl rand -base64 48)" | chpasswd
 showtext "nodo password changed to 'MoneroNodo'"
 
 ##Change system hostname to MoneroNodo
@@ -234,6 +234,7 @@ services-start
 showtext "Start services"
 systemctl daemon-reload
 systemctl enable --now monerod.service
+systemctl enable --now webui.service
 
 ## Install complete
 showtext "Installation Complete"
