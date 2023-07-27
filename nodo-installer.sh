@@ -225,6 +225,7 @@ ufw allow 80
 ufw allow 443
 ufw allow 18080
 ufw allow 18081
+ufw allow 18083
 ufw allow 4200
 ufw allow 22
 ufw enable
