@@ -2,6 +2,7 @@
 
 import sys
 import json
+import urllib3
 import dash
 import dash_bootstrap_components as dbc
 from dash_breakpoints import WindowBreakpoints
@@ -55,6 +56,26 @@ account_address_viewkey_height = []
 # Page 5.1 ( BLOCK EXPLORER -> TRANSACTION POOL )
 # transaction_pool_infomation={}
 
+global conf_dict
+conf_dict: dict = dict()
+conf_file: str = "/home/nodo/variables/config.json"
+
+def node_info():
+    h = urllib3.PoolManager()
+    r = h.request('GET', 'http://127.0.0.1:' + page1_networks_clearnet['port'] + '/get_info')
+    return json.loads(r.data)
+
+
+def load_config():
+    with open(conf_file, "r") as json_file:
+        conf_dict = json.load(json_file)
+
+def save_config():
+    if conf_dict == None:
+        return
+    with open("sample.json", "w") as outfile:
+        outfile.write(json.dumps(conf_dict, indent=2))
+
 
 # ====================================================================
 # Description: load values for page0 web ui
@@ -99,6 +120,9 @@ def load_page0_values():
     # And convert datatype just like above python dictionary type
     # ...
     # ================================================================
+    page0_sync_status = node_info().copy()
+
+
 
 
 # ====================================================================
@@ -115,7 +139,7 @@ def load_page1_values():
 
     # Networks -> Clearnet
     page1_networks_clearnet["address"] = "address.test.com"
-    page1_networks_clearnet["port"] = 1024
+    page1_networks_clearnet["port"] = 18081
     page1_networks_clearnet["peer"] = "clearnet.peer.com"
 
     # Networks -> Tor
@@ -123,14 +147,14 @@ def load_page1_values():
     page1_networks_tor[
         "route_all_connections_through_tor_switch"
     ] = 1  # 1: true, 0: false
-    page1_networks_tor["onion_addr"] = 1024
-    page1_networks_tor["port"] = 1024
+    page1_networks_tor["onion_addr"] = ".onion"
+    page1_networks_tor["port"] = 18083
     page1_networks_tor["peer"] = "tor.peer.com"
 
     # Networks -> I2P
     page1_networks_i2p["i2p_switch"] = 1  # 1: true, 0: false
-    page1_networks_i2p["i2p_b32_addr"] = 1234
-    page1_networks_i2p["port"] = 1234
+    page1_networks_i2p["i2p_b32_addr"] = ".onion"
+    page1_networks_i2p["port"] = 18089
     page1_networks_i2p["peer"] = "i2p.peer.com"
 
     # ================================================================
@@ -138,6 +162,18 @@ def load_page1_values():
     # And convert datatype just like above python dictionary type
     # ...
     # ================================================================
+    c: dict = conf_dict['config']
+    page1_networks_clearnet['port'] = c['monero_public_port']
+
+    page1_networks_tor['tor_switch'] = 1 if c['torproxy_enabled'] == "TRUE" else 0
+    page1_networks_tor['port'] = c['tor_port']
+    page1_networks_tor['onion_addr'] = c['tor_address']
+    page1_networks_tor['peer'] = c['add_tor_peer']
+
+    page1_networks_i2p['i2p_switch'] = 1 if c['i2p_enabled'] == "TRUE" else 0
+    page1_networks_i2p['port'] = c['i2p_port']
+    page1_networks_i2p['i2p_b32_addr'] = c['i2p_address']
+    page1_networks_i2p['peer'] = c['add_i2p_peer']
 
 
 # ====================================================================
@@ -167,7 +203,17 @@ def load_page2_values():
     # And convert datatype just like above python dictionary type
     # ...
     # ================================================================
+    c: dict = conf_dict['config']
 
+    page2_node_rpc['rpc_switch'] = 1 if c['rpc_enabled'] == "TRUE" else 0
+    page2_node_rpc['port'] = c['monero_port']
+    page2_node_rpc['username'] = c['rpcu']
+    page2_node_rpc['password'] = c['rpcu']
+
+    page2_node_bandwidth['incoming_peers_limit'] = c['in_peers']
+    page2_node_bandwidth['outgoing_peers_limit'] = c['out_peers']
+    page2_node_bandwidth['rate_limit_up'] = c['limit_rate_up']
+    page2_node_bandwidth['rate_limit_down'] = c['limit_rate_down']
 
 # ====================================================================
 # Description: load values for page3 web ui (Device)
@@ -208,6 +254,7 @@ def load_page3_values():
     # And convert datatype just like above python dictionary type
     # ...
     # ================================================================
+    # <++>
 
 
 # ====================================================================
@@ -3090,7 +3137,7 @@ def make_page5_1():
                         id="transcation-pool-hash-search",
                         n_clicks=0,
                         color="black",
-                        className="d-flex align-content-start  border border-whilte",
+                        className="d-flex align-content-start  border border-white",
                     ),
                 ],
                 className="mt-1 mb-1",
@@ -4208,7 +4255,7 @@ def make_page_5_1_tx(tx):
                         id="transcation-publisher-hash-search",
                         n_clicks=0,
                         color="black",
-                        className="d-flex align-content-start  border border-whilte",
+                        className="d-flex align-content-start  border border-white",
                     ),
                 ],
                 className="mt-1 mb-1 mr-10",
@@ -4990,7 +5037,7 @@ def make_page_5_1_block(block):
                         id="transcation-publisher-hash-search",
                         n_clicks=0,
                         color="black",
-                        className="d-flex align-content-start  border border-whilte",
+                        className="d-flex align-content-start  border border-white",
                     ),
                 ],
                 className="mt-1 mb-1 mr-10",
@@ -5165,7 +5212,7 @@ def make_page_5_2_tx_check(param1):
                         id="transcation-publisher-hash-search",
                         n_clicks=0,
                         color="black",
-                        className="d-flex align-content-start  border border-whilte",
+                        className="d-flex align-content-start  border border-white",
                     ),
                 ],
                 className="mt-1 mb-1 mr-10",
@@ -5436,7 +5483,7 @@ page5_2 = html.Div(
                     id="transcation-publisher-hash-search",
                     n_clicks=0,
                     color="black",
-                    className="d-flex align-content-start  border border-whilte",
+                    className="d-flex align-content-start  border border-white",
                 ),
             ],
             className="mt-1 mb-1 mr-10",
@@ -5461,7 +5508,7 @@ page5_2 = html.Div(
             style={"overflow-wrap": "break-word"},
         ),
         html.P(
-            '(In Windows, can get the raw tx data: certuntil.exe -encode -f raw_monero_tx_encoded.ext & type "encoded.txt" | clip)',
+            '(In Windows, can get the raw tx data: certutil.exe -encode -f raw_monero_tx_encoded.ext & type "encoded.txt" | clip)',
             className="text-center",
             style={"overflow-wrap": "break-word"},
         ),
@@ -5606,7 +5653,7 @@ def page5_3_key_images_checker_check(param1, param2):
                         id="key-images-checker-search",
                         n_clicks=0,
                         color="black",
-                        className="d-flex align-content-start  border border-whilte",
+                        className="d-flex align-content-start  border border-white",
                     ),
                 ],
                 className="mt-1 mb-1",
@@ -5732,7 +5779,7 @@ page5_3 = html.Div(
                     id="key-images-checker-search",
                     n_clicks=0,
                     color="black",
-                    className="d-flex align-content-start  border border-whilte",
+                    className="d-flex align-content-start  border border-white",
                 ),
             ],
             className="mt-1 mb-1",
@@ -5747,12 +5794,12 @@ page5_3 = html.Div(
             style={"overflow-wrap": "break-word"},
         ),
         html.P(
-            "(In Linux, can get base64 signed raw tx data: based64 your_key_images_file | xclip -selection clipboard)",
+            "(In Linux, can get base64 signed raw tx data: base64 your_key_images_file | xclip -selection clipboard)",
             className="text-center",
             style={"overflow-wrap": "break-word"},
         ),
         html.P(
-            '(In Windows, can get base64 signed raw tx data: certuntil.exe -encode -f your_key_images_file_encoded.txt & type "encoded.txt" | clip)',
+            '(In Windows, can get base64 signed raw tx data: certutil.exe -encode -f your_key_images_file_encoded.txt & type "encoded.txt" | clip)',
             className="text-center",
             style={"overflow-wrap": "break-word"},
         ),
@@ -5763,7 +5810,7 @@ page5_3 = html.Div(
             style={"width": "100%", "height": 300},
         ),
         html.P(
-            "Viewkey (key image file is encoded using your viewkey. This is needed for descryption)",
+            "Viewkey (key image file is encoded using your viewkey. This is needed for description)",
             className="text-center",
             style={"overflow-wrap": "break-word"},
         ),
@@ -5903,7 +5950,7 @@ def page5_4_signed_output_public_keys_checker_check(param1, param2):
                         id="key-images-checker-search",
                         n_clicks=0,
                         color="black",
-                        className="d-flex align-content-start  border border-whilte",
+                        className="d-flex align-content-start  border border-white",
                     ),
                 ],
                 className="mt-1 mb-1",
@@ -6037,7 +6084,7 @@ page5_4 = html.Div(
                     id="output-keys-checker-search",
                     n_clicks=0,
                     color="black",
-                    className="d-flex align-content-start  border border-whilte",
+                    className="d-flex align-content-start  border border-white",
                 ),
             ],
             className="mt-1 mb-1",
@@ -6052,12 +6099,12 @@ page5_4 = html.Div(
             style={"overflow-wrap": "break-word"},
         ),
         html.P(
-            "(In Linux, can get base64 signed raw tx data: based64 your_key_images_file | xclip -selection clipboard)",
+            "(In Linux, can get base64 signed raw tx data: base64 your_key_images_file | xclip -selection clipboard)",
             className="text-center",
             style={"overflow-wrap": "break-word"},
         ),
         html.P(
-            '(In Windows, can get base64 signed raw tx data: certuntil.exe -encode -f your_key_images_file_encoded.txt & type "encoded.txt" | clip)',
+            '(In Windows, can get base64 signed raw tx data: certutil.exe -encode -f your_key_images_file_encoded.txt & type "encoded.txt" | clip)',
             className="text-center",
             style={"overflow-wrap": "break-word"},
         ),
@@ -6068,7 +6115,7 @@ page5_4 = html.Div(
             style={"width": "100%", "height": 300},
         ),
         html.P(
-            "Viewkey (key image file is encoded using your viewkey. This is needed for descryption)",
+            "Viewkey (key image file is encoded using your viewkey. This is needed for description)",
             className="text-center",
             style={"overflow-wrap": "break-word"},
         ),
@@ -6281,6 +6328,9 @@ def update_switch_networks_clearnet_port(value):
     # page1_networks_clearnet["port"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['monero_public_port'] = value
+    save_config()
+    load_config()
 
     return ""
 
@@ -6308,6 +6358,7 @@ def update_switch_networks_clearnet_peer(value):
     # page1_networks_clearnet["peer"] into backend.
     # ...
     # ================================================================
+    #<++>
 
     return ""
 
@@ -6346,6 +6397,9 @@ def update_switch_networks_clearnet_add_peer(n_clicks, port, peer):
     # page1_networks_clearnet["peer"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['monero_public_port'] = port
+    save_config()
+    load_config()
 
     return ""
 
@@ -6375,6 +6429,9 @@ def update_switch_networks_clearnet(value):
     # page1_networks_tor["tor_switch"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['tor_enabled'] = "TRUE" if value else "FALSE"
+    save_config()
+    load_config()
 
     return ""
 
@@ -6407,6 +6464,9 @@ def update_switch_networks_clearnet(value):
     # page1_networks_tor["route_all_connections_through_tor_switch"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['tor_global_enabled'] = "TRUE" if value else "FALSE"
+    save_config()
+    load_config()
 
     return ""
 
@@ -6433,8 +6493,11 @@ def update_switch_networks_tor_add_peer(n_clicks):
     # Add load function here
     # Add Save function here
     # ...
-    output_value = page1_networks_tor["onion_addr"]
     # ================================================================
+    output_value = page1_networks_tor["onion_addr"]
+    conf_dict['config']['tor_address'] = output_value
+    save_config()
+    load_config()
 
     return output_value
 
@@ -6462,6 +6525,9 @@ def update_switch_networks_tor_port(value):
     # page1_networks_tor["port"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['tor_port'] = value
+    save_config()
+    load_config()
 
     return ""
 
@@ -6489,6 +6555,9 @@ def update_switch_networks_tor_peer(value):
     # page1_networks_tor["peer"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['add_tor_peer'] = value
+    save_config()
+    load_config()
 
     return ""
 
@@ -6527,6 +6596,9 @@ def update_switch_networks_tor_add_peer(n_clicks, port, peer):
     # page1_networks_tor["peer"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['add_tor_peer'] = peer
+    save_config()
+    load_config()
 
     return ""
 
@@ -6556,6 +6628,9 @@ def update_switch_networks_i2p(value):
     # page1_networks_i2p["i2p_switch"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['i2p_enabled'] = "TRUE" if value else "FALSE"
+    save_config()
+    load_config()
 
     return ""
 
@@ -6584,6 +6659,9 @@ def update_switch_networks_i2p_change(n_clicks):
     # ...
     output_value = page1_networks_i2p["i2p_b32_addr"]
     # ================================================================
+    conf_dict['config']['i2p_address'] = output_value
+    save_config()
+    load_config()
 
     return output_value
 
@@ -6611,6 +6689,9 @@ def update_switch_networks_i2p_port(value):
     # page1_networks_i2p["port"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['i2p_port'] = value
+    save_config()
+    load_config()
 
     return ""
 
@@ -6638,6 +6719,9 @@ def update_switch_networks_i2p_peer(value):
     # page1_networks_i2p["peer"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['add_i2p_peer'] = value
+    save_config()
+    load_config()
 
     return ""
 
@@ -6676,6 +6760,9 @@ def update_switch_networks_i2p_add_peer(n_clicks, port, peer):
     # page1_networks_i2p["peer"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['add_i2p_peer'] = peer
+    save_config()
+    load_config()
 
     return ""
 
@@ -6709,6 +6796,9 @@ def update_switch_node_rpc(value):
     # page2_node_rpc["rpc_switch"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['rpc_enabled'] = "TRUE" if value else "FALSE"
+    save_config()
+    load_config()
 
     return ""
 
@@ -6752,6 +6842,11 @@ def update_node_rpc_apply(n_clicks, port, username, password):
     # page2_node_rpc["password"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['monero_port'] = port
+    conf_dict['config']['rpcu'] = username
+    conf_dict['config']['rpcp'] = password
+    save_config()
+    load_config()
 
     return ""
 
@@ -6781,6 +6876,9 @@ def update_input_node_bandwidth_incoming_peers_limit(value):
     # page2_node_bandwidth["incoming-peers-limit"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['in_peers'] = value
+    save_config()
+    load_config()
 
     return ""
 
@@ -6810,6 +6908,9 @@ def update_input_node_bandwidth_outgoing_peers_limit(value):
     # page2_node_bandwidth["outgoing_peers_limit"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['out_peers'] = value
+    save_config()
+    load_config()
 
     return ""
 
@@ -6837,6 +6938,9 @@ def update_input_node_bandwidth_rate_limit_up(value):
     # page2_node_bandwidth["rate_limit_up"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['limit_rate_up'] = value
+    save_config()
+    load_config()
 
     return ""
 
@@ -6864,6 +6968,9 @@ def update_input_node_bandwidth_rate_limit_down(value):
     # page2_node_bandwidth["rate_limit_up"] into backend.
     # ...
     # ================================================================
+    conf_dict['config']['limit_rate_down'] = value
+    save_config()
+    load_config()
 
     return ""
 
@@ -6898,6 +7005,7 @@ def update_switch_device_wifi(value):
     # page3_device_wifi["wifi_switch"] into backend.
     # ...
     # ================================================================
+    # <++>
 
     return ""
 
@@ -7973,6 +8081,7 @@ if __name__ == "__main__":
         host = sys.argv[1]
         port = int(sys.argv[2])
 
+    load_config()
     load_page0_values()
     load_page1_values()
     load_page2_values()
