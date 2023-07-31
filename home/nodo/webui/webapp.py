@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import subprocess as proc
 import sys
 import json
 import urllib3
@@ -120,6 +121,7 @@ def load_page0_values():
     # And convert datatype just like above python dictionary type
     # ...
     # ================================================================
+    load_config()
     page0_sync_status = node_info().copy()
 
 
@@ -162,6 +164,7 @@ def load_page1_values():
     # And convert datatype just like above python dictionary type
     # ...
     # ================================================================
+    load_config()
     c: dict = conf_dict['config']
     page1_networks_clearnet['port'] = c['monero_public_port']
 
@@ -203,6 +206,7 @@ def load_page2_values():
     # And convert datatype just like above python dictionary type
     # ...
     # ================================================================
+    load_config()
     c: dict = conf_dict['config']
 
     page2_node_rpc['rpc_switch'] = 1 if c['rpc_enabled'] == "TRUE" else 0
@@ -239,6 +243,7 @@ def load_page3_values():
     page3_device_wifi["router"] = "192.168.0.1"
     page3_device_wifi["dhcp"] = "192.168.0.1"
 
+
     # Device -> Bandwidth
     page3_device_ethernet["automatic_switch"] = 1  # 1: true, 0: false
     page3_device_ethernet["ip_address"] = "192.168.0.10"
@@ -255,7 +260,24 @@ def load_page3_values():
     # ...
     # ================================================================
     # <++>
+    load_config()
+    w: dict = conf_dict['config']['wifi']
+    page3_device_wifi["status"] = proc.run('nmcli -c no -t -f WIFI general', stdout=proc.PIPE)
+    page3_device_wifi["ssid"] = w['ssid']
+    page3_device_wifi["ssids"] = w['ssids']
+    page3_device_wifi["passphrase"] = w['pw']
+    page3_device_wifi["ip_address"] = w['ip']
+    page3_device_wifi["subnet_mask"] = w['subnet']
+    page3_device_wifi["router"] = w['router']
+    page3_device_wifi["dhcp"] = w['dhcp']
 
+    w: dict = conf_dict['config']['ethernet']
+    page3_device_ethernet["status"] = proc.run('nmcli -c no -t -f GENERAL.STATE con show ethernet | cut -d: -f2', stdout=proc.PIPE)
+    page3_device_ethernet["passphrase"] = w['pw']
+    page3_device_ethernet["ip_address"] = w['ip']
+    page3_device_ethernet["subnet_mask"] = w['subnet']
+    page3_device_ethernet["router"] = w['router']
+    page3_device_ethernet["dhcp"] = w['dhcp']
 
 # ====================================================================
 # Description: load values for page4 web ui (LWS Admin)

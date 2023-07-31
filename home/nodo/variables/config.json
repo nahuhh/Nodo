@@ -42,6 +42,7 @@
       "enabled": "TRUE",
       "auto": "TRUE",
       "ssid": "",
+      "ssids": [],
       "pw": "",
       "ip": "",
       "subnet": "",
