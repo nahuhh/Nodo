@@ -2,13 +2,12 @@
   "config": {
     "add_i2p_peer": "dsc7fyzzultm7y6pmx2avu6tze3usc7d27nkbzs5qwuujplxcmzq.b32.i2p",
     "add_tor_peer": "nitbdip72kdg5z6g.onion:28083",
-    "wifi_ssid": "",
-    "wifi_pw": "",
     "boot_status": 0,
     "credits": 250,
     "difficulty": 1000,
     "htmlpasswordrequired": "FALSE",
     "torproxy_enabled": "FALSE",
+    "tor_global_enabled": "FALSE",
     "tor_enabled": "TRUE",
     "tor_address": "",
     "tor_port": 18083,
@@ -17,6 +16,7 @@
     "i2p_address": "",
     "i2p_port": 18089,
     "i2p_tx_proxy_port": "",
+    "lws_port": 18084,
     "in_peers": 64,
     "limit_rate_down": -1,
     "limit_rate_up": -1,
@@ -31,6 +31,23 @@
     "rpcu": "nodo",
     "data_dir": "/media/monero/bitmonero",
     "sync_mode": "fast:async",
+    "ethernet": {
+      "enabled": "TRUE",
+      "ip": "",
+      "subnet": "",
+      "router": "",
+      "dhcp": ""
+    },
+    "wifi": {
+      "enabled": "TRUE",
+      "auto": "TRUE",
+      "ssid": "",
+      "pw": "",
+      "ip": "",
+      "subnet": "",
+      "router": "",
+      "dhcp": ""
+    },
     "versions": {
       "nodo": "unset",
       "monero": "unset",
