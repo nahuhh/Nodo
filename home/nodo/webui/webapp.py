@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from io import TextIOWrapper
+import psutil
 import subprocess as proc
 import sys
 import json
@@ -61,15 +63,19 @@ global conf_dict
 conf_dict: dict = dict()
 conf_file: str = "/home/nodo/variables/config.json"
 
+
 def node_info():
     h = urllib3.PoolManager()
-    r = h.request('GET', 'http://127.0.0.1:' + page1_networks_clearnet['port'] + '/get_info')
+    r = h.request(
+        "GET", "http://127.0.0.1:" + page1_networks_clearnet["port"] + "/get_info"
+    )
     return json.loads(r.data)
 
 
 def load_config():
     with open(conf_file, "r") as json_file:
         conf_dict = json.load(json_file)
+
 
 def save_config():
     if conf_dict == None:
@@ -102,12 +108,12 @@ def load_page0_values():
     page0_sync_status["update_available"] = "false"
 
     # System Status
-    page0_system_status["mainnet_node"] = "Running"
-    page0_system_status["private_node"] = "Running"
-    page0_system_status["tor_node"] = "Running"
-    page0_system_status["i2p_node"] = "Running"
-    page0_system_status["monero_lws_admin"] = "Scanning"
-    page0_system_status["block_explorer"] = "Running"
+    page0_system_status["mainnet_node"] = ""
+    page0_system_status["private_node"] = ""
+    page0_system_status["tor_node"] = ""
+    page0_system_status["i2p_node"] = ""
+    page0_system_status["monero_lws_admin"] = ""
+    page0_system_status["block_explorer"] = ""
 
     # Hardware Status
     page0_hardware_status["cpu_percentage"] = 30
@@ -124,7 +130,32 @@ def load_page0_values():
     load_config()
     page0_sync_status = node_info().copy()
 
+    s: list[str] = ["systemctl", "show", "--no-pager", "--property=SubState", ""]
+    s[4] = "monerod"
+    page0_system_status["mainnet_node"] = proc.run(s, stdout=proc.PIPE).stdout.decode()
 
+    s[4] = "tor"
+    page0_system_status["tor_node"] = proc.run(s, stdout=proc.PIPE).stdout.decode()
+
+    s[4] = "i2pd"
+    page0_system_status["i2p_node"] = proc.run(s, stdout=proc.PIPE).stdout.decode()
+
+    s[4] = "monero-lws"
+    page0_system_status["monero_lws_admin"] = proc.run(
+        s, stdout=proc.PIPE
+    ).stdout.decode()
+
+    s[4] = "explorer"
+    page0_system_status["block_explorer"] = proc.run(
+        s, stdout=proc.PIPE
+    ).stdout.decode()
+
+    page0_hardware_status["cpu_percentage"] = psutil.cpu_percent()
+    # <++> TODO
+    # page0_hardware_status["cpu_temp"] = psutil.sensors_temperatures()
+    page0_hardware_status["primary_storage"] = psutil.disk_usage("/dev/nvme0n1p1")
+    page0_hardware_status["backup_storage"] = psutil.disk_usage("/dev/mmcblk0p1")
+    page0_hardware_status["ram_percentage"] = psutil.virtual_memory().percent
 
 
 # ====================================================================
@@ -165,18 +196,18 @@ def load_page1_values():
     # ...
     # ================================================================
     load_config()
-    c: dict = conf_dict['config']
-    page1_networks_clearnet['port'] = c['monero_public_port']
+    c: dict = conf_dict["config"]
+    page1_networks_clearnet["port"] = c["monero_public_port"]
 
-    page1_networks_tor['tor_switch'] = 1 if c['torproxy_enabled'] == "TRUE" else 0
-    page1_networks_tor['port'] = c['tor_port']
-    page1_networks_tor['onion_addr'] = c['tor_address']
-    page1_networks_tor['peer'] = c['add_tor_peer']
+    page1_networks_tor["tor_switch"] = 1 if c["torproxy_enabled"] == "TRUE" else 0
+    page1_networks_tor["port"] = c["tor_port"]
+    page1_networks_tor["onion_addr"] = c["tor_address"]
+    page1_networks_tor["peer"] = c["add_tor_peer"]
 
-    page1_networks_i2p['i2p_switch'] = 1 if c['i2p_enabled'] == "TRUE" else 0
-    page1_networks_i2p['port'] = c['i2p_port']
-    page1_networks_i2p['i2p_b32_addr'] = c['i2p_address']
-    page1_networks_i2p['peer'] = c['add_i2p_peer']
+    page1_networks_i2p["i2p_switch"] = 1 if c["i2p_enabled"] == "TRUE" else 0
+    page1_networks_i2p["port"] = c["i2p_port"]
+    page1_networks_i2p["i2p_b32_addr"] = c["i2p_address"]
+    page1_networks_i2p["peer"] = c["add_i2p_peer"]
 
 
 # ====================================================================
@@ -207,17 +238,18 @@ def load_page2_values():
     # ...
     # ================================================================
     load_config()
-    c: dict = conf_dict['config']
+    c: dict = conf_dict["config"]
 
-    page2_node_rpc['rpc_switch'] = 1 if c['rpc_enabled'] == "TRUE" else 0
-    page2_node_rpc['port'] = c['monero_port']
-    page2_node_rpc['username'] = c['rpcu']
-    page2_node_rpc['password'] = c['rpcu']
+    page2_node_rpc["rpc_switch"] = 1 if c["rpc_enabled"] == "TRUE" else 0
+    page2_node_rpc["port"] = c["monero_port"]
+    page2_node_rpc["username"] = c["rpcu"]
+    page2_node_rpc["password"] = c["rpcu"]
 
-    page2_node_bandwidth['incoming_peers_limit'] = c['in_peers']
-    page2_node_bandwidth['outgoing_peers_limit'] = c['out_peers']
-    page2_node_bandwidth['rate_limit_up'] = c['limit_rate_up']
-    page2_node_bandwidth['rate_limit_down'] = c['limit_rate_down']
+    page2_node_bandwidth["incoming_peers_limit"] = c["in_peers"]
+    page2_node_bandwidth["outgoing_peers_limit"] = c["out_peers"]
+    page2_node_bandwidth["rate_limit_up"] = c["limit_rate_up"]
+    page2_node_bandwidth["rate_limit_down"] = c["limit_rate_down"]
+
 
 # ====================================================================
 # Description: load values for page3 web ui (Device)
@@ -243,7 +275,6 @@ def load_page3_values():
     page3_device_wifi["router"] = "192.168.0.1"
     page3_device_wifi["dhcp"] = "192.168.0.1"
 
-
     # Device -> Bandwidth
     page3_device_ethernet["automatic_switch"] = 1  # 1: true, 0: false
     page3_device_ethernet["ip_address"] = "192.168.0.10"
@@ -259,25 +290,29 @@ def load_page3_values():
     # And convert datatype just like above python dictionary type
     # ...
     # ================================================================
-    # <++>
     load_config()
-    w: dict = conf_dict['config']['wifi']
-    page3_device_wifi["status"] = proc.run('nmcli -c no -t -f WIFI general', stdout=proc.PIPE)
-    page3_device_wifi["ssid"] = w['ssid']
-    page3_device_wifi["ssids"] = w['ssids']
-    page3_device_wifi["passphrase"] = w['pw']
-    page3_device_wifi["ip_address"] = w['ip']
-    page3_device_wifi["subnet_mask"] = w['subnet']
-    page3_device_wifi["router"] = w['router']
-    page3_device_wifi["dhcp"] = w['dhcp']
+    w: dict = conf_dict["config"]["wifi"]
+    page3_device_wifi["status"] = proc.run(
+        ["nmcli", "-c", "no", "-t", "-f", "WIFI", "general"], stdout=proc.PIPE
+    ).stdout.decode()
+    page3_device_wifi["ssid"] = w["ssid"]
+    page3_device_wifi["ssids"] = w["ssids"]
+    page3_device_wifi["passphrase"] = w["pw"]
+    page3_device_wifi["ip_address"] = w["ip"]
+    page3_device_wifi["subnet_mask"] = w["subnet"]
+    page3_device_wifi["router"] = w["router"]
+    page3_device_wifi["dhcp"] = w["dhcp"]
 
-    w: dict = conf_dict['config']['ethernet']
-    page3_device_ethernet["status"] = proc.run('nmcli -c no -t -f GENERAL.STATE con show ethernet | cut -d: -f2', stdout=proc.PIPE)
-    page3_device_ethernet["passphrase"] = w['pw']
-    page3_device_ethernet["ip_address"] = w['ip']
-    page3_device_ethernet["subnet_mask"] = w['subnet']
-    page3_device_ethernet["router"] = w['router']
-    page3_device_ethernet["dhcp"] = w['dhcp']
+    w: dict = conf_dict["config"]["ethernet"]
+    f: TextIOWrapper = open("/sys/class/net/eth0/operstate", "r")
+    page3_device_ethernet["status"] = f.read()
+    page3_device_ethernet["passphrase"] = w["pw"]
+    page3_device_ethernet["ip_address"] = w["ip"]
+    page3_device_ethernet["subnet_mask"] = w["subnet"]
+    page3_device_ethernet["router"] = w["router"]
+    page3_device_ethernet["dhcp"] = w["dhcp"]
+    f.close()
+
 
 # ====================================================================
 # Description: load values for page4 web ui (LWS Admin)
@@ -6350,7 +6385,7 @@ def update_switch_networks_clearnet_port(value):
     # page1_networks_clearnet["port"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['monero_public_port'] = value
+    conf_dict["config"]["monero_public_port"] = value
     save_config()
     load_config()
 
@@ -6380,7 +6415,7 @@ def update_switch_networks_clearnet_peer(value):
     # page1_networks_clearnet["peer"] into backend.
     # ...
     # ================================================================
-    #<++>
+    # <++>
 
     return ""
 
@@ -6419,7 +6454,7 @@ def update_switch_networks_clearnet_add_peer(n_clicks, port, peer):
     # page1_networks_clearnet["peer"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['monero_public_port'] = port
+    conf_dict["config"]["monero_public_port"] = port
     save_config()
     load_config()
 
@@ -6451,7 +6486,7 @@ def update_switch_networks_clearnet(value):
     # page1_networks_tor["tor_switch"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['tor_enabled'] = "TRUE" if value else "FALSE"
+    conf_dict["config"]["tor_enabled"] = "TRUE" if value else "FALSE"
     save_config()
     load_config()
 
@@ -6486,7 +6521,7 @@ def update_switch_networks_clearnet(value):
     # page1_networks_tor["route_all_connections_through_tor_switch"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['tor_global_enabled'] = "TRUE" if value else "FALSE"
+    conf_dict["config"]["tor_global_enabled"] = "TRUE" if value else "FALSE"
     save_config()
     load_config()
 
@@ -6517,7 +6552,7 @@ def update_switch_networks_tor_add_peer(n_clicks):
     # ...
     # ================================================================
     output_value = page1_networks_tor["onion_addr"]
-    conf_dict['config']['tor_address'] = output_value
+    conf_dict["config"]["tor_address"] = output_value
     save_config()
     load_config()
 
@@ -6547,7 +6582,7 @@ def update_switch_networks_tor_port(value):
     # page1_networks_tor["port"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['tor_port'] = value
+    conf_dict["config"]["tor_port"] = value
     save_config()
     load_config()
 
@@ -6577,7 +6612,7 @@ def update_switch_networks_tor_peer(value):
     # page1_networks_tor["peer"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['add_tor_peer'] = value
+    conf_dict["config"]["add_tor_peer"] = value
     save_config()
     load_config()
 
@@ -6618,7 +6653,7 @@ def update_switch_networks_tor_add_peer(n_clicks, port, peer):
     # page1_networks_tor["peer"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['add_tor_peer'] = peer
+    conf_dict["config"]["add_tor_peer"] = peer
     save_config()
     load_config()
 
@@ -6650,7 +6685,7 @@ def update_switch_networks_i2p(value):
     # page1_networks_i2p["i2p_switch"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['i2p_enabled'] = "TRUE" if value else "FALSE"
+    conf_dict["config"]["i2p_enabled"] = "TRUE" if value else "FALSE"
     save_config()
     load_config()
 
@@ -6681,7 +6716,7 @@ def update_switch_networks_i2p_change(n_clicks):
     # ...
     output_value = page1_networks_i2p["i2p_b32_addr"]
     # ================================================================
-    conf_dict['config']['i2p_address'] = output_value
+    conf_dict["config"]["i2p_address"] = output_value
     save_config()
     load_config()
 
@@ -6711,7 +6746,7 @@ def update_switch_networks_i2p_port(value):
     # page1_networks_i2p["port"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['i2p_port'] = value
+    conf_dict["config"]["i2p_port"] = value
     save_config()
     load_config()
 
@@ -6741,7 +6776,7 @@ def update_switch_networks_i2p_peer(value):
     # page1_networks_i2p["peer"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['add_i2p_peer'] = value
+    conf_dict["config"]["add_i2p_peer"] = value
     save_config()
     load_config()
 
@@ -6782,7 +6817,7 @@ def update_switch_networks_i2p_add_peer(n_clicks, port, peer):
     # page1_networks_i2p["peer"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['add_i2p_peer'] = peer
+    conf_dict["config"]["add_i2p_peer"] = peer
     save_config()
     load_config()
 
@@ -6818,7 +6853,7 @@ def update_switch_node_rpc(value):
     # page2_node_rpc["rpc_switch"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['rpc_enabled'] = "TRUE" if value else "FALSE"
+    conf_dict["config"]["rpc_enabled"] = "TRUE" if value else "FALSE"
     save_config()
     load_config()
 
@@ -6864,9 +6899,9 @@ def update_node_rpc_apply(n_clicks, port, username, password):
     # page2_node_rpc["password"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['monero_port'] = port
-    conf_dict['config']['rpcu'] = username
-    conf_dict['config']['rpcp'] = password
+    conf_dict["config"]["monero_port"] = port
+    conf_dict["config"]["rpcu"] = username
+    conf_dict["config"]["rpcp"] = password
     save_config()
     load_config()
 
@@ -6898,7 +6933,7 @@ def update_input_node_bandwidth_incoming_peers_limit(value):
     # page2_node_bandwidth["incoming-peers-limit"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['in_peers'] = value
+    conf_dict["config"]["in_peers"] = value
     save_config()
     load_config()
 
@@ -6930,7 +6965,7 @@ def update_input_node_bandwidth_outgoing_peers_limit(value):
     # page2_node_bandwidth["outgoing_peers_limit"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['out_peers'] = value
+    conf_dict["config"]["out_peers"] = value
     save_config()
     load_config()
 
@@ -6960,7 +6995,7 @@ def update_input_node_bandwidth_rate_limit_up(value):
     # page2_node_bandwidth["rate_limit_up"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['limit_rate_up'] = value
+    conf_dict["config"]["limit_rate_up"] = value
     save_config()
     load_config()
 
@@ -6990,7 +7025,7 @@ def update_input_node_bandwidth_rate_limit_down(value):
     # page2_node_bandwidth["rate_limit_up"] into backend.
     # ...
     # ================================================================
-    conf_dict['config']['limit_rate_down'] = value
+    conf_dict["config"]["limit_rate_down"] = value
     save_config()
     load_config()
 
@@ -7027,7 +7062,11 @@ def update_switch_device_wifi(value):
     # page3_device_wifi["wifi_switch"] into backend.
     # ...
     # ================================================================
-    # <++>
+    load_config()
+    w: dict = conf_dict["config"]["wifi"]
+    w["enabled"] = "TRUE" if value else "FALSE"
+    proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+    save_config()
 
     return ""
 
@@ -7055,6 +7094,11 @@ def update_input_node_rpc_port(value):
     # page3_device_wifi["ssid"] into backend.
     # ...
     # ================================================================
+    load_config()
+    w: dict = conf_dict["config"]["wifi"]
+    w["ssid"] = value
+    proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+    save_config()
 
     return ""
 
@@ -7082,6 +7126,11 @@ def update_input_node_rpc_port(value):
     # page3_device_wifi["passphrase"] into backend.
     # ...
     # ================================================================
+    load_config()
+    w: dict = conf_dict["config"]["wifi"]
+    w["pw"] = value
+    proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+    save_config()
 
     return ""
 
@@ -7113,6 +7162,11 @@ def update_input_device_wifi_ip_address_by_switches_input_device_wifi_automatic(
     # page3_device_wifi["automatic_switch"] into backend.
     # ...
     # ================================================================
+    load_config()
+    w: dict = conf_dict["config"]["wifi"]
+    w["auto"] = "TRUE" if value else "FALSE"
+    proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+    save_config()
 
     if page3_device_wifi["automatic_switch"] == 1:
         return [True, True, True, True]
@@ -7147,6 +7201,11 @@ def validate_input_device_wifi_ip_address_by_regex(value, pattern):
         # page3_device_wifi["ip_address"] into backend.
         # ...
         # ============================================================
+        load_config()
+        w: dict = conf_dict["config"]["wifi"]
+        w["ip"] = value
+        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        save_config()
         return True, False
     else:
         return False, True
@@ -7178,6 +7237,11 @@ def validate_input_device_wifi_subnet_mask_by_regex(value, pattern):
         # page3_device_wifi["subnet_mask"] into backend.
         # ...
         # ============================================================
+        load_config()
+        w: dict = conf_dict["config"]["wifi"]
+        w["subnet"] = value
+        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        save_config()
         return True, False
     else:
         return False, True
@@ -7209,6 +7273,11 @@ def validate_input_device_wifi_router_by_regex(value, pattern):
         # page3_device_wifi["router"] into backend.
         # ...
         # ============================================================
+        load_config()
+        w: dict = conf_dict["config"]["wifi"]
+        w["router"] = value
+        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        save_config()
         return True, False
     else:
         return False, True
@@ -7240,6 +7309,11 @@ def validate_input_device_wifi_dhcp_by_regex(value, pattern):
         # page3_device_wifi["dhcp"] into backend.
         # ...
         # ============================================================
+        load_config()
+        w: dict = conf_dict["config"]["wifi"]
+        w["dhcp"] = value
+        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        save_config()
         return True, False
     else:
         return False, True
@@ -7274,6 +7348,11 @@ def update_input_device_ethernet_ip_address_by_switches_input_device_ethernet_au
     # Add save function to write back
     # page3_device_ethernet["automatic_switch"] into backend.
     # ...
+    load_config()
+    w: dict = conf_dict["config"]["ethernet"]
+    w["auto"] = value
+    proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+    save_config()
 
     if page3_device_ethernet["automatic_switch"] == 1:
         return [True, True, True, True]
@@ -7307,6 +7386,11 @@ def validate_input_device_ethernet_ip_address_by_regex(value, pattern):
         # page3_device_ethernet["ip_address"] into backend.
         # ...
         page3_device_ethernet["ip_address"] = value
+        load_config()
+        w: dict = conf_dict["config"]["ethernet"]
+        w["ip"] = value
+        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        save_config()
         return True, False
     else:
         return False, True
@@ -7337,6 +7421,11 @@ def validate_input_device_ethernet_subnet_mask_by_regex(value, pattern):
         # page3_device_ethernet["subnet_mask"] into backend.
         # ...
         page3_device_ethernet["subnet_mask"] = value
+        load_config()
+        w: dict = conf_dict["config"]["ethernet"]
+        w["subnet"] = value
+        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        save_config()
         return True, False
     else:
         return False, True
@@ -7367,6 +7456,11 @@ def validate_input_device_ethernet_router_by_regex(value, pattern):
         # page3_device_ethernet["router"] into backend.
         # ...
         page3_device_ethernet["router"] = value
+        load_config()
+        w: dict = conf_dict["config"]["ethernet"]
+        w["router"] = value
+        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        save_config()
         return True, False
     else:
         return False, True
@@ -7397,6 +7491,11 @@ def validate_input_device_ethernet_dhcp_by_regex(value, pattern):
         # page3_device_ethernet["dhcp"] into backend.
         # ...
         page3_device_ethernet["dhcp"] = value
+        load_config()
+        w: dict = conf_dict["config"]["ethernet"]
+        w["dhcp"] = value
+        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        save_config()
         return True, False
     else:
         return False, True
@@ -8109,4 +8208,4 @@ if __name__ == "__main__":
     load_page2_values()
     load_page3_values()
     load_page4_values()
-    app.run_server(host=host, port=port, debug=False)
+    app.run_server(host=host, port=str(port), debug=False)
