@@ -3,6 +3,7 @@
 
 DEBUG_LOG=/home/nodo/debug.log
 CONFIG_FILE=/home/nodo/variables/config.json
+XMRPARTLABEL="NODO_BLOCKCHAIN"
 
 check_connection() {
 	touse="$(ip r | grep default | cut -d ' ' -f 3)"
@@ -32,7 +33,7 @@ setup_drive() {
 		true
 		# TODO encrypt
 	else
-		parted --script "$blockdevice" mklabel gpt mkpart primary 1MiB 100%
+		parted --script "$blockdevice" mklabel gpt mkpart primary 1MiB 100% name 1 "$XMRPARTLABEL"
 		sleep 1
 		#create fs
 		mkfs."$fstype" -f "${blockdevice}p1"
