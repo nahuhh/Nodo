@@ -58,12 +58,10 @@ getip() {
 }
 
 getvar() {
-	log "var $1 queried"
 	jq ".config.$1" "$CONFIG_FILE"
 }
 
 putvar() {
-	log "var $1 updated to $2"
 	# Very cringe, I know
 	re='^[+-]?[0-9]+([.][0-9]+)?$'
 	if [[ $2 =~ $re ]]; then

@@ -3,6 +3,11 @@
 #shellcheck source=home/nodo/common.sh
 . /home/nodo/common.sh
 
+CONF=$(</home/nodo/variables/config.json)
+getvar() {
+	echo "$CONF" | jq -r ".config.$1"
+}
+
 MONERO_PORT=$(getvar "monero_port")
 
 RPC_ENABLED=$(getvar "rpc_enabled")
