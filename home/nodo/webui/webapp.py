@@ -7065,7 +7065,7 @@ def update_switch_device_wifi(value):
     load_config()
     w: dict = conf_dict["config"]["wifi"]
     w["enabled"] = "TRUE" if value else "FALSE"
-    proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+    proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
     save_config()
 
     return ""
@@ -7097,7 +7097,7 @@ def update_input_node_rpc_port(value):
     load_config()
     w: dict = conf_dict["config"]["wifi"]
     w["ssid"] = value
-    proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+    proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
     save_config()
 
     return ""
@@ -7129,7 +7129,7 @@ def update_input_node_rpc_port(value):
     load_config()
     w: dict = conf_dict["config"]["wifi"]
     w["pw"] = value
-    proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+    proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
     save_config()
 
     return ""
@@ -7165,7 +7165,7 @@ def update_input_device_wifi_ip_address_by_switches_input_device_wifi_automatic(
     load_config()
     w: dict = conf_dict["config"]["wifi"]
     w["auto"] = "TRUE" if value else "FALSE"
-    proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+    proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
     save_config()
 
     if page3_device_wifi["automatic_switch"] == 1:
@@ -7204,7 +7204,7 @@ def validate_input_device_wifi_ip_address_by_regex(value, pattern):
         load_config()
         w: dict = conf_dict["config"]["wifi"]
         w["ip"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
         save_config()
         return True, False
     else:
@@ -7240,7 +7240,7 @@ def validate_input_device_wifi_subnet_mask_by_regex(value, pattern):
         load_config()
         w: dict = conf_dict["config"]["wifi"]
         w["subnet"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
         save_config()
         return True, False
     else:
@@ -7276,7 +7276,7 @@ def validate_input_device_wifi_router_by_regex(value, pattern):
         load_config()
         w: dict = conf_dict["config"]["wifi"]
         w["router"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
         save_config()
         return True, False
     else:
@@ -7312,7 +7312,7 @@ def validate_input_device_wifi_dhcp_by_regex(value, pattern):
         load_config()
         w: dict = conf_dict["config"]["wifi"]
         w["dhcp"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
         save_config()
         return True, False
     else:
@@ -7351,7 +7351,7 @@ def update_input_device_ethernet_ip_address_by_switches_input_device_ethernet_au
     load_config()
     w: dict = conf_dict["config"]["ethernet"]
     w["auto"] = value
-    proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+    proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
     save_config()
 
     if page3_device_ethernet["automatic_switch"] == 1:
@@ -7389,7 +7389,7 @@ def validate_input_device_ethernet_ip_address_by_regex(value, pattern):
         load_config()
         w: dict = conf_dict["config"]["ethernet"]
         w["ip"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
         save_config()
         return True, False
     else:
@@ -7424,7 +7424,7 @@ def validate_input_device_ethernet_subnet_mask_by_regex(value, pattern):
         load_config()
         w: dict = conf_dict["config"]["ethernet"]
         w["subnet"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
         save_config()
         return True, False
     else:
@@ -7459,7 +7459,7 @@ def validate_input_device_ethernet_router_by_regex(value, pattern):
         load_config()
         w: dict = conf_dict["config"]["ethernet"]
         w["router"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
         save_config()
         return True, False
     else:
@@ -7494,7 +7494,7 @@ def validate_input_device_ethernet_dhcp_by_regex(value, pattern):
         load_config()
         w: dict = conf_dict["config"]["ethernet"]
         w["dhcp"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/update_net.sh'])
+        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
         save_config()
         return True, False
     else:
