@@ -187,6 +187,31 @@ showtext "Installing log.io..."
 	systemctl enable log-io-file.service
 } 2>&1 | tee -a "$DEBUG_LOG"
 
+#Install webui
+showtext "Installing python dependencies..."
+
+{
+	mkdir /home/nodo/webui
+	chown nodo /home/nodo/webui
+	chmod gu+rx nodo:nodo /home/nodo/webui
+	cd /home/nodo/webui || return 1
+	apt-get install -y software-properties-common
+	apt-get install -y python3.8 python3.8-dev python-pip python-virtualenv
+	add-apt-repository -y ppa:deadsnakes/ppa
+	virtualenv --python=python3.8 venv
+	(
+		. venv/bin/activate
+		venv/bin/pip3.11 install Cython
+		venv/bin/pip3.11 install numpy
+		venv/bin/pip3.11 install dash
+		venv/bin/pip3.11 install dash_bootstrap_components dash_mantine_components dash_iconify
+		venv/bin/pip3.11 install pandas
+		venv/bin/pip3.11 install dash_breakpoints dash_daq
+		venv/bin/pip3.11 install furl
+		venv/bin/pip3.11 install psutil
+	)
+} 2>&1 | tee -a "$DEBUG_LOG"
+
 ##Install crontab
 showtext "Setting up crontab..."
 crontab -u nodo var/spool/cron/crontabs/nodo 2>&1 | tee -a "$DEBUG_LOG"
