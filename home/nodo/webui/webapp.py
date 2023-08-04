@@ -20,7 +20,7 @@ from dash import html
 from dash.dependencies import ALL, Input, Output, State
 from dash.exceptions import PreventUpdate
 import dash_daq as daq
-import dash_table
+from dash import dash_table
 import pandas as pd
 from pandas import json_normalize
 from furl import furl
@@ -59,15 +59,15 @@ account_address_viewkey_height = []
 # Page 5.1 ( BLOCK EXPLORER -> TRANSACTION POOL )
 # transaction_pool_infomation={}
 
-global conf_dict
 conf_dict: dict = dict()
 conf_file: str = "/home/nodo/variables/config.json"
 
 
 def node_info():
     h = urllib3.PoolManager()
+    p = page1_networks_clearnet["port"] or 18081
     r = h.request(
-        "GET", "http://127.0.0.1:" + page1_networks_clearnet["port"] + "/get_info"
+        "GET", "http://127.0.0.1:" + str(p) + "/get_info"
     )
     return json.loads(r.data)
 
