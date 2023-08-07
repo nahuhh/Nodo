@@ -22,7 +22,7 @@ fi
 
 ##Create new user 'nodo'
 showtext "Creating user 'nodo'..."
-adduser nodo --disabled-password --gecos ""
+adduser nodo --disabled-password --gecos "" -m
 adduser --system --no-create-home --shell /bin/false --group monero monero
 
 #Set nodo password 'MoneroNodo'
@@ -231,6 +231,10 @@ services-stop
 
 showtext "Downloading Monero..."
 # Install monero for the first time
+apt-get update
+
+apt-get install git build-essential ccache cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 -y
+
 sudo -u nodo bash ./update-monero.sh
 
 showtext "Downloading Block Explorer..."
@@ -239,7 +243,7 @@ sudo -u nodo bash ./update-explorer.sh
 
 showtext "Downloading Monero LWS"
 # Install monero block explorer for the first time
-sudo -u nodo bash ./update-lws.sh
+sudo -u nodo bash ./update-monero-lws.sh
 
 showtext "Downloading Monero LWS"
 # Install monero block explorer for the first time
