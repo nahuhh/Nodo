@@ -65,7 +65,9 @@ conf_file: str = "/home/nodo/variables/config.json"
 
 def node_info():
     h = urllib3.PoolManager()
-    p = page1_networks_clearnet["port"] or 18081
+    p = 18081
+    if 'config' in conf_dict and 'monero_port' in conf_dict['config']:
+        p = conf_dict['config']['monero_port']
     r = h.request(
         "GET", "http://127.0.0.1:" + str(p) + "/get_info"
     )
