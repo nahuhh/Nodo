@@ -68,10 +68,13 @@ def node_info():
     p = 18081
     if 'config' in conf_dict and 'monero_port' in conf_dict['config']:
         p = conf_dict['config']['monero_port']
-    r = h.request(
-        "GET", "http://127.0.0.1:" + str(p) + "/get_info"
-    )
-    return json.loads(r.data)
+    try:
+        r = h.request(
+            "GET", "http://127.0.0.1:" + str(p) + "/get_info"
+        )
+        return json.loads(r.data)
+    except IOError:
+        return dict()
 
 
 def load_config():
@@ -153,8 +156,7 @@ def load_page0_values():
     ).stdout.decode()
 
     page0_hardware_status["cpu_percentage"] = psutil.cpu_percent()
-    # <++> TODO
-    # page0_hardware_status["cpu_temp"] = psutil.sensors_temperatures()
+    page0_hardware_status["cpu_temp"] = psutil.sensors_temperatures()["soc-thermal"][0].current
     page0_hardware_status["primary_storage"] = psutil.disk_usage("/dev/nvme0n1p1")
     page0_hardware_status["backup_storage"] = psutil.disk_usage("/dev/mmcblk0p1")
     page0_hardware_status["ram_percentage"] = psutil.virtual_memory().percent
