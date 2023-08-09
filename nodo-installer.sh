@@ -218,14 +218,6 @@ crontab -u nodo var/spool/cron/crontabs/nodo 2>&1 | tee -a "$DEBUG_LOG"
 crontab -u root var/spool/cron/crontabs/root 2>&1 | tee -a "$DEBUG_LOG"
 showtext "Success"
 
-##End debug log
-{
-	showtext "
-	####################
-	End ubuntu-install-continue.sh script $(date)
-	####################"
-} 2>&1 | tee -a "$DEBUG_LOG"
-
 #Stop Node to make system resources available.
 services-stop
 
