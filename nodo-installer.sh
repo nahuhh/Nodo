@@ -23,7 +23,7 @@ fi
 ##Create new user 'nodo'
 showtext "Creating user 'nodo'..."
 adduser nodo --disabled-password --gecos "" -m
-adduser --system --no-create-home --shell /bin/false --group monero monero
+adduser --system --no-create-home --shell /bin/false --group monero
 
 #Set nodo password 'MoneroNodo'
 echo "nodo:MoneroNodo" | chpasswd
@@ -66,7 +66,6 @@ showtext "Downloading and installing OS updates..."
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 ###Begin2
-
 ##Update and Upgrade system (This step repeated due to importance and maybe someone using this installer script out-of-sequence)
 showtext "Verifying Update..."
 {
@@ -247,6 +246,7 @@ ufw allow 443
 ufw allow 18080
 ufw allow 18081
 ufw allow 18083
+ufw allow 18089
 ufw allow 4200
 ufw allow 22
 ufw enable
