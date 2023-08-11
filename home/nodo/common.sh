@@ -41,7 +41,7 @@ setup_drive() {
 	fi
 	sleep 1
 	#get uuid from block device
-	uuid=$(blkid | grep "$1" | sed 's/.*\sUUID="\([a-z0-9\-]\+\)".*/\1/g')
+	uuid=$(blkid | grep "$1"p1 | sed 's/.*\sUUID="\([a-z0-9\-]\+\)".*/\1/g')
 	#append new partition to fstab
 	sed "/^UUID=$uuid/d" /etc/fstab
 	#add to fstab
