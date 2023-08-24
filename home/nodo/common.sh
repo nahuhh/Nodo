@@ -1,7 +1,7 @@
 #!/bin/bash
 #Common variables and functions
 
-DEBUG_LOG=/home/nodo/debug.log
+DEBUG_LOG=debug.log
 CONFIG_FILE=/home/nodo/variables/config.json
 XMRPARTLABEL="NODO_BLOCKCHAIN"
 

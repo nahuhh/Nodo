@@ -22,7 +22,7 @@ fi
 
 ##Create new user 'nodo'
 showtext "Creating user 'nodo'..."
-adduser nodo --disabled-password --gecos "" -m
+adduser --gecos "" --disabled-password --home /home/nodo nodo
 adduser --system --no-create-home --shell /bin/false --group monero
 
 #Set nodo password 'MoneroNodo'
@@ -92,9 +92,9 @@ chown httpd:httpd -R /var/www/html
 cp "${_cwd}"/update-*sh /home/nodo/
 chown nodo:nodo -R /home/nodo
 
-log "manual build of gtest for --- Monero"
+log "manual build of gtest for Monero"
 {
-	cd /usr/src/gtest || exit 1
+	cd /home/nodo/gtest || exit 1
 	apt-get install libgtest-dev -y
 	cmake .
 	make
