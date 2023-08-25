@@ -191,15 +191,16 @@ showtext "Installing python dependencies..."
 
 {
 	mkdir /home/nodo/webui
-	chown nodo /home/nodo/webui
-	chmod gu+rx nodo:nodo /home/nodo/webui
+	chown nodo:nodo /home/nodo/webui
+	chmod gu+rx /home/nodo/webui
 	cd /home/nodo/webui || return 1
 	apt-get install -y software-properties-common
-	apt-get install -y python3.8 python3.8-dev python-pip python-virtualenv
-	add-apt-repository -y ppa:deadsnakes/ppa
-	virtualenv --python=python3.8 venv
+	apt-get install -y python3.11 python3.11-dev python3-pip python3.11-venv
+	showtext "Creating virtualenv, may take a minute..."
+	python3.11 -m venv venv
 	(
 		. venv/bin/activate
+		venv/bin/pip3.11 install --upgrade pip
 		venv/bin/pip3.11 install Cython
 		venv/bin/pip3.11 install numpy
 		venv/bin/pip3.11 install dash
