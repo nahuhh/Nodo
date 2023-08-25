@@ -5,13 +5,12 @@ After=network.target
 [Service]
 ExecStart=/bin/bash monerod.sh
 WorkingDirectory=/home/nodo/execScripts/
-Type=forking
+Type=exec
 Restart=always
 RestartSec=30
 User=monero
 StandardOutput=inherit
 StandardError=inherit
-PIDFile=/run/monerod.pid
 
 [Install]
 WantedBy=multi-user.target
