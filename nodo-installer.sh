@@ -133,18 +133,6 @@ showtext "Moving MoneroNodo scripts into position..."
 } 2>&1 | tee -a "$DEBUG_LOG"
 showtext "Success"
 
-##Add MoneroNodo systemd services
-showtext "Addding MoneroNodo systemd services..."
-{
-	# cp "${_cwd}"/etc/systemd/system/*.service /etc/systemd/system/
-	chmod 644 /etc/systemd/system/*.service
-	chown root /etc/systemd/system/*.service
-	systemctl daemon-reload
-	systemctl start moneroStatus.service
-	systemctl enable moneroStatus.service
-} 2>&1 | tee -a "$DEBUG_LOG"
-showtext "Success"
-
 showtext "Configuring apache server for access to Monero log file..."
 {
 	cp "${_cwd}"/etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default.conf
