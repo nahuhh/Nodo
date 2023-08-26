@@ -3,9 +3,9 @@ Description=Monero Web Interface
 After=network.target
 
 [Service]
-ExecStart=/home/nodo/webui/venv/bin/python3.6 /home/nodo/webui/webapp.py 127.0.0.1 8081
+ExecStart=/home/nodo/webui/venv/bin/python /home/nodo/webui/webapp.py 127.0.0.1 8081
 WorkingDirectory=/home/nodo/webui/
-Type=forking
+Type=exec
 Restart=always
 RestartSec=5
 User=nodo
