@@ -26,7 +26,7 @@
     "monero_rpc_port": 18084,
     "out_peers": 64,
     "payment_address": "",
-    "rpc_enabled": "TRUE",
+    "rpc_enabled": "FALSE",
     "rpcp": "password",
     "rpcu": "nodo",
     "data_dir": "/media/monero/bitmonero",

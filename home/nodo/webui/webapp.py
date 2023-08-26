@@ -5,7 +5,9 @@ import psutil
 import subprocess as proc
 import sys
 import json
-import urllib3
+import requests
+from requests.auth import HTTPDigestAuth
+from requests import JSONDecodeError
 import dash
 import dash_bootstrap_components as dbc
 from dash_breakpoints import WindowBreakpoints
@@ -64,21 +66,23 @@ conf_file: str = "/home/nodo/variables/config.json"
 
 
 def node_info():
-    h = urllib3.PoolManager()
-    p = 18081
-    if 'config' in conf_dict and 'monero_port' in conf_dict['config']:
-        p = conf_dict['config']['monero_port']
+    p = conf_dict['config']['monero_port']
     try:
-        r = h.request(
-            "GET", "http://127.0.0.1:" + str(p) + "/get_info"
+        auth=None
+        if conf_dict['config']['rpc_enabled'] == 'TRUE':
+            auth=HTTPDigestAuth(conf_dict['config']['rpcu'], conf_dict['config']['rpcp'])
+        r = requests.get(
+            "GET", "http://127.0.0.1:" + str(p) + "/get_info",
+            auth=auth
         )
-        return json.loads(r.data)
-    except IOError:
+        return r.json()
+    except (IOError, JSONDecodeError):
         return dict()
 
 
 def load_config():
     with open(conf_file, "r") as json_file:
+        global conf_dict
         conf_dict = json.load(json_file)
 
 
