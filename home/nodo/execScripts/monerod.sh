@@ -43,7 +43,7 @@ DEVICE_IP="0.0.0.0"
 
 putvar "boot_status" "3"
 #Start Monerod
-if [ "$TORPROXY_ENABLED" != "TRUE" ]; then
+if [ "$TORPROXY_ENABLED" == "TRUE" ]; then
 	if [ "$I2P_ENABLED" == "TRUE" ]; then
 		cln_flags="--proxy=127.0.0.1:4447 "
 	else
