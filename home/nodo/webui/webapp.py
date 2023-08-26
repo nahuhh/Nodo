@@ -64,8 +64,11 @@ account_address_viewkey_height = []
 conf_dict: dict = dict()
 conf_file: str = "/home/nodo/variables/config.json"
 
+node_dict: dict = dict()
+
 
 def node_info():
+    global node_dict
     p = conf_dict['config']['monero_port']
     try:
         auth=None
@@ -75,9 +78,10 @@ def node_info():
             "GET", "http://127.0.0.1:" + str(p) + "/get_info",
             auth=auth
         )
-        return r.json()
-    except (IOError, JSONDecodeError):
-        return dict()
+        node_dict = r.json()
+    except (IOError, JSONDecodeError) as e:
+        print(e)
+    return node_dict
 
 
 def load_config():
