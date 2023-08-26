@@ -246,6 +246,7 @@ showtext "Start services"
 systemctl daemon-reload
 systemctl enable --now monerod.service
 systemctl enable --now webui.service
+systemctl disable --now gdm.service # no gnome-shell necessary
 
 ## Install complete
 showtext "Installation Complete"
