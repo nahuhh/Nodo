@@ -32,7 +32,7 @@ showtext "Downloading VTNerd Monero-LWS"
 {
 	git clone --recursive https://github.com/vtnerd/monero-lws.git
 	cd monero-lws || exit 1
-	git checkout release-v0.2_0.18
+	git checkout master
 	git pull
 	mkdir build
 	cd build || exit 1
