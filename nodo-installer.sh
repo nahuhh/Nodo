@@ -19,6 +19,7 @@ else
 	showtext "NO CONNECTION -- aborting!"
 	exit 1
 fi
+systemctl disable --now gdm.service # no gnome-shell necessary
 
 ##Create new user 'nodo'
 showtext "Creating user 'nodo'..."
@@ -138,7 +139,7 @@ showtext "Configuring apache server for access to Monero log file..."
 	cp "${_cwd}"/etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 	chmod 777 /etc/apache2/sites-enabled/000-default.conf
 	chown root /etc/apache2/sites-enabled/000-default.conf
-	/etc/init.d/apache2 restart
+	systemctl restart apache2
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 showtext "Success"
@@ -215,6 +216,9 @@ apt-get update
 
 apt-get install git build-essential ccache cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 -y
 
+(
+cd /home/nodo || exit 1
+
 sudo -u nodo bash ./update-monero.sh
 
 showtext "Downloading Block Explorer..."
@@ -230,6 +234,8 @@ showtext "Downloading Monero LWS"
 sudo -u nodo bash ./update-lws-admin.sh
 putvar 'lws_admin_key' "$(uuidgen -r)"
 
+)
+
 ufw allow 80
 ufw allow 443
 ufw allow 18080
@@ -240,13 +246,12 @@ ufw allow 4200
 ufw allow 22
 ufw enable
 
-services-start
-
 showtext "Start services"
+
 systemctl daemon-reload
-systemctl enable --now monerod.service
-systemctl enable --now webui.service
-systemctl disable --now gdm.service # no gnome-shell necessary
+systemctl enable monerod blockExplorer monero-lws monero-lws-admin webui
+
+services-start
 
 ## Install complete
 showtext "Installation Complete"
