@@ -3,15 +3,12 @@ Description=Block-explorer
 After=network.target
 
 [Service]
-ExecStart=/bin/bash blockExplorer.sh
+ExecStart=/bin/bash explorer.sh
 WorkingDirectory=/home/nodo/execScripts/
-StandardOutput=file:/home/nodo/onion-monero-blockchain-explorer/explorer.log
-StandardError=file:/home/nodo/onion-monero-blockchain-explorer/explorer.log
 Type=exec
-PIDFile=/home/nodo/onion-monero-blockchain-explorer/explorer.pid
 Restart=on-failure
 RestartSec=300
-User=nodo
+User=monero
 
 [Install]
 WantedBy=multi-user.target
