@@ -3,7 +3,7 @@ Description=Monero Web Interface
 After=network.target
 
 [Service]
-ExecStart=/home/nodo/webui/venv/bin/python /home/nodo/webui/webapp.py 127.0.0.1 8081
+ExecStart=/home/nodo/webui/venv/bin/python /home/nodo/webui/webapp.py 127.0.0.1 8082
 WorkingDirectory=/home/nodo/webui/
 Type=exec
 Restart=always

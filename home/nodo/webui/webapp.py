@@ -69,17 +69,18 @@ node_dict: dict = dict()
 
 def node_info():
     global node_dict
-    p = conf_dict['config']['monero_port']
+    p = conf_dict['config']['monero_rpc_port']
     try:
         auth=None
         if conf_dict['config']['rpc_enabled'] == 'TRUE':
             auth=HTTPDigestAuth(conf_dict['config']['rpcu'], conf_dict['config']['rpcp'])
         r = requests.get(
-            "GET", "http://127.0.0.1:" + str(p) + "/get_info",
+            "http://127.0.0.1:" + str(p) + "/get_info",
             auth=auth
         )
         node_dict = r.json()
     except (IOError, JSONDecodeError) as e:
+        print('connection to monerod failed')
         print(e)
     return node_dict
 
@@ -111,11 +112,11 @@ def load_page0_values():
 
     # Sync Status
     page0_sync_status["sync_status"] = "Synchronized"
-    page0_sync_status["timestamp"] = "1685381909"
-    page0_sync_status["current_sync_height"] = 0
-    page0_sync_status["monero_version"] = "0.18.0.0"
-    page0_sync_status["outgoing_connections"] = 0
-    page0_sync_status["incoming_connections"] = 0
+    page0_sync_status["start_time"] = "1685381909"
+    page0_sync_status["height"] = 0
+    page0_sync_status["version"] = "0.18.0.0"
+    page0_sync_status["outgoing_connections_count"] = 0
+    page0_sync_status["incoming_connections_count"] = 0
     page0_sync_status["white_peerlist_size"] = 0
     page0_sync_status["grey_peerlist_size"] = 0
     page0_sync_status["update_available"] = "false"
@@ -143,30 +144,38 @@ def load_page0_values():
     load_config()
     page0_sync_status = node_info().copy()
 
+    if page0_sync_status['synchronized']:
+        page0_sync_status['sync_status'] = 'Synchronized'
+    else:
+        page0_sync_status['sync_status'] = 'Not yet synchronized'
+
     s: list[str] = ["systemctl", "show", "--no-pager", "--property=SubState", ""]
     s[4] = "monerod"
-    page0_system_status["mainnet_node"] = proc.run(s, stdout=proc.PIPE).stdout.decode()
+    page0_system_status["mainnet_node"] = proc.run(s, stdout=proc.PIPE).stdout.decode().split('=')[1]
 
     s[4] = "tor"
-    page0_system_status["tor_node"] = proc.run(s, stdout=proc.PIPE).stdout.decode()
+    page0_system_status["tor_node"] = proc.run(s, stdout=proc.PIPE).stdout.decode().split('=')[1]
 
     s[4] = "i2pd"
-    page0_system_status["i2p_node"] = proc.run(s, stdout=proc.PIPE).stdout.decode()
+    page0_system_status["i2p_node"] = proc.run(s, stdout=proc.PIPE).stdout.decode().split('=')[1]
 
     s[4] = "monero-lws"
     page0_system_status["monero_lws_admin"] = proc.run(
         s, stdout=proc.PIPE
-    ).stdout.decode()
+    ).stdout.decode().split('=')[1]
 
     s[4] = "explorer"
     page0_system_status["block_explorer"] = proc.run(
         s, stdout=proc.PIPE
-    ).stdout.decode()
+    ).stdout.decode().split('=')[1]
 
     page0_hardware_status["cpu_percentage"] = psutil.cpu_percent()
-    page0_hardware_status["cpu_temp"] = psutil.sensors_temperatures()["soc-thermal"][0].current
-    page0_hardware_status["primary_storage"] = psutil.disk_usage("/dev/nvme0n1p1")
-    page0_hardware_status["backup_storage"] = psutil.disk_usage("/dev/mmcblk0p1")
+    if 'soc-thermal' in psutil.sensors_temperatures():
+        page0_hardware_status["cpu_temp"] = psutil.sensors_temperatures()["soc-thermal"][0].current
+    else:
+        page0_hardware_status["cpu_temp"] = '<unknown>'
+    page0_hardware_status["primary_storage"] = psutil.disk_usage("/media/monero")
+    page0_hardware_status["backup_storage"] = psutil.disk_usage("/")
     page0_hardware_status["ram_percentage"] = psutil.virtual_memory().percent
 
 
@@ -318,7 +327,6 @@ def load_page3_values():
     w: dict = conf_dict["config"]["ethernet"]
     f: TextIOWrapper = open("/sys/class/net/eth0/operstate", "r")
     page3_device_ethernet["status"] = f.read()
-    page3_device_ethernet["passphrase"] = w["pw"]
     page3_device_ethernet["ip_address"] = w["ip"]
     page3_device_ethernet["subnet_mask"] = w["subnet"]
     page3_device_ethernet["router"] = w["router"]
@@ -787,11 +795,12 @@ offcanvas = dbc.Row(
 # Update Available: false
 def make_page0_sync_status():
     sync_status = page0_sync_status["sync_status"]
-    monero_version = page0_sync_status["monero_version"]
-    timestamp = page0_sync_status["timestamp"]
-    current_sync_height = page0_sync_status["current_sync_height"]
-    outgoing_connections = page0_sync_status["outgoing_connections"]
-    incoming_connections = page0_sync_status["incoming_connections"]
+    monero_version = page0_sync_status["version"]
+    timestamp = page0_sync_status["start_time"]
+    date = datetime.datetime.fromtimestamp(timestamp).strftime("%d/%m/%Y, %H:%M:%S")
+    current_sync_height = page0_sync_status["height"]
+    outgoing_connections = page0_sync_status["outgoing_connections_count"]
+    incoming_connections = page0_sync_status["incoming_connections_count"]
     white_peerlist_size = page0_sync_status["white_peerlist_size"]
     grey_peerlist_size = page0_sync_status["grey_peerlist_size"]
     update_available = page0_sync_status["update_available"]
@@ -821,7 +830,7 @@ def make_page0_sync_status():
                                 type="text",
                                 id="page0_sync_status_timestamp",
                                 className="homeBoxNodoInput",
-                                value=timestamp,
+                                value=date,
                                 disabled=True,
                             ),
                         ],
@@ -1068,11 +1077,12 @@ def make_page0_hardware_status():
     global page0_sync_status
     global page0_system_status
     global page0_hardware_status
-    cpu_percentage = str(page0_hardware_status["cpu_percentage"]) + " (%)"
-    cpu_temp = str(page0_hardware_status["cpu_temp"]) + " (°C)"
-    primary_storage = page0_hardware_status["primary_storage"]
-    backup_storage = page0_hardware_status["backup_storage"]
-    ram_percentage = page0_hardware_status["ram_percentage"]
+    cpu_percentage = str(page0_hardware_status["cpu_percentage"]) + "%"
+    cpu_temp = str(page0_hardware_status["cpu_temp"]) + "°C"
+    primary_storage = str(page0_hardware_status["primary_storage"]) + '% in use'
+    backup_storage =  str(page0_hardware_status["backup_storage"]) + '% in use'
+    ram_percentage =  str(page0_hardware_status["ram_percentage"]) + '% in use'
+
 
     return dbc.Card(
         [
@@ -1112,7 +1122,7 @@ def make_page0_hardware_status():
                                 "Primary Storage:", className="homeBoxNodo"
                             ),
                             dbc.Input(
-                                type="number",
+                                type="text",
                                 id="page0_hardware_status_primary_storage",
                                 className="homeBoxNodoInput",
                                 value=primary_storage,
@@ -1127,7 +1137,7 @@ def make_page0_hardware_status():
                                 "Backup Storage:", className="homeBoxNodo"
                             ),
                             dbc.Input(
-                                type="number",
+                                type="text",
                                 id="page0_system_status_i2p_node",
                                 className="homeBoxNodoInput",
                                 value=backup_storage,
@@ -1140,7 +1150,7 @@ def make_page0_hardware_status():
                         [
                             dbc.InputGroupText("RAM:", className="homeBoxNodo"),
                             dbc.Input(
-                                type="number",
+                                type="text",
                                 id="page0_system_status_monero_lws_admin",
                                 className="homeBoxNodoInput",
                                 value=ram_percentage,
@@ -8221,3 +8231,4 @@ if __name__ == "__main__":
     load_page3_values()
     load_page4_values()
     app.run_server(host=host, port=str(port), debug=False)
+
