@@ -112,7 +112,7 @@ def load_page0_values():
 
     # Sync Status
     page0_sync_status["sync_status"] = "Synchronized"
-    page0_sync_status["start_time"] = "1685381909"
+    page0_sync_status["adjusted_time"] = "1685381909"
     page0_sync_status["height"] = 0
     page0_sync_status["version"] = "0.18.0.0"
     page0_sync_status["outgoing_connections_count"] = 0
@@ -796,7 +796,7 @@ offcanvas = dbc.Row(
 def make_page0_sync_status():
     sync_status = page0_sync_status["sync_status"]
     monero_version = page0_sync_status["version"]
-    timestamp = page0_sync_status["start_time"]
+    timestamp = page0_sync_status["adjusted_time"]
     date = datetime.datetime.fromtimestamp(timestamp).strftime("%d/%m/%Y, %H:%M:%S")
     current_sync_height = page0_sync_status["height"]
     outgoing_connections = page0_sync_status["outgoing_connections_count"]
