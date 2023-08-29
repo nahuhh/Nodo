@@ -59,7 +59,7 @@ getip() {
 }
 
 getvar() {
-	jq ".config.$1" "$CONFIG_FILE"
+	jq -r ".config.$1" "$CONFIG_FILE"
 }
 
 putvar() {
