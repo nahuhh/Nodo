@@ -249,7 +249,7 @@ ufw enable
 showtext "Start services"
 
 systemctl daemon-reload
-systemctl enable monerod blockExplorer monero-lws monero-lws-admin webui
+systemctl enable monerod block-explorer monero-lws monero-lws-admin webui
 
 services-start
 

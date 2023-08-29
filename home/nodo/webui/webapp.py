@@ -164,7 +164,7 @@ def load_page0_values():
         s, stdout=proc.PIPE
     ).stdout.decode().split('=')[1]
 
-    s[4] = "explorer"
+    s[4] = "block-explorer"
     page0_system_status["block_explorer"] = proc.run(
         s, stdout=proc.PIPE
     ).stdout.decode().split('=')[1]

@@ -13,4 +13,4 @@ if [ "$RPC_ENABLED" == "TRUE" ]; then
 	RPCu=$(getvar "rpcu")
 fi
 
-eval "$exploc/xmrblocks -d $MONEROD ${RPCp:+--daemon-login $RPCp:$RPCu} --enable-json-api=1 -b $DATA_DIR"
+eval "$exploc/xmrblocks --daemon-url=$MONEROD ${RPCp:+--daemon-login $RPCu:$RPCp} --enable-json-api=1 -b $DATA_DIR"
