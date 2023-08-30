@@ -69,7 +69,7 @@ node_dict: dict = dict()
 
 def node_info():
     global node_dict
-    p = conf_dict['config']['monero_rpc_port']
+    p = conf_dict['config']['monero_public_port']
     try:
         auth=None
         if conf_dict['config']['rpc_enabled'] == 'TRUE':
@@ -112,11 +112,11 @@ def load_page0_values():
 
     # Sync Status
     page0_sync_status["sync_status"] = "Synchronized"
-    page0_sync_status["adjusted_time"] = "1685381909"
+    page0_sync_status["start_time"] = "1685381909"
     page0_sync_status["height"] = 0
     page0_sync_status["version"] = "0.18.0.0"
-    page0_sync_status["outgoing_connections_count"] = 0
-    page0_sync_status["incoming_connections_count"] = 0
+    page0_sync_status["outgoing_connections_count"] = 4
+    page0_sync_status["incoming_connections_count"] = 4
     page0_sync_status["white_peerlist_size"] = 0
     page0_sync_status["grey_peerlist_size"] = 0
     page0_sync_status["update_available"] = "false"
@@ -147,7 +147,10 @@ def load_page0_values():
     if page0_sync_status['synchronized']:
         page0_sync_status['sync_status'] = 'Synchronized'
     else:
-        page0_sync_status['sync_status'] = 'Not yet synchronized'
+        if page0_sync_status['busy_syncing']:
+            page0_sync_status['sync_status'] = 'Syncing...'
+        else:
+            page0_sync_status['sync_status'] = 'Not syncing...'
 
     s: list[str] = ["systemctl", "show", "--no-pager", "--property=SubState", ""]
     s[4] = "monerod"
@@ -161,21 +164,21 @@ def load_page0_values():
 
     s[4] = "monero-lws"
     page0_system_status["monero_lws_admin"] = proc.run(
-        s, stdout=proc.PIPE
-    ).stdout.decode().split('=')[1]
+            s, stdout=proc.PIPE
+            ).stdout.decode().split('=')[1]
 
-    s[4] = "block-explorer"
+    s[4] = "explorer"
     page0_system_status["block_explorer"] = proc.run(
-        s, stdout=proc.PIPE
-    ).stdout.decode().split('=')[1]
+            s, stdout=proc.PIPE
+            ).stdout.decode().split('=')[1]
 
     page0_hardware_status["cpu_percentage"] = psutil.cpu_percent()
     if 'soc-thermal' in psutil.sensors_temperatures():
         page0_hardware_status["cpu_temp"] = psutil.sensors_temperatures()["soc-thermal"][0].current
     else:
         page0_hardware_status["cpu_temp"] = '<unknown>'
-    page0_hardware_status["primary_storage"] = psutil.disk_usage("/media/monero")
-    page0_hardware_status["backup_storage"] = psutil.disk_usage("/")
+    page0_hardware_status["primary_storage"] = psutil.disk_usage("/media/monero").percent
+    page0_hardware_status["backup_storage"] = psutil.disk_usage("/").percent
     page0_hardware_status["ram_percentage"] = psutil.virtual_memory().percent
 
 
@@ -796,7 +799,7 @@ offcanvas = dbc.Row(
 def make_page0_sync_status():
     sync_status = page0_sync_status["sync_status"]
     monero_version = page0_sync_status["version"]
-    timestamp = page0_sync_status["adjusted_time"]
+    timestamp = page0_sync_status["start_time"]
     date = datetime.datetime.fromtimestamp(timestamp).strftime("%d/%m/%Y, %H:%M:%S")
     current_sync_height = page0_sync_status["height"]
     outgoing_connections = page0_sync_status["outgoing_connections_count"]
@@ -1079,10 +1082,9 @@ def make_page0_hardware_status():
     global page0_hardware_status
     cpu_percentage = str(page0_hardware_status["cpu_percentage"]) + "%"
     cpu_temp = str(page0_hardware_status["cpu_temp"]) + "°C"
-    primary_storage = str(page0_hardware_status["primary_storage"]) + '% in use'
-    backup_storage =  str(page0_hardware_status["backup_storage"]) + '% in use'
-    ram_percentage =  str(page0_hardware_status["ram_percentage"]) + '% in use'
-
+    primary_storage = str(page0_hardware_status["primary_storage"]) + '%% in use'
+    backup_storage =  str(page0_hardware_status["backup_storage"]) + '%% in use'
+    ram_percentage =  str(page0_hardware_status["ram_percentage"]) + '%% in use'
 
     return dbc.Card(
         [
@@ -2854,9 +2856,9 @@ def make_page5_1():
     transaction_pool_infomation["hash_rate"] = "2.732 GH/s"
     transaction_pool_infomation["fee_per_byte"] = "0.000000020000"
     transaction_pool_infomation["median_block_size_limit"] = "292.97 kB"
-    transaction_pool_infomation["monero_emission"] = "18271422.065"
-    transaction_pool_infomation["monero_emission_fees"] = "99595.517"
-    transaction_pool_infomation["monero_emission_fees_as_of_block"] = "2873707"
+    transaction_pool_infomation["monero_emission"] = "--"
+    transaction_pool_infomation["monero_emission_fees"] = "--"
+    transaction_pool_infomation["monero_emission_fees_as_of_block"] = "--"
 
     transaction_pool_infomation["no_of_txs"] = "17"
     transaction_pool_infomation["size_of_txs"] = "29.46kB"
@@ -3107,11 +3109,14 @@ def make_page5_1():
     # Opening JSON file
     f = open("./json/demo/transactions.json")
 
+    r = requests.get(
+        "http://127.0.0.1:8081/api/transactions?limit=11"
+    )
+
     # returns JSON object as
     # a dictionary
     transactionInTheLastBlock = transactionInTheLastBlock.iloc[0:0]
-    data = json.load(f)
-    print(data)
+    data = r.json()
     outputs_DataFrame = json_normalize(data["data"]["blocks"])
     print(outputs_DataFrame)
     for ind in outputs_DataFrame.index:
@@ -3156,6 +3161,15 @@ def make_page5_1():
             transactionInTheLastBlock.index = (
                 transactionInTheLastBlock.index + 1
             )  # shifting index
+
+    r= requests.get(
+            "http://127.0.0.1:8081/api/networkinfo"
+    )
+    transaction_pool_information = r.json()['data'].copy()
+    # r= requests.get(
+    #         "http://127.0.0.1:8081/api/emission"
+    # )
+    # transaction_pool_information.update(r.json()['data'])
     # print(transactionInTheLastBlock)
     # --- transactionInTheLastBlock
     # ================================================================
@@ -3225,30 +3239,30 @@ def make_page5_1():
                 "Server time: "
                 + transaction_pool_infomation["server_time"]
                 + " | Network difficulty: "
-                + transaction_pool_infomation["network_difficulty"]
-                + " | Hard fork: "
-                + transaction_pool_infomation["hard_fork"]
+                + transaction_pool_infomation["difficulty"]
+                + " | Hard fork: v"
+                + transaction_pool_infomation["current_hf_version"]
                 + " | Hash rate: "
                 + transaction_pool_infomation["hash_rate"]
                 + " | Fee per byte: "
-                + transaction_pool_infomation["fee_per_byte"]
+                + str(int(transaction_pool_infomation["fee_per_kb"]) * 10**-15)
                 + " | Median block size limit: "
-                + transaction_pool_infomation["median_block_size_limit"]
+                + transaction_pool_infomation["block_size_limit"]
                 + " ",
                 className="text-center",
                 style={"overflow-wrap": "break-word"},
             ),
-            html.P(
-                "Monero emission (fees) is "
-                + transaction_pool_infomation["monero_emission"]
-                + "("
-                + transaction_pool_infomation["monero_emission_fees"]
-                + ") as of "
-                + transaction_pool_infomation["monero_emission_fees_as_of_block"]
-                + " block",
-                className="text-center",
-                style={"overflow-wrap": "break-word"},
-            ),
+            # html.P(
+            #     "Monero emission (fees) is "
+            #     + str(int(transaction_pool_infomation["coinbase"]) * 10**-12)
+            #     + "("
+            #     + str(int(transaction_pool_infomation["fee"]) * 10**-12)
+            #     + ") as of "
+            #     + transaction_pool_infomation["blk_no"]
+            #     + " block",
+            #     className="text-center",
+            #     style={"overflow-wrap": "break-word"},
+            # ),
             html.P(
                 "Transaction Pool",
                 className="text-center",
