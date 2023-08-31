@@ -2,6 +2,8 @@
 
 from io import TextIOWrapper
 import psutil
+import threading
+import time
 import subprocess as proc
 import sys
 import json
@@ -26,6 +28,18 @@ from dash import dash_table
 import pandas as pd
 from pandas import json_normalize
 from furl import furl
+
+
+class TimerThread(threading.Thread):
+    def __init__(self, event):
+        threading.Thread.__init__(self)
+        self.stopped = event
+
+    def run(self):
+        while not self.stopped.wait(2):
+            update_config()
+            # call a function
+
 
 ## parameters
 # Page 0 : Python dictionary variables for ui status
@@ -69,18 +83,17 @@ node_dict: dict = dict()
 
 def node_info():
     global node_dict
-    p = conf_dict['config']['monero_public_port']
+    p = conf_dict["config"]["monero_public_port"]
     try:
-        auth=None
-        if conf_dict['config']['rpc_enabled'] == 'TRUE':
-            auth=HTTPDigestAuth(conf_dict['config']['rpcu'], conf_dict['config']['rpcp'])
-        r = requests.get(
-            "http://127.0.0.1:" + str(p) + "/get_info",
-            auth=auth
-        )
+        auth = None
+        if conf_dict["config"]["rpc_enabled"] == "TRUE":
+            auth = HTTPDigestAuth(
+                conf_dict["config"]["rpcu"], conf_dict["config"]["rpcp"]
+            )
+        r = requests.get("http://127.0.0.1:" + str(p) + "/get_info", auth=auth)
         node_dict = r.json()
     except (IOError, JSONDecodeError) as e:
-        print('connection to monerod failed')
+        print("connection to monerod failed")
         print(e)
     return node_dict
 
@@ -90,12 +103,37 @@ def load_config():
         global conf_dict
         conf_dict = json.load(json_file)
 
+update_time: datetime.datetime = datetime.datetime.now()
+written: bool = True
+applied: bool = True
+timedelta_config: datetime.timedelta = datetime.timedelta(seconds=10)
+timedelta_restart: datetime.timedelta = datetime.timedelta(seconds=30)
 
-def save_config():
+def write_config():
+    global written
     if conf_dict == None:
         return
-    with open("sample.json", "w") as outfile:
+    with open(conf_file, "w") as outfile:
         outfile.write(json.dumps(conf_dict, indent=2))
+    written = True
+
+
+def update_config():
+    global written, applied
+    if not written and update_time < datetime.datetime.now():
+        write_config()
+    if not applied and update_time < datetime.datetime.now() - timedelta_restart:
+        proc.run(["systemctl", "restart", "monerod.service", "monero-lws.service", "block-explorer.service"])
+        applied = True
+        print("monerod restarting")
+
+
+
+def save_config():
+    global update_time
+    global written, applied
+    update_time = datetime.datetime.now() + timedelta_config
+    written = applied = False
 
 
 # ====================================================================
@@ -144,40 +182,50 @@ def load_page0_values():
     load_config()
     page0_sync_status = node_info().copy()
 
-    if page0_sync_status['synchronized']:
-        page0_sync_status['sync_status'] = 'Synchronized'
+    if page0_sync_status["synchronized"]:
+        page0_sync_status["sync_status"] = "Synchronized"
     else:
-        if page0_sync_status['busy_syncing']:
-            page0_sync_status['sync_status'] = 'Syncing...'
+        if page0_sync_status["busy_syncing"]:
+            page0_sync_status["sync_status"] = "Syncing..."
         else:
-            page0_sync_status['sync_status'] = 'Not syncing...'
+            page0_sync_status["sync_status"] = "Not syncing..."
 
     s: list[str] = ["systemctl", "show", "--no-pager", "--property=SubState", ""]
     s[4] = "monerod"
-    page0_system_status["mainnet_node"] = proc.run(s, stdout=proc.PIPE).stdout.decode().split('=')[1]
+    page0_system_status["mainnet_node"] = (
+        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+    )
 
     s[4] = "tor"
-    page0_system_status["tor_node"] = proc.run(s, stdout=proc.PIPE).stdout.decode().split('=')[1]
+    page0_system_status["tor_node"] = (
+        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+    )
 
     s[4] = "i2pd"
-    page0_system_status["i2p_node"] = proc.run(s, stdout=proc.PIPE).stdout.decode().split('=')[1]
+    page0_system_status["i2p_node"] = (
+        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+    )
 
     s[4] = "monero-lws"
-    page0_system_status["monero_lws_admin"] = proc.run(
-            s, stdout=proc.PIPE
-            ).stdout.decode().split('=')[1]
+    page0_system_status["monero_lws_admin"] = (
+        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+    )
 
     s[4] = "explorer"
-    page0_system_status["block_explorer"] = proc.run(
-            s, stdout=proc.PIPE
-            ).stdout.decode().split('=')[1]
+    page0_system_status["block_explorer"] = (
+        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+    )
 
     page0_hardware_status["cpu_percentage"] = psutil.cpu_percent()
-    if 'soc-thermal' in psutil.sensors_temperatures():
-        page0_hardware_status["cpu_temp"] = psutil.sensors_temperatures()["soc-thermal"][0].current
+    if "soc-thermal" in psutil.sensors_temperatures():
+        page0_hardware_status["cpu_temp"] = psutil.sensors_temperatures()[
+            "soc-thermal"
+        ][0].current
     else:
-        page0_hardware_status["cpu_temp"] = '<unknown>'
-    page0_hardware_status["primary_storage"] = psutil.disk_usage("/media/monero").percent
+        page0_hardware_status["cpu_temp"] = "<unknown>"
+    page0_hardware_status["primary_storage"] = psutil.disk_usage(
+        "/media/monero"
+    ).percent
     page0_hardware_status["backup_storage"] = psutil.disk_usage("/").percent
     page0_hardware_status["ram_percentage"] = psutil.virtual_memory().percent
 
@@ -1082,9 +1130,9 @@ def make_page0_hardware_status():
     global page0_hardware_status
     cpu_percentage = str(page0_hardware_status["cpu_percentage"]) + "%"
     cpu_temp = str(page0_hardware_status["cpu_temp"]) + "°C"
-    primary_storage = str(page0_hardware_status["primary_storage"]) + '%% in use'
-    backup_storage =  str(page0_hardware_status["backup_storage"]) + '%% in use'
-    ram_percentage =  str(page0_hardware_status["ram_percentage"]) + '%% in use'
+    primary_storage = str(page0_hardware_status["primary_storage"]) + "%% in use"
+    backup_storage = str(page0_hardware_status["backup_storage"]) + "%% in use"
+    ram_percentage = str(page0_hardware_status["ram_percentage"]) + "%% in use"
 
     return dbc.Card(
         [
@@ -3109,9 +3157,7 @@ def make_page5_1():
     # Opening JSON file
     f = open("./json/demo/transactions.json")
 
-    r = requests.get(
-        "http://127.0.0.1:8081/api/transactions?limit=11"
-    )
+    r = requests.get("http://127.0.0.1:8081/api/transactions?limit=11")
 
     # returns JSON object as
     # a dictionary
@@ -3162,10 +3208,8 @@ def make_page5_1():
                 transactionInTheLastBlock.index + 1
             )  # shifting index
 
-    r= requests.get(
-            "http://127.0.0.1:8081/api/networkinfo"
-    )
-    transaction_pool_information = r.json()['data'].copy()
+    r = requests.get("http://127.0.0.1:8081/api/networkinfo")
+    transaction_pool_information = r.json()["data"].copy()
     # r= requests.get(
     #         "http://127.0.0.1:8081/api/emission"
     # )
@@ -6422,8 +6466,6 @@ def update_switch_networks_clearnet_port(value):
     # ...
     # ================================================================
     conf_dict["config"]["monero_public_port"] = value
-    save_config()
-    load_config()
 
     return ""
 
@@ -6492,7 +6534,6 @@ def update_switch_networks_clearnet_add_peer(n_clicks, port, peer):
     # ================================================================
     conf_dict["config"]["monero_public_port"] = port
     save_config()
-    load_config()
 
     return ""
 
@@ -6506,7 +6547,7 @@ def update_switch_networks_clearnet_add_peer(n_clicks, port, peer):
     Input("switch-networks-tor", "on"),
     prevent_initial_call=True,
 )
-def update_switch_networks_clearnet(value):
+def update_switch_networks_tor(value):
     global page1_networks_tor
     ctx = dash.callback_context
 
@@ -6524,7 +6565,6 @@ def update_switch_networks_clearnet(value):
     # ================================================================
     conf_dict["config"]["tor_enabled"] = "TRUE" if value else "FALSE"
     save_config()
-    load_config()
 
     return ""
 
@@ -6559,7 +6599,6 @@ def update_switch_networks_clearnet(value):
     # ================================================================
     conf_dict["config"]["tor_global_enabled"] = "TRUE" if value else "FALSE"
     save_config()
-    load_config()
 
     return ""
 
@@ -6590,7 +6629,6 @@ def update_switch_networks_tor_add_peer(n_clicks):
     output_value = page1_networks_tor["onion_addr"]
     conf_dict["config"]["tor_address"] = output_value
     save_config()
-    load_config()
 
     return output_value
 
@@ -6620,7 +6658,6 @@ def update_switch_networks_tor_port(value):
     # ================================================================
     conf_dict["config"]["tor_port"] = value
     save_config()
-    load_config()
 
     return ""
 
@@ -6650,7 +6687,6 @@ def update_switch_networks_tor_peer(value):
     # ================================================================
     conf_dict["config"]["add_tor_peer"] = value
     save_config()
-    load_config()
 
     return ""
 
@@ -6691,7 +6727,6 @@ def update_switch_networks_tor_add_peer(n_clicks, port, peer):
     # ================================================================
     conf_dict["config"]["add_tor_peer"] = peer
     save_config()
-    load_config()
 
     return ""
 
@@ -6723,7 +6758,6 @@ def update_switch_networks_i2p(value):
     # ================================================================
     conf_dict["config"]["i2p_enabled"] = "TRUE" if value else "FALSE"
     save_config()
-    load_config()
 
     return ""
 
@@ -6754,7 +6788,6 @@ def update_switch_networks_i2p_change(n_clicks):
     # ================================================================
     conf_dict["config"]["i2p_address"] = output_value
     save_config()
-    load_config()
 
     return output_value
 
@@ -6784,7 +6817,6 @@ def update_switch_networks_i2p_port(value):
     # ================================================================
     conf_dict["config"]["i2p_port"] = value
     save_config()
-    load_config()
 
     return ""
 
@@ -6814,7 +6846,6 @@ def update_switch_networks_i2p_peer(value):
     # ================================================================
     conf_dict["config"]["add_i2p_peer"] = value
     save_config()
-    load_config()
 
     return ""
 
@@ -6855,7 +6886,6 @@ def update_switch_networks_i2p_add_peer(n_clicks, port, peer):
     # ================================================================
     conf_dict["config"]["add_i2p_peer"] = peer
     save_config()
-    load_config()
 
     return ""
 
@@ -6891,7 +6921,6 @@ def update_switch_node_rpc(value):
     # ================================================================
     conf_dict["config"]["rpc_enabled"] = "TRUE" if value else "FALSE"
     save_config()
-    load_config()
 
     return ""
 
@@ -6939,7 +6968,6 @@ def update_node_rpc_apply(n_clicks, port, username, password):
     conf_dict["config"]["rpcu"] = username
     conf_dict["config"]["rpcp"] = password
     save_config()
-    load_config()
 
     return ""
 
@@ -6954,6 +6982,7 @@ def update_node_rpc_apply(n_clicks, port, username, password):
     prevent_initial_call=True,
 )
 def update_input_node_bandwidth_incoming_peers_limit(value):
+    global conf_dict
     global page2_node_bandwidth
     ctx = dash.callback_context
 
@@ -6971,7 +7000,6 @@ def update_input_node_bandwidth_incoming_peers_limit(value):
     # ================================================================
     conf_dict["config"]["in_peers"] = value
     save_config()
-    load_config()
 
     return ""
 
@@ -6986,6 +7014,7 @@ def update_input_node_bandwidth_incoming_peers_limit(value):
     prevent_initial_call=True,
 )
 def update_input_node_bandwidth_outgoing_peers_limit(value):
+    global conf_dict
     global page2_node_bandwidth
     ctx = dash.callback_context
 
@@ -7003,7 +7032,6 @@ def update_input_node_bandwidth_outgoing_peers_limit(value):
     # ================================================================
     conf_dict["config"]["out_peers"] = value
     save_config()
-    load_config()
 
     return ""
 
@@ -7018,6 +7046,7 @@ def update_input_node_bandwidth_outgoing_peers_limit(value):
     prevent_initial_call=True,
 )
 def update_input_node_bandwidth_rate_limit_up(value):
+    global conf_dict
     global page2_node_bandwidth
     ctx = dash.callback_context
 
@@ -7033,7 +7062,6 @@ def update_input_node_bandwidth_rate_limit_up(value):
     # ================================================================
     conf_dict["config"]["limit_rate_up"] = value
     save_config()
-    load_config()
 
     return ""
 
@@ -7048,6 +7076,7 @@ def update_input_node_bandwidth_rate_limit_up(value):
     prevent_initial_call=True,
 )
 def update_input_node_bandwidth_rate_limit_down(value):
+    global conf_dict
     global page2_node_bandwidth
     ctx = dash.callback_context
 
@@ -7063,7 +7092,6 @@ def update_input_node_bandwidth_rate_limit_down(value):
     # ================================================================
     conf_dict["config"]["limit_rate_down"] = value
     save_config()
-    load_config()
 
     return ""
 
@@ -7098,10 +7126,9 @@ def update_switch_device_wifi(value):
     # page3_device_wifi["wifi_switch"] into backend.
     # ...
     # ================================================================
-    load_config()
     w: dict = conf_dict["config"]["wifi"]
     w["enabled"] = "TRUE" if value else "FALSE"
-    proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
+    proc.run(["/usr/bin/bash", "/home/nodo/execScripts/update-net.sh"])
     save_config()
 
     return ""
@@ -7116,7 +7143,8 @@ def update_switch_device_wifi(value):
     Input("input-device-wifi-ssid", "value"),
     prevent_initial_call=True,
 )
-def update_input_node_rpc_port(value):
+def update_input_node_wifi_ssid(value):
+    global conf_dict
     global page3_device_wifi
     ctx = dash.callback_context
 
@@ -7130,10 +7158,9 @@ def update_input_node_rpc_port(value):
     # page3_device_wifi["ssid"] into backend.
     # ...
     # ================================================================
-    load_config()
     w: dict = conf_dict["config"]["wifi"]
     w["ssid"] = value
-    proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
+    proc.run(["/usr/bin/bash", "/home/nodo/execScripts/update-net.sh"])
     save_config()
 
     return ""
@@ -7148,7 +7175,8 @@ def update_input_node_rpc_port(value):
     Input("input-device-wifi-passphrase", "value"),
     prevent_initial_call=True,
 )
-def update_input_node_rpc_port(value):
+def update_input_node_wifi_password(value):
+    global conf_dict
     global page3_device_wifi
     ctx = dash.callback_context
 
@@ -7162,10 +7190,9 @@ def update_input_node_rpc_port(value):
     # page3_device_wifi["passphrase"] into backend.
     # ...
     # ================================================================
-    load_config()
     w: dict = conf_dict["config"]["wifi"]
     w["pw"] = value
-    proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
+    proc.run(["/usr/bin/bash", "/home/nodo/execScripts/update-net.sh"])
     save_config()
 
     return ""
@@ -7198,10 +7225,9 @@ def update_input_device_wifi_ip_address_by_switches_input_device_wifi_automatic(
     # page3_device_wifi["automatic_switch"] into backend.
     # ...
     # ================================================================
-    load_config()
     w: dict = conf_dict["config"]["wifi"]
     w["auto"] = "TRUE" if value else "FALSE"
-    proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
+    proc.run(["/usr/bin/bash", "/home/nodo/execScripts/update-net.sh"])
     save_config()
 
     if page3_device_wifi["automatic_switch"] == 1:
@@ -7237,10 +7263,9 @@ def validate_input_device_wifi_ip_address_by_regex(value, pattern):
         # page3_device_wifi["ip_address"] into backend.
         # ...
         # ============================================================
-        load_config()
         w: dict = conf_dict["config"]["wifi"]
         w["ip"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
+        proc.run(["/usr/bin/bash", "/home/nodo/execScripts/update-net.sh"])
         save_config()
         return True, False
     else:
@@ -7273,10 +7298,9 @@ def validate_input_device_wifi_subnet_mask_by_regex(value, pattern):
         # page3_device_wifi["subnet_mask"] into backend.
         # ...
         # ============================================================
-        load_config()
         w: dict = conf_dict["config"]["wifi"]
         w["subnet"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
+        proc.run(["/usr/bin/bash", "/home/nodo/execScripts/update-net.sh"])
         save_config()
         return True, False
     else:
@@ -7309,10 +7333,9 @@ def validate_input_device_wifi_router_by_regex(value, pattern):
         # page3_device_wifi["router"] into backend.
         # ...
         # ============================================================
-        load_config()
         w: dict = conf_dict["config"]["wifi"]
         w["router"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
+        proc.run(["/usr/bin/bash", "/home/nodo/execScripts/update-net.sh"])
         save_config()
         return True, False
     else:
@@ -7345,10 +7368,9 @@ def validate_input_device_wifi_dhcp_by_regex(value, pattern):
         # page3_device_wifi["dhcp"] into backend.
         # ...
         # ============================================================
-        load_config()
         w: dict = conf_dict["config"]["wifi"]
         w["dhcp"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
+        proc.run(["/usr/bin/bash", "/home/nodo/execScripts/update-net.sh"])
         save_config()
         return True, False
     else:
@@ -7384,10 +7406,9 @@ def update_input_device_ethernet_ip_address_by_switches_input_device_ethernet_au
     # Add save function to write back
     # page3_device_ethernet["automatic_switch"] into backend.
     # ...
-    load_config()
     w: dict = conf_dict["config"]["ethernet"]
     w["auto"] = value
-    proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
+    proc.run(["/usr/bin/bash", "/home/nodo/execScripts/update-net.sh"])
     save_config()
 
     if page3_device_ethernet["automatic_switch"] == 1:
@@ -7422,10 +7443,9 @@ def validate_input_device_ethernet_ip_address_by_regex(value, pattern):
         # page3_device_ethernet["ip_address"] into backend.
         # ...
         page3_device_ethernet["ip_address"] = value
-        load_config()
         w: dict = conf_dict["config"]["ethernet"]
         w["ip"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
+        proc.run(["/usr/bin/bash", "/home/nodo/execScripts/update-net.sh"])
         save_config()
         return True, False
     else:
@@ -7457,10 +7477,9 @@ def validate_input_device_ethernet_subnet_mask_by_regex(value, pattern):
         # page3_device_ethernet["subnet_mask"] into backend.
         # ...
         page3_device_ethernet["subnet_mask"] = value
-        load_config()
         w: dict = conf_dict["config"]["ethernet"]
         w["subnet"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
+        proc.run(["/usr/bin/bash", "/home/nodo/execScripts/update-net.sh"])
         save_config()
         return True, False
     else:
@@ -7492,10 +7511,9 @@ def validate_input_device_ethernet_router_by_regex(value, pattern):
         # page3_device_ethernet["router"] into backend.
         # ...
         page3_device_ethernet["router"] = value
-        load_config()
         w: dict = conf_dict["config"]["ethernet"]
         w["router"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
+        proc.run(["/usr/bin/bash", "/home/nodo/execScripts/update-net.sh"])
         save_config()
         return True, False
     else:
@@ -7527,10 +7545,9 @@ def validate_input_device_ethernet_dhcp_by_regex(value, pattern):
         # page3_device_ethernet["dhcp"] into backend.
         # ...
         page3_device_ethernet["dhcp"] = value
-        load_config()
         w: dict = conf_dict["config"]["ethernet"]
         w["dhcp"] = value
-        proc.run(['/usr/bin/bash', '/home/nodo/execScripts/update-net.sh'])
+        proc.run(["/usr/bin/bash", "/home/nodo/execScripts/update-net.sh"])
         save_config()
         return True, False
     else:
@@ -8238,6 +8255,9 @@ if __name__ == "__main__":
         host = sys.argv[1]
         port = int(sys.argv[2])
 
+    stopFlag = threading.Event()
+    thread = TimerThread(stopFlag)
+    thread.start()
     load_config()
     load_page0_values()
     load_page1_values()
@@ -8245,4 +8265,4 @@ if __name__ == "__main__":
     load_page3_values()
     load_page4_values()
     app.run_server(host=host, port=str(port), debug=False)
-
+    stopFlag.set()
