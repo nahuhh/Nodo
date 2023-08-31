@@ -1,32 +1,22 @@
 #!/bin/bash
 
 CONF=$(</home/nodo/variables/config.json)
-getvar() {
-	echo "$CONF" | jq -r ".config.$1"
-}
 
 WIFI_CONNAME="nodo-wireless"
 ETH_CONNAME="nodo-ethernet"
 
-WIFI_ENABLED=$(getvar "wifi.enabled")
-WIFI_SSID=$(getvar "wifi.ssid")
-WIFI_PW=$(getvar "wifi.pw")
-WIFI_AUTO=$(getvar "wifi.auto")
-WIFI_IP=$(getvar "wifi.ip")
-WIFI_SUBNET=$(getvar "wifi.subnet")
-WIFI_ROUTER=$(getvar "wifi.router")
-WIFI_DHCP=$(getvar "wifi.dhcp")
+read WIFI_ENABLED WIFI_SSID WIFI_PW WIFI_AUTO \
+	WIFI_IP WIFI_SUBNET WIFI_ROUTER WIFI_DHCP < <(
+echo "$CONF" | jq -r '.config.wifi | .enabled, .ssid, .pw, .auto, .ip, .subnet, .router, .dhcp'
+)
 
-ETH_ENABLED=$(getvar "ethernet.enabled")
-ETH_AUTO=$(getvar "ethernet.auto")
-ETH_IP=$(getvar "ethernet.ip")
-ETH_SUBNET=$(getvar "ethernet.subnet")
-ETH_ROUTER=$(getvar "ethernet.router")
-ETH_DHCP=$(getvar "ethernet.dhcp")
+read ETH_ENABLED ETH_AUTO ETH_IP ETH_SUBNET \
+	ETH_ROUTER ETH_DHCP < <(
+echo "$CONF" | jq -r '.config.ethernet | .enabled, .auto, .ip, .subjet, .router, .dhcp'
+)
 
 if [ "$ETH_ENABLED" = "TRUE" ]; then
-	true
-	nmcli con show "$ETH_CONNAME" || \ #create connection if not existing
+	nmcli con show "$ETH_CONNAME" || \
 		nmcli connection add type ethernet con-name "$ETH_CONNAME"
 
 	if [ ! "$ETH_AUTO" = "TRUE" ]; then
@@ -39,7 +29,7 @@ else
 fi
 
 if [ "$WIFI_ENABLED" = "TRUE" ]; then
-	nmcli con show "$WIFI_CONNAME" || \ #create connection if not existing
+	nmcli con show "$WIFI_CONNAME" || \
 		nmcli connection add type wifi con-name "$WIFI_CONNAME"
 
 	nmcli con modify "$WIFI_CONNAME" ssid "$WIFI_SSID" wifi-sec.psk "$WIFI_PW"

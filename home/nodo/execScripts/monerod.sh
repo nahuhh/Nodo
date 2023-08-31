@@ -3,45 +3,35 @@
 #shellcheck source=home/nodo/common.sh
 . /home/nodo/common.sh
 
-CONF=$(</home/nodo/variables/config.json)
-getvar() {
-	echo "$CONF" | jq -r ".config.$1"
-}
-
-MONERO_PORT=$(getvar "monero_port")
-MONERO_PUBLIC_PORT=$(getvar "monero_public_port")
-
-RPC_ENABLED=$(getvar "rpc_enabled")
-RPC_PORT=$(getvar "monero_rpc_port")
-RPCu=$(getvar "rpcu")
-RPCp=$(getvar "rpcp")
-
-IN_PEERS=$(getvar "in_peers")
-OUT_PEERS=$(getvar "out_peers")
-
-LIMIT_RATE_UP=$(getvar "limit_rate_up")
-LIMIT_RATE_DOWN=$(getvar "limit_rate_down")
-
-DATA_DIR=$(getvar "data_dir")
-
-TORPROXY_ENABLED=$(getvar "torproxy_enabled")
-
-I2P_ENABLED=$(getvar "i2p_enabled")
-I2P_PEER=$(getvar "add_i2p_peer")
-I2P_PORT=$(getvar "i2p_port")
-I2P_ADDRESS=$(getvar "i2p_address")
-
-TOR_ENABLED=$(getvar "tor_enabled")
-TOR_PEER=$(getvar "add_tor_peer")
-TOR_PORT=$(getvar "tor_port")
-TOR_ADDRESS=$(getvar "tor_address")
-
-DATA_DIR=$(getvar "data_dir")
-SYNC_MODE=$(getvar "sync_mode")
+{
+read -r MONERO_PORT
+read -r MONERO_PUBLIC_PORT
+read -r RPC_ENABLED
+read -r RPC_PORT
+read -r RPCu
+read -r RPCp
+read -r IN_PEERS
+read -r OUT_PEERS
+read -r LIMIT_RATE_UP
+read -r LIMIT_RATE_DOWN
+read -r DATA_DIR
+read -r TORPROXY_ENABLED
+read -r I2P_ENABLED
+read -r I2P_PEER
+read -r I2P_PORT
+read -r I2P_ADDRESS
+read -r TOR_ENABLED
+read -r TOR_PEER
+read -r TOR_PORT
+read -r TOR_ADDRESS
+read -r DATA_DIR
+read -r SYNC_MODE
+} < <(
+	jq '.config | .monero_port, .monero_public_port, .rpc_enabled, .monero_rpc_port, .rpcu, .rpcp, .in_peers, .out_peers, .limit_rate_up, .limit_rate_down, .data_dir, .torproxy_enabled, .i2p_enabled, .add_i2p_peer, .i2p_port, .i2p_address, .tor_enabled, .add_tor_peer, .tor_port, .tor_address, .data_dir, .sync_mode' $CONFIG_FILE
+)
 
 DEVICE_IP="0.0.0.0"
 
-putvar "boot_status" "3"
 #Start Monerod
 if [ "$TORPROXY_ENABLED" == "TRUE" ]; then
 	if [ "$I2P_ENABLED" == "TRUE" ]; then

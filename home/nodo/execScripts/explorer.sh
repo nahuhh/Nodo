@@ -3,14 +3,19 @@
 #shellcheck source=home/nodo/common.sh
 . /home/nodo/common.sh
 
-exploc=/home/nodo/onion-monero-blockchain-explorer/build/
-DATA_DIR=$(getvar "data_dir")/lmdb
-MONERO_RPC_PORT=$(getvar "monero_rpc_port")
-MONEROD="127.0.0.1:$MONERO_RPC_PORT}"
-RPC_ENABLED=$(getvar "rpc_enabled")
+{
+read -r DATA_DIR
+read -r MONERO_RPC_PORT
+read -r RPC_ENABLED
 if [ "$RPC_ENABLED" == "TRUE" ]; then
-	RPCp=$(getvar "rpcp")
-	RPCu=$(getvar "rpcu")
+	read -r RPCu
+	read -r RPCp
 fi
+} < <(
+jq -r '.config | .data_dir, .monero_rpc_port, .rpc_enabled, .rpcu, .rpcp' < $CONFIG_FILE
+)
 
-eval "$exploc/xmrblocks --daemon-url=$MONEROD ${RPCp:+--daemon-login $RPCu:$RPCp} --enable-json-api=1 -b $DATA_DIR"
+exploc=/home/nodo/onion-monero-blockchain-explorer/build/
+MONEROD="127.0.0.1:$MONERO_RPC_PORT}"
+
+eval "$exploc/xmrblocks --daemon-url=$MONEROD ${RPCp:+--daemon-login $RPCu:$RPCp} --enable-json-api=1 -b $DATA_DIR/lmdb"
