@@ -5,13 +5,27 @@ CONF=$(</home/nodo/variables/config.json)
 WIFI_CONNAME="nodo-wireless"
 ETH_CONNAME="nodo-ethernet"
 
-read WIFI_ENABLED WIFI_SSID WIFI_PW WIFI_AUTO \
-	WIFI_IP WIFI_SUBNET WIFI_ROUTER WIFI_DHCP < <(
+{
+read -r WIFI_ENABLED
+read -r WIFI_SSID
+read -r WIFI_PW
+read -r WIFI_AUTO
+read -r WIFI_IP
+read -r WIFI_SUBNET
+read -r WIFI_ROUTER
+read -r WIFI_DHCP
+} < <(
 echo "$CONF" | jq -r '.config.wifi | .enabled, .ssid, .pw, .auto, .ip, .subnet, .router, .dhcp'
 )
 
-read ETH_ENABLED ETH_AUTO ETH_IP ETH_SUBNET \
-	ETH_ROUTER ETH_DHCP < <(
+{
+read -r ETH_ENABLED
+read -r ETH_AUTO
+read -r ETH_IP
+read -r ETH_SUBNET
+read -r ETH_ROUTER
+read -r ETH_DHCP
+} < <(
 echo "$CONF" | jq -r '.config.ethernet | .enabled, .auto, .ip, .subjet, .router, .dhcp'
 )
 
