@@ -73,7 +73,7 @@ inactive_address_height = []
 account_address_viewkey_height = []
 
 # Page 5.1 ( BLOCK EXPLORER -> TRANSACTION POOL )
-# transaction_pool_infomation={}
+# transaction_pool_information={}
 
 conf_dict: dict = dict()
 conf_file: str = "/home/nodo/variables/config.json"
@@ -125,7 +125,6 @@ def update_config():
     if not applied and update_time < datetime.datetime.now() - timedelta_restart:
         proc.run(["systemctl", "restart", "monerod.service", "monero-lws.service", "block-explorer.service"])
         applied = True
-        print("monerod restarting")
 
 
 
@@ -2896,26 +2895,26 @@ page4_4 = html.Div(
 
 
 def make_page5_1():
-    # transaction_pool_infomation;
-    transaction_pool_infomation = {}
-    transaction_pool_infomation["server_time"] = "2023-4-27 20:36:27"
-    transaction_pool_infomation["network_difficulty"] = "327906897405"
-    transaction_pool_infomation["hard_fork"] = "v16"
-    transaction_pool_infomation["hash_rate"] = "2.732 GH/s"
-    transaction_pool_infomation["fee_per_byte"] = "0.000000020000"
-    transaction_pool_infomation["median_block_size_limit"] = "292.97 kB"
-    transaction_pool_infomation["monero_emission"] = "--"
-    transaction_pool_infomation["monero_emission_fees"] = "--"
-    transaction_pool_infomation["monero_emission_fees_as_of_block"] = "--"
+    # transaction_pool_information;
+    transaction_pool_information = {}
+    transaction_pool_information["server_time"] = "2023-4-27 20:36:27"
+    transaction_pool_information["network_difficulty"] = "327906897405"
+    transaction_pool_information["current_hf_version"] = "v16"
+    transaction_pool_information["hash_rate"] = "2.732 GH/s"
+    transaction_pool_information["fee_per_byte"] = "0.000000020000"
+    transaction_pool_information["median_block_size_limit"] = "292.97 kB"
+    transaction_pool_information["monero_emission"] = "--"
+    transaction_pool_information["monero_emission_fees"] = "--"
+    transaction_pool_information["monero_emission_fees_as_of_block"] = "--"
 
-    transaction_pool_infomation["no_of_txs"] = "17"
-    transaction_pool_infomation["size_of_txs"] = "29.46kB"
-    transaction_pool_infomation["transactions_in_the_last_blocks"] = "11"
-    transaction_pool_infomation["median_size_of_100_blocks"] = "292.97 kB"
+    transaction_pool_information["no_of_txs"] = "17"
+    transaction_pool_information["size_of_txs"] = "29.46kB"
+    transaction_pool_information["transactions_in_the_last_blocks"] = "11"
+    transaction_pool_information["median_size_of_100_blocks"] = "292.97 kB"
     ## parameters for transaction pool ( Page 5.1 Transaction Pool)
     transactionPoolDF = pd.DataFrame(
         {
-            "age [h:m:s]": ["00:00:22", "00:00:37", "00:00:44"],
+            "age [h:m:s]": ["", "", ""],
             "transaction hash": [
                 "[e7cbf1e76041d93ef0b672955ebecfc52b4d24e5402168548855cc0f6049e67e](/txe7cbf1e76041d93ef0b672955ebecfc52b4d24e5402168548855cc0f6049e67e)",
                 "[153bada79026d209316145984b8aa98141fe34f62f05a300f85ab74f1f728284](/tx153bada79026d209316145984b8aa98141fe34f62f05a300f85ab74f1f728284)",
@@ -3144,7 +3143,7 @@ def make_page5_1():
     # Add query function here to load data from backend
     # And convert datatype just like above python dictionary and dataframe type
     #
-    # transaction_pool_infomation:  dictionary
+    # transaction_pool_information:  dictionary
     # transactionPoolDF:            DataFrame
     # transactionInTheLastBlock:    DataFrame
     # ...
@@ -3157,6 +3156,10 @@ def make_page5_1():
     # Opening JSON file
     f = open("./json/demo/transactions.json")
 
+    r = requests.get("http://127.0.0.1:8081/api/networkinfo")
+    transaction_pool_information = r.json()["data"].copy()
+    transaction_pool_information["server_time"] = datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+
     r = requests.get("http://127.0.0.1:8081/api/transactions?limit=11")
 
     # returns JSON object as
@@ -3165,6 +3168,7 @@ def make_page5_1():
     data = r.json()
     outputs_DataFrame = json_normalize(data["data"]["blocks"])
     print(outputs_DataFrame)
+
     for ind in outputs_DataFrame.index:
         outputs_txs_DataFrame = json_normalize(outputs_DataFrame["txs"][ind])
         height = (
@@ -3174,8 +3178,8 @@ def make_page5_1():
             + str(outputs_DataFrame["height"][ind])
             + ")"
         )
-        age = outputs_DataFrame["age"][ind]
         size = str(round((outputs_DataFrame["size"][ind] / 1024), 2))
+        age = outputs_DataFrame["age"][ind]
         tx_hash = ""
         tx_fee = ""
         in_out = "?/?"
@@ -3190,7 +3194,7 @@ def make_page5_1():
                 + ")"
             )
             tx_fee = str(round(outputs_txs_DataFrame["tx_fee"][indexTXS] / 1000000, 0))
-            tx_size = str(round(outputs_txs_DataFrame["tx_size"][indexTXS] / 1024, 0))
+            tx_size = str(round(outputs_txs_DataFrame["tx_size"][indexTXS], 0))
             xmr_outputs = str(
                 round(outputs_txs_DataFrame["xmr_outputs"][indexTXS] / 1000000000000, 3)
             )
@@ -3208,8 +3212,42 @@ def make_page5_1():
                 transactionInTheLastBlock.index + 1
             )  # shifting index
 
-    r = requests.get("http://127.0.0.1:8081/api/networkinfo")
-    transaction_pool_information = r.json()["data"].copy()
+    r = requests.get("http://127.0.0.1:8081/api/mempool?limit=11")
+    transactionPoolDF = transactionPoolDF.iloc[0:0]
+    data = r.json()
+    outputs_DataFrame = json_normalize(data["data"])
+    outputs_txs_DataFrame = json_normalize(data["data"]["txs"])
+    tx_hash = ""
+    tx_fee = ""
+    in_out = "?/?"
+    tx_size = "0"
+
+    for indexTXS in outputs_txs_DataFrame.index:
+        tx_hash = (
+            "["
+            + str(outputs_txs_DataFrame["tx_hash"][indexTXS])
+            + "](/tx"
+            + str(outputs_txs_DataFrame["tx_hash"][indexTXS])
+            + ")"
+        )
+        age = datetime.datetime.now().timestamp() - outputs_txs_DataFrame["timestamp"][indexTXS]
+        age = datetime.datetime.fromtimestamp(age).strftime("%H:%M:%S")
+        tx_fee = str(round(outputs_txs_DataFrame["tx_fee"][indexTXS] / 1000000, 0))
+        tx_size = str(round(outputs_txs_DataFrame["tx_size"][indexTXS], 0))
+        xmr_outputs = str(
+            round(outputs_txs_DataFrame["xmr_outputs"][indexTXS] / 1000000000000, 3)
+        )
+        transactionPoolDF.loc[-1] = [
+            age,
+            tx_hash,
+            tx_fee,
+            in_out,
+            tx_size,
+        ]  # adding a row
+        transactionPoolDF.index = (
+            transactionPoolDF.index + 1
+        )  # shifting index
+
     # r= requests.get(
     #         "http://127.0.0.1:8081/api/emission"
     # )
@@ -3281,28 +3319,28 @@ def make_page5_1():
             ),
             html.P(
                 "Server time: "
-                + transaction_pool_infomation["server_time"]
+                + str(transaction_pool_information["server_time"])
                 + " | Network difficulty: "
-                + transaction_pool_infomation["difficulty"]
+                + str(transaction_pool_information["difficulty"])
                 + " | Hard fork: v"
-                + transaction_pool_infomation["current_hf_version"]
+                + str(transaction_pool_information["current_hf_version"])
                 + " | Hash rate: "
-                + transaction_pool_infomation["hash_rate"]
+                + str(transaction_pool_information["hash_rate"])
                 + " | Fee per byte: "
-                + str(int(transaction_pool_infomation["fee_per_kb"]) * 10**-15)
+                + "{:.12f}".format(float(str(int(transaction_pool_information["fee_per_kb"]) * 10**-15)))
                 + " | Median block size limit: "
-                + transaction_pool_infomation["block_size_limit"]
+                + str(transaction_pool_information["block_size_limit"])
                 + " ",
                 className="text-center",
                 style={"overflow-wrap": "break-word"},
             ),
             # html.P(
             #     "Monero emission (fees) is "
-            #     + str(int(transaction_pool_infomation["coinbase"]) * 10**-12)
+            #     + str(int(transaction_pool_information["coinbase"]) * 10**-12)
             #     + "("
-            #     + str(int(transaction_pool_infomation["fee"]) * 10**-12)
+            #     + str(int(transaction_pool_information["fee"]) * 10**-12)
             #     + ") as of "
-            #     + transaction_pool_infomation["blk_no"]
+            #     + transaction_pool_information["blk_no"]
             #     + " block",
             #     className="text-center",
             #     style={"overflow-wrap": "break-word"},
@@ -3314,10 +3352,10 @@ def make_page5_1():
             ),
             html.P(
                 "(no of txs: "
-                + transaction_pool_infomation["no_of_txs"]
+                + str(transaction_pool_information["tx_pool_size"])
                 + ", size: "
-                + transaction_pool_infomation["size_of_txs"]
-                + ", updated every 5 seconds)",
+                + str(transaction_pool_information["tx_pool_size_kbytes"])
+                + "kB, updated every 5 seconds)",
                 className="text-center",
                 style={"overflow-wrap": "break-word"},
             ),
@@ -3359,11 +3397,7 @@ def make_page5_1():
                         "marginRight": "auto",
                     },
                     style_cell_conditional=[
-                        {
-                            "if": {"column_id": "age [h:m:s]"},
-                            "width": "21%",
-                            "min-width": "225px",
-                        },
+                        {"if": {"column_id": "age [h:m:s]"}, "width": "12%"},
                         {"if": {"column_id": "transaction hash"}, "width": "63%"},
                         {"if": {"column_id": "fee/per_kB [µɱ]"}, "width": "8%"},
                         {"if": {"column_id": "in/out"}, "width": "4%"},
@@ -4726,29 +4760,29 @@ def make_page5_block_status(block):
 
 
 def make_page_5_1_block_transaction_numbers(block):
-    block_transaction_infomation = {}
-    block_transaction_infomation[
+    block_transaction_information = {}
+    block_transaction_information[
         "hash"
     ] = "c7e17c513d8f8fe7e271ce5343a903fd531e7214c1d706f8543a2851e1744320"
-    block_transaction_infomation["outputs"] = "0.867455"
-    block_transaction_infomation["size"] = "0.1025"
-    block_transaction_infomation["version"] = "2"
+    block_transaction_information["outputs"] = "0.867455"
+    block_transaction_information["size"] = "0.1025"
+    block_transaction_information["version"] = "2"
     miner_reward_transaction_DataFrame = pd.DataFrame(
         {
             "hash": [
                 "["
-                + block_transaction_infomation["hash"]
+                + block_transaction_information["hash"]
                 + "](tx"
-                + block_transaction_infomation["hash"]
+                + block_transaction_information["hash"]
                 + ")"
             ],
-            "outputs": [block_transaction_infomation["outputs"]],
-            "size [kB]": [block_transaction_infomation["size"]],
-            "version": [block_transaction_infomation["version"]],
+            "outputs": [block_transaction_information["outputs"]],
+            "size [kB]": [block_transaction_information["size"]],
+            "version": [block_transaction_information["version"]],
         }
     )
 
-    block_transaction_infomation["num_of_transactions"] = "33"
+    block_transaction_information["num_of_transactions"] = "33"
 
     block_transaction_numbers_DataFrame = pd.DataFrame(
         {
@@ -4969,7 +5003,7 @@ def make_page_5_1_block_transaction_numbers(block):
     # Add query function here to load data from backend
     # And convert datatype just like above python dictionary and dataframe type
     #
-    # block_transaction_infomation:                  dictionary
+    # block_transaction_information:                  dictionary
     # miner_reward_transaction_DataFrame:            DataFrame
     # block_transaction_numbers_DataFrame:           DataFrame
     # ...
@@ -5025,7 +5059,7 @@ def make_page_5_1_block_transaction_numbers(block):
             html.P(
                 "Transactions"
                 + "("
-                + str(block_transaction_infomation["num_of_transactions"])
+                + str(block_transaction_information["num_of_transactions"])
                 + ")",
                 className="text-center",
                 style={"width": "95vw", "line-break": "anywhere"},
