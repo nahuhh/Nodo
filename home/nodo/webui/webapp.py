@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 from io import TextIOWrapper
+import socket
 import psutil
 import threading
-import time
 import subprocess as proc
 import sys
 import json
@@ -12,13 +12,11 @@ from requests.auth import HTTPDigestAuth
 from requests import JSONDecodeError
 import dash
 import dash_bootstrap_components as dbc
+import dash_qr_manager as dqm
 from dash_breakpoints import WindowBreakpoints
 from dash import Input, Output, State, dcc, html
-from dash_bootstrap_components._components.Container import Container
-import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 import datetime
-from typing import Tuple
 import re
 from dash import html
 from dash.dependencies import ALL, Input, Output, State
@@ -29,6 +27,18 @@ import pandas as pd
 from pandas import json_normalize
 from furl import furl
 
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.settimeout(0)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.254.254.254', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
 
 class TimerThread(threading.Thread):
     def __init__(self, event):
@@ -103,11 +113,13 @@ def load_config():
         global conf_dict
         conf_dict = json.load(json_file)
 
+
 update_time: datetime.datetime = datetime.datetime.now()
 written: bool = True
 applied: bool = True
 timedelta_config: datetime.timedelta = datetime.timedelta(seconds=10)
 timedelta_restart: datetime.timedelta = datetime.timedelta(seconds=30)
+
 
 def write_config():
     global written
@@ -123,10 +135,16 @@ def update_config():
     if not written and update_time < datetime.datetime.now():
         write_config()
     if not applied and update_time < datetime.datetime.now() - timedelta_restart:
-        proc.run(["systemctl", "restart", "monerod.service", "monero-lws.service", "block-explorer.service"])
+        proc.run(
+            [
+                "systemctl",
+                "restart",
+                "monerod.service",
+                "monero-lws.service",
+                "block-explorer.service",
+            ]
+        )
         applied = True
-
-
 
 def save_config():
     global update_time
@@ -268,6 +286,7 @@ def load_page1_values():
     # ================================================================
     load_config()
     c: dict = conf_dict["config"]
+    page1_networks_clearnet["address"] = get_ip()
     page1_networks_clearnet["port"] = c["monero_public_port"]
 
     page1_networks_tor["tor_switch"] = 1 if c["torproxy_enabled"] == "TRUE" else 0
@@ -1279,7 +1298,7 @@ def make_page1_1():
                 [
                     dbc.InputGroupText("Address"),
                     dbc.Input(
-                        id="input-networks-clearnet-address", type="text", value=address
+                        id="input-networks-clearnet-address", type="text", value=address, disabled=True
                     ),
                 ],
                 className="me-1 mt-1",
@@ -1327,6 +1346,15 @@ def make_page1_1():
             ),
             html.Br(),
             html.Br(),
+            html.Div(
+                    children=[
+                    dqm.DashQrGenerator(
+                        id="qr-code-clearnet",
+                        data=address + ":" + str(port),
+                        framed=True,
+                    )
+                ],
+            ),
         ]
     )
 
@@ -1471,6 +1499,15 @@ def make_page1_2():
             html.Div(id="networks-tor-add-peer-hidden-div", style={"display": "none"}),
             html.Br(),
             html.Br(),
+            html.Div(
+                    children=[
+                    dqm.DashQrGenerator(
+                        id="qr-code-tor",
+                        data=onion_addr + ":" + str(port),
+                        framed=True,
+                    )
+                ],
+            ),
         ]
     )
 
@@ -1594,6 +1631,15 @@ def make_page1_3():
             html.Div(id="networks-i2p-add-peer-hidden-div", style={"display": "none"}),
             html.Br(),
             html.Br(),
+            html.Div(
+                    children=[
+                    dqm.DashQrGenerator(
+                        id="qr-code-i2p",
+                        data=i2p_b32_addr + ":" + str(port),
+                        framed=True,
+                    )
+                ],
+            ),
         ]
     )
 
@@ -3158,9 +3204,11 @@ def make_page5_1():
 
     r = requests.get("http://127.0.0.1:8081/api/networkinfo")
     transaction_pool_information = r.json()["data"].copy()
-    transaction_pool_information["server_time"] = datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+    transaction_pool_information["server_time"] = datetime.datetime.now().strftime(
+        "%d/%m/%Y, %H:%M:%S"
+    )
 
-    r = requests.get("http://127.0.0.1:8081/api/transactions?limit=11")
+    r = requests.get("http://127.0.0.1:8081/api/transactions?limit=3")
 
     # returns JSON object as
     # a dictionary
@@ -3212,7 +3260,7 @@ def make_page5_1():
                 transactionInTheLastBlock.index + 1
             )  # shifting index
 
-    r = requests.get("http://127.0.0.1:8081/api/mempool?limit=11")
+    r = requests.get("http://127.0.0.1:8081/api/mempool?limit=40")
     transactionPoolDF = transactionPoolDF.iloc[0:0]
     data = r.json()
     outputs_DataFrame = json_normalize(data["data"])
@@ -3230,7 +3278,10 @@ def make_page5_1():
             + str(outputs_txs_DataFrame["tx_hash"][indexTXS])
             + ")"
         )
-        age = datetime.datetime.now().timestamp() - outputs_txs_DataFrame["timestamp"][indexTXS]
+        age = (
+            datetime.datetime.now().timestamp()
+            - outputs_txs_DataFrame["timestamp"][indexTXS]
+        )
         age = datetime.datetime.fromtimestamp(age).strftime("%H:%M:%S")
         tx_fee = str(round(outputs_txs_DataFrame["tx_fee"][indexTXS] / 1000000, 0))
         tx_size = str(round(outputs_txs_DataFrame["tx_size"][indexTXS], 0))
@@ -3244,9 +3295,7 @@ def make_page5_1():
             in_out,
             tx_size,
         ]  # adding a row
-        transactionPoolDF.index = (
-            transactionPoolDF.index + 1
-        )  # shifting index
+        transactionPoolDF.index = transactionPoolDF.index + 1  # shifting index
 
     # r= requests.get(
     #         "http://127.0.0.1:8081/api/emission"
@@ -3327,7 +3376,11 @@ def make_page5_1():
                 + " | Hash rate: "
                 + str(transaction_pool_information["hash_rate"])
                 + " | Fee per byte: "
-                + "{:.12f}".format(float(str(int(transaction_pool_information["fee_per_kb"]) * 10**-15)))
+                + "{:.12f}".format(
+                    float(
+                        str(int(transaction_pool_information["fee_per_kb"]) * 10**-15)
+                    )
+                )
                 + " | Median block size limit: "
                 + str(transaction_pool_information["block_size_limit"])
                 + " ",

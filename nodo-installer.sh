@@ -198,6 +198,7 @@ showtext "Installing python dependencies..."
 		venv/bin/pip3.11 install dash_breakpoints dash_daq
 		venv/bin/pip3.11 install furl
 		venv/bin/pip3.11 install psutil
+		venv/bin/pip3.11 install dash-qr-manager
 	)
 } 2>&1 | tee -a "$DEBUG_LOG"
 
