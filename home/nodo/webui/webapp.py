@@ -291,12 +291,12 @@ def load_page1_values():
 
     page1_networks_tor["tor_switch"] = 1 if c["torproxy_enabled"] == "TRUE" else 0
     page1_networks_tor["port"] = c["tor_port"]
-    page1_networks_tor["onion_addr"] = c["tor_address"]
+    page1_networks_tor["onion_addr"] = c["onion_addr"]
     page1_networks_tor["peer"] = c["add_tor_peer"]
 
     page1_networks_i2p["i2p_switch"] = 1 if c["i2p_enabled"] == "TRUE" else 0
     page1_networks_i2p["port"] = c["i2p_port"]
-    page1_networks_i2p["i2p_b32_addr"] = c["i2p_address"]
+    page1_networks_i2p["i2p_b32_addr"] = c["i2p_b32_addr_rpc"]
     page1_networks_i2p["peer"] = c["add_i2p_peer"]
 
 
@@ -1347,9 +1347,14 @@ def make_page1_1():
             html.Br(),
             html.Br(),
             html.Div(
-                    children=[
+                children=[
+                    html.P("Scan to add Nodo to your wallet app:"),
+                ]
+            ),
+            html.Div(
+                id="qr-code-clearnet",
+                children=[
                     dqm.DashQrGenerator(
-                        id="qr-code-clearnet",
                         data=address + ":" + str(port),
                         framed=True,
                     )
@@ -1444,17 +1449,7 @@ def make_page1_2():
                         value=onion_addr,
                     ),
                 ],
-                className="me-1 mt-1",
-            ),
-            dbc.Col(
-                dbc.Button(
-                    "Change",
-                    className="buttonNodo ms-auto fa fa-send",
-                    id="button-networks-tor-change",
-                    n_clicks=0,
-                ),
-                width="auto",
-                className="me-1 mt-1 pt-2",
+                className="me-1 mt-1 pb-2",
             ),
             dbc.InputGroup(
                 [
@@ -1500,9 +1495,14 @@ def make_page1_2():
             html.Br(),
             html.Br(),
             html.Div(
-                    children=[
+                children=[
+                    html.P("Scan to add Nodo to your wallet app:"),
+                ]
+            ),
+            html.Div(
+                id="qr-code-tor",
+                children=[
                     dqm.DashQrGenerator(
-                        id="qr-code-tor",
                         data=onion_addr + ":" + str(port),
                         framed=True,
                     )
@@ -1580,17 +1580,7 @@ def make_page1_3():
                         value=i2p_b32_addr,
                     ),
                 ],
-                className="me-1 mt-1",
-            ),
-            dbc.Col(
-                dbc.Button(
-                    "Change",
-                    className="buttonNodo ms-auto fa fa-send",
-                    id="button-networks-i2p-change",
-                    n_clicks=0,
-                ),
-                width="auto",
-                className="me-1 mt-1 pt-2",
+                className="me-1 mt-1 pb-2",
             ),
             dbc.InputGroup(
                 [
@@ -1632,9 +1622,14 @@ def make_page1_3():
             html.Br(),
             html.Br(),
             html.Div(
-                    children=[
+                children=[
+                    html.P("Scan to add Nodo to your wallet app:"),
+                ]
+            ),
+            html.Div(
+                id='qr-code-i2p',
+                children=[
                     dqm.DashQrGenerator(
-                        id="qr-code-i2p",
                         data=i2p_b32_addr + ":" + str(port),
                         framed=True,
                     )
@@ -6878,6 +6873,34 @@ def update_switch_networks_i2p_change(n_clicks):
 
     return output_value
 
+
+@app.callback(
+    Output("qr-code-clearnet", "children"),
+    Input("input-networks-clearnet-port", "value"),
+    prevent_initial_call=True
+)
+def update_qr_code_i2p(value):
+    return dqm.DashQrGenerator(data=get_ip() + ":" + str(value), framed=True)
+
+@app.callback(
+    Output("qr-code-tor", "children"),
+    Input("input-networks-tor-port", "value"),
+    prevent_initial_call=True
+)
+def update_qr_code_i2p(value):
+    global page1_networks_i2p
+
+    return dqm.DashQrGenerator(data=page1_networks_tor["onion_addr"] + ":" + str(value), framed=True)
+
+@app.callback(
+    Output("qr-code-i2p", "children"),
+    Input("input-networks-i2p-port", "value"),
+    prevent_initial_call=True
+)
+def update_qr_code_i2p(value):
+    global page1_networks_i2p
+
+    return dqm.DashQrGenerator(data=page1_networks_i2p["i2p_b32_addr"] + ":" + str(value), framed=True)
 
 # ====================================================================
 # Page 1_3 Networks -> I2P -> Port (Input)

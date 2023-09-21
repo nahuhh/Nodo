@@ -53,7 +53,7 @@ chown nodo "$DEBUG_LOG"
 chmod 777 "$DEBUG_LOG"
 
 #force confnew by default everywhere
-echo "force-confnew" >/etc/dpkg/dpkg.cfg.d/force-confnew
+echo "force-confnew" > /etc/dpkg/dpkg.cfg.d/force-confnew
 
 ##Update and Upgrade system
 showtext "Downloading and installing OS updates..."
@@ -188,19 +188,23 @@ showtext "Installing python dependencies..."
 	showtext "Creating virtualenv, may take a minute..."
 	python3.11 -m venv venv
 	(
-		. venv/bin/activate
-		venv/bin/pip3.11 install --upgrade pip
-		venv/bin/pip3.11 install Cython
-		venv/bin/pip3.11 install numpy
-		venv/bin/pip3.11 install dash
-		venv/bin/pip3.11 install dash_bootstrap_components dash_mantine_components dash_iconify
-		venv/bin/pip3.11 install pandas
-		venv/bin/pip3.11 install dash_breakpoints dash_daq
-		venv/bin/pip3.11 install furl
-		venv/bin/pip3.11 install psutil
-		venv/bin/pip3.11 install dash-qr-manager
-	)
+	. venv/bin/activate
+	venv/bin/pip3.11 install --upgrade pip
+	venv/bin/pip3.11 install Cython
+	venv/bin/pip3.11 install numpy
+	venv/bin/pip3.11 install dash
+	venv/bin/pip3.11 install dash_bootstrap_components dash_mantine_components dash_iconify
+	venv/bin/pip3.11 install pandas
+	venv/bin/pip3.11 install dash_breakpoints dash_daq
+	venv/bin/pip3.11 install furl
+	venv/bin/pip3.11 install psutil
+	venv/bin/pip3.11 install dash-qr-manager
+)
 } 2>&1 | tee -a "$DEBUG_LOG"
+
+#Install tor and i2p
+apt-get install -y tor i2pd
+putvar 'onion_addr' "$(cat /var/lib/tor/hidden_service/hostname)"
 
 ##Install crontab
 showtext "Setting up crontab..."
@@ -250,9 +254,13 @@ ufw enable
 showtext "Start services"
 
 systemctl daemon-reload
+systemctl enable --now tor i2pd
 systemctl enable monerod block-explorer monero-lws monero-lws-admin webui
 
 services-start
+putvar 'i2p_b32_addr' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmr.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
+putvar 'i2p_b32_addr_rpc' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmrRpc.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
+putvar 'onion_addr' "$(cat /var/lib/tor/hidden_service/hostname)"
 
 ## Install complete
 showtext "Installation Complete"
