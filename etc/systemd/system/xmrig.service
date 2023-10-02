@@ -1,0 +1,16 @@
+[Unit]
+Description=XMRig
+After=network.target
+
+[Service]
+ExecStart=/bin/bash xmrig.sh
+WorkingDirectory=/home/nodo/execScripts/
+Type=exec
+Restart=always
+RestartSec=30
+User=monero
+StandardOutput=inherit
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target

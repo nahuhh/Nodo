@@ -1,0 +1,16 @@
+[Unit]
+Description=P2Pool
+After=network.target
+
+[Service]
+ExecStart=/bin/bash p2pool.sh
+WorkingDirectory=/home/nodo/execScripts/
+Type=exec
+Restart=always
+RestartSec=30
+User=monero
+StandardOutput=inherit
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target

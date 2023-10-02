@@ -241,6 +241,7 @@ putvar 'lws_admin_key' "$(uuidgen -r)"
 showtext "Downloading p2pool..."
 # Install monero block explorer for the first time
 sudo -u nodo bash ./update-p2pool.sh
+sysctl vm.nr_hugepages=3072
 
 showtext "Downloading XMRig..."
 # Install monero block explorer for the first time
@@ -256,13 +257,15 @@ ufw allow 18083
 ufw allow 18089
 ufw allow 4200
 ufw allow 22
+ufw allow 37888 #p2pool
+ufw allow 37889 #p2pool
 ufw enable
 
 showtext "Start services"
 
 systemctl daemon-reload
 systemctl enable --now tor i2pd
-systemctl enable monerod block-explorer monero-lws monero-lws-admin webui
+systemctl enable monerod block-explorer monero-lws monero-lws-admin webui p2pool
 
 services-start
 putvar 'i2p_b32_addr' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmr.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
