@@ -39,7 +39,7 @@ showtext "Building Monero..."
 
 	cd monero/ || exit 1
 	git pull
-	USE_SINGLE_BUILDDIR=1 make && cp build/release/bin/monero* /usr/bin/ && chmod a+x /usr/bin/monero*
+	USE_SINGLE_BUILDDIR=1 make -j$(nproc --ignore=2) && cp build/release/bin/monero* /usr/bin/ && chmod a+x /usr/bin/monero*
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 # {

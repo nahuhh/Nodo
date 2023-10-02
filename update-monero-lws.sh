@@ -38,7 +38,7 @@ showtext "Downloading VTNerd Monero-LWS"
 	cd build || exit 1
 	cmake -DMONERO_SOURCE_DIR=/home/nodo/monero -DMONERO_BUILD_DIR=/home/nodo/monero/build/release ..
 	showtext "Building VTNerd Monero-LW"
-	make
+	make -j$(nproc --ignore=2)
 } 2>&1 | tee -a "$DEBUG_LOG"
 cd || exit 1
 #Update system reference current LWS version number to New version number
