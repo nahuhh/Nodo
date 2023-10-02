@@ -219,8 +219,7 @@ showtext "Downloading Monero..."
 # Install monero for the first time
 apt-get update
 
-apt-get install git build-essential ccache cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 -y
-
+apt-get install git build-essential ccache cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libuv1-dev libhwloc-dev -y
 (
 cd /home/nodo || exit 1
 
@@ -238,6 +237,14 @@ showtext "Downloading Monero LWS"
 # Install monero block explorer for the first time
 sudo -u nodo bash ./update-lws-admin.sh
 putvar 'lws_admin_key' "$(uuidgen -r)"
+
+showtext "Downloading p2pool..."
+# Install monero block explorer for the first time
+sudo -u nodo bash ./update-p2pool.sh
+
+showtext "Downloading XMRig..."
+# Install monero block explorer for the first time
+sudo -u nodo bash ./update-xmrig.sh
 
 )
 

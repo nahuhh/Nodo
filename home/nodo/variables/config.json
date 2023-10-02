@@ -54,6 +54,8 @@
       "monero": "unset",
       "exp": "unset",
       "lws": "unset",
+      "p2pool": "unset",
+      "xmrig": "unset",
       "lws-admin": "unset"
     }
   }
