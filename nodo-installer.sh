@@ -258,7 +258,6 @@ ufw allow 18089
 ufw allow 4200
 ufw allow 22
 ufw allow 37888 #p2pool
-ufw allow 37889 #p2pool
 ufw enable
 
 showtext "Start services"
