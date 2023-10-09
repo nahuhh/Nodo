@@ -18,8 +18,7 @@ from dash import Input, Output, State, dcc, html
 from dash_iconify import DashIconify
 import datetime
 import re
-from dash import html
-from dash.dependencies import ALL, Input, Output, State
+from dash.dependencies import ALL
 from dash.exceptions import PreventUpdate
 import dash_daq as daq
 from dash import dash_table
@@ -27,18 +26,20 @@ import pandas as pd
 from pandas import json_normalize
 from furl import furl
 
+
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.settimeout(0)
     try:
         # doesn't even have to be reachable
-        s.connect(('10.254.254.254', 1))
+        s.connect(("10.254.254.254", 1))
         IP = s.getsockname()[0]
     except Exception:
-        IP = '127.0.0.1'
+        IP = "127.0.0.1"
     finally:
         s.close()
     return IP
+
 
 class TimerThread(threading.Thread):
     def __init__(self, event):
@@ -51,7 +52,7 @@ class TimerThread(threading.Thread):
             # call a function
 
 
-## parameters
+# parameters
 # Page 0 : Python dictionary variables for ui status
 page0_sync_status = {}
 page0_system_status = {}
@@ -145,6 +146,7 @@ def update_config():
             ]
         )
         applied = True
+
 
 def save_config():
     global update_time
@@ -1298,7 +1300,10 @@ def make_page1_1():
                 [
                     dbc.InputGroupText("Address"),
                     dbc.Input(
-                        id="input-networks-clearnet-address", type="text", value=address, disabled=True
+                        id="input-networks-clearnet-address",
+                        type="text",
+                        value=address,
+                        disabled=True,
                     ),
                 ],
                 className="me-1 mt-1",
@@ -1627,7 +1632,7 @@ def make_page1_3():
                 ]
             ),
             html.Div(
-                id='qr-code-i2p',
+                id="qr-code-i2p",
                 children=[
                     dqm.DashQrGenerator(
                         data=i2p_b32_addr + ":" + str(port),
@@ -2955,227 +2960,31 @@ def make_page5_1():
     ## parameters for transaction pool ( Page 5.1 Transaction Pool)
     transactionPoolDF = pd.DataFrame(
         {
-            "age [h:m:s]": ["", "", ""],
-            "transaction hash": [
-                "[e7cbf1e76041d93ef0b672955ebecfc52b4d24e5402168548855cc0f6049e67e](/txe7cbf1e76041d93ef0b672955ebecfc52b4d24e5402168548855cc0f6049e67e)",
-                "[153bada79026d209316145984b8aa98141fe34f62f05a300f85ab74f1f728284](/tx153bada79026d209316145984b8aa98141fe34f62f05a300f85ab74f1f728284)",
-                "[2eed4ea669d552215ec2be3e9c6686da2e488391d79b56f3b8fae73500578a5d](/tx2eed4ea669d552215ec2be3e9c6686da2e488391d79b56f3b8fae73500578a5d)",
-            ],
-            "fee/per_kB [µɱ]": ["0031/0020", "0160/0107", "0044/0020"],
-            "in/out": ["1/2", "1/2", "2/2"],
-            "tx size [kB]": ["1.50", "1.50", "2.17"],
+            "age [h:m:s]": [],
+            "transaction hash": [],
+            "fee/per_kB [µɱ]": [],
+            "in/out": [],
+            "tx size [kB]": [],
         }
     )
 
     transactionInTheLastBlock = pd.DataFrame(
         {
             "height": [
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
-                "[2902010](block2902010)",
             ],
             "age [h:m:s]": [
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
-                "00:05:13",
             ],
             "size [kB]": [
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
-                "34.45",
             ],
             "transaction hash": [
-                "[8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667](/tx8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667)",
-                "[f2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb](/txf2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb)",
-                "[709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691](/tx709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691)",
-                "[8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667](/tx8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667)",
-                "[f2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb](/txf2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb)",
-                "[709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691](/tx709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691)",
-                "[8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667](/tx8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667)",
-                "[f2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb](/txf2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb)",
-                "[709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691](/tx709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691)",
-                "[8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667](/tx8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667)",
-                "[f2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb](/txf2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb)",
-                "[709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691](/tx709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691)",
-                "[8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667](/tx8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667)",
-                "[f2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb](/txf2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb)",
-                "[709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691](/tx709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691)",
-                "[8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667](/tx8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667)",
-                "[f2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb](/txf2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb)",
-                "[709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691](/tx709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691)",
-                "[8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667](/tx8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667)",
-                "[f2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb](/txf2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb)",
-                "[709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691](/tx709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691)",
-                "[8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667](/tx8ecec2abff451e7ff0eff2e8e2278d080d9808f17182fbded0da81fc9bdd6667)",
-                "[f2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb](/txf2d5fd936429b2c54ad47cf5ac508580767e92fac210861295cd8139c41c5ccb)",
-                "[709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691](/tx709817acf581b6feae569a5239a80093e6547d339c261ecab406a63a2ee2e691)",
             ],
             "fee [µɱ]": [
-                "N/A",
-                "0044",
-                "0122",
-                "N/A",
-                "0044",
-                "0122",
-                "N/A",
-                "0044",
-                "0122",
-                "N/A",
-                "0044",
-                "0122",
-                "N/A",
-                "0044",
-                "0122",
-                "N/A",
-                "0044",
-                "0122",
-                "N/A",
-                "0044",
-                "0122",
-                "N/A",
-                "0044",
-                "0122",
             ],
             "outputs": [
-                "0.602",
-                "?",
-                "?",
-                "0.602",
-                "?",
-                "?",
-                "0.602",
-                "?",
-                "?",
-                "0.602",
-                "?",
-                "?",
-                "0.602",
-                "?",
-                "?",
-                "0.602",
-                "?",
-                "?",
-                "0.602",
-                "?",
-                "?",
-                "0.602",
-                "?",
-                "?",
             ],
             "in/out": [
-                "0/36",
-                "2/2",
-                "1/2",
-                "0/36",
-                "2/2",
-                "1/2",
-                "0/36",
-                "2/2",
-                "1/2",
-                "0/36",
-                "2/2",
-                "1/2",
-                "0/36",
-                "2/2",
-                "1/2",
-                "0/36",
-                "2/2",
-                "1/2",
-                "0/36",
-                "2/2",
-                "1/2",
-                "0/36",
-                "2/2",
-                "1/2",
             ],
             "tx size [kB]": [
-                "1.46",
-                "2.16",
-                "1.50",
-                "1.46",
-                "2.16",
-                "1.50",
-                "1.46",
-                "2.16",
-                "1.50",
-                "1.46",
-                "2.16",
-                "1.50",
-                "1.46",
-                "2.16",
-                "1.50",
-                "1.46",
-                "2.16",
-                "1.50",
-                "1.46",
-                "2.16",
-                "1.50",
-                "1.46",
-                "2.16",
-                "1.50",
             ],
         }
     )
@@ -3195,67 +3004,67 @@ def make_page5_1():
     #   curl  -w "\n" -X GET "https://xmrchain.net/" > transactions.html
     #   curl  -w "\n" -X GET "https://xmrchain.net/api/transactions?limit=11" > "json/transactions.json"
     # Opening JSON file
-    f = open("./json/demo/transactions.json")
-
     r = requests.get("http://127.0.0.1:8081/api/networkinfo")
-    transaction_pool_information = r.json()["data"].copy()
-    transaction_pool_information["server_time"] = datetime.datetime.now().strftime(
-        "%d/%m/%Y, %H:%M:%S"
-    )
-
-    r = requests.get("http://127.0.0.1:8081/api/transactions?limit=3")
-
-    # returns JSON object as
-    # a dictionary
-    transactionInTheLastBlock = transactionInTheLastBlock.iloc[0:0]
-    data = r.json()
-    outputs_DataFrame = json_normalize(data["data"]["blocks"])
-    print(outputs_DataFrame)
-
-    for ind in outputs_DataFrame.index:
-        outputs_txs_DataFrame = json_normalize(outputs_DataFrame["txs"][ind])
-        height = (
-            "["
-            + str(outputs_DataFrame["height"][ind])
-            + "](block"
-            + str(outputs_DataFrame["height"][ind])
-            + ")"
+    if r.json()["status"] == "success":
+        transaction_pool_information = r.json()["data"].copy()
+        transaction_pool_information["server_time"] = datetime.datetime.now().strftime(
+            "%d/%m/%Y, %H:%M:%S"
         )
-        size = str(round((outputs_DataFrame["size"][ind] / 1024), 2))
-        age = outputs_DataFrame["age"][ind]
-        tx_hash = ""
-        tx_fee = ""
-        in_out = "?/?"
-        tx_size = "0"
 
-        for indexTXS in outputs_txs_DataFrame.index:
-            tx_hash = (
+        r = requests.get("http://127.0.0.1:8081/api/transactions?limit=3")
+
+        # returns JSON object as
+        # a dictionary
+        transactionInTheLastBlock = transactionInTheLastBlock.iloc[0:0]
+        data = r.json()
+        outputs_DataFrame = json_normalize(data["data"]["blocks"])
+        print(outputs_DataFrame)
+
+        for ind in outputs_DataFrame.index:
+            outputs_txs_DataFrame = json_normalize(outputs_DataFrame["txs"][ind])
+            height = (
                 "["
-                + str(outputs_txs_DataFrame["tx_hash"][indexTXS])
-                + "](tx"
-                + str(outputs_txs_DataFrame["tx_hash"][indexTXS])
+                + str(outputs_DataFrame["height"][ind])
+                + "](block"
+                + str(outputs_DataFrame["height"][ind])
                 + ")"
             )
-            tx_fee = str(round(outputs_txs_DataFrame["tx_fee"][indexTXS] / 1000000, 0))
-            tx_size = str(round(outputs_txs_DataFrame["tx_size"][indexTXS], 0))
-            xmr_outputs = str(
-                round(outputs_txs_DataFrame["xmr_outputs"][indexTXS] / 1000000000000, 3)
-            )
-            transactionInTheLastBlock.loc[-1] = [
-                height,
-                age,
-                size,
-                tx_hash,
-                tx_fee,
-                xmr_outputs,
-                in_out,
-                tx_size,
-            ]  # adding a row
-            transactionInTheLastBlock.index = (
-                transactionInTheLastBlock.index + 1
-            )  # shifting index
+            size = str(round((outputs_DataFrame["size"][ind] / 1024), 2))
+            age = outputs_DataFrame["age"][ind]
+            tx_hash = ""
+            tx_fee = ""
+            in_out = "?/?"
+            tx_size = "0"
+
+            for indexTXS in outputs_txs_DataFrame.index:
+                tx_hash = (
+                    "["
+                    + str(outputs_txs_DataFrame["tx_hash"][indexTXS])
+                    + "](tx"
+                    + str(outputs_txs_DataFrame["tx_hash"][indexTXS])
+                    + ")"
+                )
+                tx_fee = str(round(outputs_txs_DataFrame["tx_fee"][indexTXS] / 1000000, 0))
+                tx_size = str(round(outputs_txs_DataFrame["tx_size"][indexTXS], 0))
+                xmr_outputs = str(
+                    round(outputs_txs_DataFrame["xmr_outputs"][indexTXS] / 1000000000000, 3)
+                )
+                transactionInTheLastBlock.loc[-1] = [
+                    height,
+                    age,
+                    size,
+                    tx_hash,
+                    tx_fee,
+                    xmr_outputs,
+                    in_out,
+                    tx_size,
+                ]  # adding a row
+                transactionInTheLastBlock.index = (
+                    transactionInTheLastBlock.index + 1
+                )  # shifting index
 
     r = requests.get("http://127.0.0.1:8081/api/mempool?limit=40")
+    print("lmao")
     transactionPoolDF = transactionPoolDF.iloc[0:0]
     data = r.json()
     outputs_DataFrame = json_normalize(data["data"])
@@ -3348,7 +3157,7 @@ def make_page5_1():
                 [
                     dbc.Input(
                         type="text",
-                        placeholder="block height,block hash, transaction hash",
+                        placeholder="block height, block hash, transaction hash",
                         className="d-flex align-content-start boxNodo",
                     ),
                     dbc.Button(
@@ -3466,10 +3275,10 @@ def make_page5_1():
                     html.P(
                         "Transactions in the last 11 blocks", className="text-center"
                     ),
-                    html.P(
-                        "(Median size of 100 blocks: 292.97 kB)",
-                        className="text-center",
-                    ),
+                    # html.P(
+                    #     "(Median size of 100 blocks: 292.97 kB)",
+                    #     className="text-center",
+                    # ),
                 ]
             ),
             html.P(
@@ -3650,233 +3459,11 @@ tab_page5_1_tx_prove_sending = html.Div(
 
 
 # 1 input(s) for total of ? xmr
-# key image 00: 3f6e7190d088c0f61554d554c6318ee99518c30a1e81082f570ff086d0ae9167	amount: ?
-# ring members	blk	ring size	in/out	timestamp	age [y:d:h:m:s]
-# - 00: 52c013c1e6cf535a06b3763a07651211239d225db73b5e731bba71b0733bdd87	02306487	11	1/2	2021-02-28 04:21:18	02:103:22:58:49
-# - 01: d6cdf4e3daa6304a5b75ac9e7c3c1f3e92bd6918715002c660565e408e75a3c1	02435894	11	2/2	2021-08-26 23:19:37	01:289:04:00:30
-# - 02: f7646b9c37d2138197b137baf5d0cf65e2c7205779b86bbc412e5369b81531fa	02442403	11	2/5	2021-09-04 23:42:21	01:280:03:37:46
-# - 03: 4b19284488fb9140d89c1c6e3bfe72cb55ec21a2fcbd5f0081162a7a4894a7e8	02445287	11	1/2	2021-09-08 23:57:27	01:276:03:22:40
-# - 04: 82ee6551022def3521efe2ba86ed307f8c6327fde90c88811b15b62b24ccb387	02446488	11	2/2	2021-09-10 17:34:37	01:274:09:45:30
-# - 05: 8c217e2dfa0115215f6b510216e737499d5175b86503a3f2f5c982885db809ab	02447662	11	1/2	2021-09-12 08:46:30	01:272:18:33:37
-# - 06: 879cdada6c53ec4655168afee5d8ad6cee38cef9ec06a2ec104587627eed3353	02447969	11	2/2	2021-09-12 18:20:54	01:272:08:59:13
-# - 07: 0b1d030a5adced75f75f28cf8c35ca7daeda8961074118f7cddba637d12d7972	02447992	11	1/2	2021-09-12 19:18:47	01:272:08:01:20
-# - 08: ab35133310dd16941f75746706da4909957b98be3f11c370fcff139f548517dd	02448050	11	2/2	2021-09-12 21:31:16	01:272:05:48:51
-# - 09: ee8cd35e9de1cdcad1a5c250e8ad4454c0eb56771e207d8483a8b45a34845881	02448269	0	0/1	2021-09-13 05:07:24	01:271:22:12:43
-# - 10: f938a09cbf70d8b476b9515c06f741aa6e29a13b3eb29803e99f167b53f2f2ac	02448306	11	1/2	2021-09-13 06:47:28	01:271:20:32:39
-# ring members	blk	ring size	in/out	timestamp	age [y:d:h:m:s]
 def make_page_5_1_and_5_2_tx_inputs_of_total_xmrs(tx):
     transaction_pool_tx_inputs_of_total_xmrs = {}
     transaction_pool_tx_inputs_of_total_xmrs["num_of_xmrs"] = "31"
-    key_image_DataFrame = pd.DataFrame(
-        {
-            "col0": [
-                "key image 00: 3f6e7190d088c0f61554d554c6318ee99518c30a1e81082f570ff086d0ae9167"
-            ],
-            #        'col1': ["amount: ?"],
-        }
-    )
-    key_image_ring_members_DataFrame = pd.DataFrame(
-        {
-            "ring members": [
-                "[- 00: 52c013c1e6cf535a06b3763a07651211239d225db73b5e731bba71b0733bdd87](tx52c013c1e6cf535a06b3763a07651211239d225db73b5e731bba71b0733bdd87)",
-                "[- 01: d6cdf4e3daa6304a5b75ac9e7c3c1f3e92bd6918715002c660565e408e75a3c1](txd6cdf4e3daa6304a5b75ac9e7c3c1f3e92bd6918715002c660565e408e75a3c1)",
-                "[- 02: f7646b9c37d2138197b137baf5d0cf65e2c7205779b86bbc412e5369b81531fa](txf7646b9c37d2138197b137baf5d0cf65e2c7205779b86bbc412e5369b81531fa)",
-                "[- 03: 4b19284488fb9140d89c1c6e3bfe72cb55ec21a2fcbd5f0081162a7a4894a7e8](tx4b19284488fb9140d89c1c6e3bfe72cb55ec21a2fcbd5f0081162a7a4894a7e8)",
-                "[- 04: 82ee6551022def3521efe2ba86ed307f8c6327fde90c88811b15b62b24ccb387](tx82ee6551022def3521efe2ba86ed307f8c6327fde90c88811b15b62b24ccb387)",
-                "[- 05: 8c217e2dfa0115215f6b510216e737499d5175b86503a3f2f5c982885db809ab](tx8c217e2dfa0115215f6b510216e737499d5175b86503a3f2f5c982885db809ab)",
-                "[- 06: 879cdada6c53ec4655168afee5d8ad6cee38cef9ec06a2ec104587627eed3353](tx879cdada6c53ec4655168afee5d8ad6cee38cef9ec06a2ec104587627eed3353)",
-                "[- 07: 0b1d030a5adced75f75f28cf8c35ca7daeda8961074118f7cddba637d12d7972](tx0b1d030a5adced75f75f28cf8c35ca7daeda8961074118f7cddba637d12d7972)",
-                "[- 08: ab35133310dd16941f75746706da4909957b98be3f11c370fcff139f548517dd](txab35133310dd16941f75746706da4909957b98be3f11c370fcff139f548517dd)",
-                "[- 09: ee8cd35e9de1cdcad1a5c250e8ad4454c0eb56771e207d8483a8b45a34845881](txee8cd35e9de1cdcad1a5c250e8ad4454c0eb56771e207d8483a8b45a34845881)",
-                "[- 10: f938a09cbf70d8b476b9515c06f741aa6e29a13b3eb29803e99f167b53f2f2ac](txf938a09cbf70d8b476b9515c06f741aa6e29a13b3eb29803e99f167b53f2f2ac)",
-                "[- 11: d6cdf4e3daa6304a5b75ac9e7c3c1f3e92bd6918715002c660565e408e75a3c1](txd6cdf4e3daa6304a5b75ac9e7c3c1f3e92bd6918715002c660565e408e75a3c1)",
-                "[- 12: f7646b9c37d2138197b137baf5d0cf65e2c7205779b86bbc412e5369b81531fa](txf7646b9c37d2138197b137baf5d0cf65e2c7205779b86bbc412e5369b81531fa)",
-                "[- 13: 4b19284488fb9140d89c1c6e3bfe72cb55ec21a2fcbd5f0081162a7a4894a7e8](tx4b19284488fb9140d89c1c6e3bfe72cb55ec21a2fcbd5f0081162a7a4894a7e8)",
-                "[- 14: 82ee6551022def3521efe2ba86ed307f8c6327fde90c88811b15b62b24ccb387](tx82ee6551022def3521efe2ba86ed307f8c6327fde90c88811b15b62b24ccb387)",
-                "[- 15: 8c217e2dfa0115215f6b510216e737499d5175b86503a3f2f5c982885db809ab](tx8c217e2dfa0115215f6b510216e737499d5175b86503a3f2f5c982885db809ab)",
-                "[- 16: 879cdada6c53ec4655168afee5d8ad6cee38cef9ec06a2ec104587627eed3353](tx879cdada6c53ec4655168afee5d8ad6cee38cef9ec06a2ec104587627eed3353)",
-                "[- 17: 0b1d030a5adced75f75f28cf8c35ca7daeda8961074118f7cddba637d12d7972](tx0b1d030a5adced75f75f28cf8c35ca7daeda8961074118f7cddba637d12d7972)",
-                "[- 18: ab35133310dd16941f75746706da4909957b98be3f11c370fcff139f548517dd](txab35133310dd16941f75746706da4909957b98be3f11c370fcff139f548517dd)",
-                "[- 19: ee8cd35e9de1cdcad1a5c250e8ad4454c0eb56771e207d8483a8b45a34845881](txee8cd35e9de1cdcad1a5c250e8ad4454c0eb56771e207d8483a8b45a34845881)",
-                "[- 20: f938a09cbf70d8b476b9515c06f741aa6e29a13b3eb29803e99f167b53f2f2ac](txf938a09cbf70d8b476b9515c06f741aa6e29a13b3eb29803e99f167b53f2f2ac)",
-                "[- 21: d6cdf4e3daa6304a5b75ac9e7c3c1f3e92bd6918715002c660565e408e75a3c1](txd6cdf4e3daa6304a5b75ac9e7c3c1f3e92bd6918715002c660565e408e75a3c1)",
-                "[- 22: f7646b9c37d2138197b137baf5d0cf65e2c7205779b86bbc412e5369b81531fa](txf7646b9c37d2138197b137baf5d0cf65e2c7205779b86bbc412e5369b81531fa)",
-                "[- 23: 4b19284488fb9140d89c1c6e3bfe72cb55ec21a2fcbd5f0081162a7a4894a7e8](tx4b19284488fb9140d89c1c6e3bfe72cb55ec21a2fcbd5f0081162a7a4894a7e8)",
-                "[- 24: 82ee6551022def3521efe2ba86ed307f8c6327fde90c88811b15b62b24ccb387](tx82ee6551022def3521efe2ba86ed307f8c6327fde90c88811b15b62b24ccb387)",
-                "[- 25: 8c217e2dfa0115215f6b510216e737499d5175b86503a3f2f5c982885db809ab](tx8c217e2dfa0115215f6b510216e737499d5175b86503a3f2f5c982885db809ab)",
-                "[- 26: 879cdada6c53ec4655168afee5d8ad6cee38cef9ec06a2ec104587627eed3353](tx879cdada6c53ec4655168afee5d8ad6cee38cef9ec06a2ec104587627eed3353)",
-                "[- 27: 0b1d030a5adced75f75f28cf8c35ca7daeda8961074118f7cddba637d12d7972](tx0b1d030a5adced75f75f28cf8c35ca7daeda8961074118f7cddba637d12d7972)",
-                "[- 28: ab35133310dd16941f75746706da4909957b98be3f11c370fcff139f548517dd](txab35133310dd16941f75746706da4909957b98be3f11c370fcff139f548517dd)",
-                "[- 29: ee8cd35e9de1cdcad1a5c250e8ad4454c0eb56771e207d8483a8b45a34845881](txee8cd35e9de1cdcad1a5c250e8ad4454c0eb56771e207d8483a8b45a34845881)",
-                "[- 30: f938a09cbf70d8b476b9515c06f741aa6e29a13b3eb29803e99f167b53f2f2ac](txf938a09cbf70d8b476b9515c06f741aa6e29a13b3eb29803e99f167b53f2f2ac)",
-            ],
-            "blk": [
-                "02306487",
-                "02435894",
-                "02442403",
-                "02445287",
-                "02446488",
-                "02447662",
-                "02447969",
-                "02447992",
-                "02448269",
-                "02448306",
-                "02448306",
-                "02306487",
-                "02435894",
-                "02442403",
-                "02445287",
-                "02446488",
-                "02447662",
-                "02447969",
-                "02447992",
-                "02448269",
-                "02448306",
-                "02448306",
-                "02306487",
-                "02435894",
-                "02442403",
-                "02445287",
-                "02446488",
-                "02447662",
-                "02447969",
-                "02447992",
-                "02448269",
-            ],
-            "ring size": [
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "0",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "0",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "0",
-            ],
-            "in/out": [
-                "1/2",
-                "2/2",
-                "2/5",
-                "1/2",
-                "2/2",
-                "2/2",
-                "1/2",
-                "2/2",
-                "0/1",
-                "1/2",
-                "1/2",
-                "1/2",
-                "2/2",
-                "2/5",
-                "1/2",
-                "2/2",
-                "2/2",
-                "1/2",
-                "2/2",
-                "0/1",
-                "1/2",
-                "1/2",
-                "1/2",
-                "2/2",
-                "2/5",
-                "1/2",
-                "2/2",
-                "2/2",
-                "1/2",
-                "2/2",
-                "0/1",
-            ],
-            "timestamp": [
-                "2021-02-28 04:21:18",
-                "2021-08-26 23:19:37",
-                "2021-09-04 23:42:21",
-                "2021-09-08 23:57:27",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-08-26 23:19:37",
-                "2021-09-04 23:42:21",
-                "2021-09-08 23:57:27",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-08-26 23:19:37",
-                "2021-09-04 23:42:21",
-                "2021-09-08 23:57:27",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-            ],
-            "age [y:d:h:m:s]": [
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-            ],
-        }
-    )
+    key_image_DataFrame = pd.DataFrame()
+    key_image_ring_members_DataFrame = pd.DataFrame()
 
     # ================================================================
     # Add query function here to load data from backend
@@ -3997,10 +3584,6 @@ def make_page_5_1_tx_decode_or_prove_outputs_output(param1, param2, prove):
     # outputs_DataFrame:                           DataFrame
     # ...
     # Opening JSON file
-    if prove == 0:
-        f = open("./json/demo/decode_outputs.json")
-    else:
-        f = open("./json/demo/sending_prove.json")
 
     # returns JSON object as
     # a dictionary
@@ -4053,88 +3636,7 @@ def make_page_5_1_tx_decode_or_prove_outputs_output(param1, param2, prove):
             "col4": ["Tx size: " + tx_decode_or_prove_outputs_output["tx_size"]],
         }
     )
-    key_image_ring_members_DataFrame = pd.DataFrame(
-        {
-            "ring members": [
-                "[- 00: 52c013c1e6cf535a06b3763a07651211239d225db73b5e731bba71b0733bdd87](tx52c013c1e6cf535a06b3763a07651211239d225db73b5e731bba71b0733bdd87)",
-                "[- 01: d6cdf4e3daa6304a5b75ac9e7c3c1f3e92bd6918715002c660565e408e75a3c1](txd6cdf4e3daa6304a5b75ac9e7c3c1f3e92bd6918715002c660565e408e75a3c1)",
-                "[- 02: f7646b9c37d2138197b137baf5d0cf65e2c7205779b86bbc412e5369b81531fa](txf7646b9c37d2138197b137baf5d0cf65e2c7205779b86bbc412e5369b81531fa)",
-                "[- 03: 4b19284488fb9140d89c1c6e3bfe72cb55ec21a2fcbd5f0081162a7a4894a7e8](tx4b19284488fb9140d89c1c6e3bfe72cb55ec21a2fcbd5f0081162a7a4894a7e8)",
-                "[- 04: 82ee6551022def3521efe2ba86ed307f8c6327fde90c88811b15b62b24ccb387](tx82ee6551022def3521efe2ba86ed307f8c6327fde90c88811b15b62b24ccb387)",
-                "[- 05: 8c217e2dfa0115215f6b510216e737499d5175b86503a3f2f5c982885db809ab](tx8c217e2dfa0115215f6b510216e737499d5175b86503a3f2f5c982885db809ab)",
-                "[- 06: 879cdada6c53ec4655168afee5d8ad6cee38cef9ec06a2ec104587627eed3353](tx879cdada6c53ec4655168afee5d8ad6cee38cef9ec06a2ec104587627eed3353)",
-                "[- 07: 0b1d030a5adced75f75f28cf8c35ca7daeda8961074118f7cddba637d12d7972](tx0b1d030a5adced75f75f28cf8c35ca7daeda8961074118f7cddba637d12d7972)",
-                "[- 08: ab35133310dd16941f75746706da4909957b98be3f11c370fcff139f548517dd](txab35133310dd16941f75746706da4909957b98be3f11c370fcff139f548517dd)",
-                "[- 09: ee8cd35e9de1cdcad1a5c250e8ad4454c0eb56771e207d8483a8b45a34845881](txee8cd35e9de1cdcad1a5c250e8ad4454c0eb56771e207d8483a8b45a34845881)",
-                "[- 10: f938a09cbf70d8b476b9515c06f741aa6e29a13b3eb29803e99f167b53f2f2ac](txf938a09cbf70d8b476b9515c06f741aa6e29a13b3eb29803e99f167b53f2f2ac)",
-            ],
-            "blk": [
-                "02306487",
-                "02435894",
-                "02442403",
-                "02445287",
-                "02446488",
-                "02447662",
-                "02447969",
-                "02447992",
-                "02448269",
-                "02448306",
-                "02448306",
-            ],
-            "ring size": [
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "11",
-                "0",
-                "11",
-                "11",
-            ],
-            "in/out": [
-                "1/2",
-                "2/2",
-                "2/5",
-                "1/2",
-                "2/2",
-                "2/2",
-                "1/2",
-                "2/2",
-                "0/1",
-                "1/2",
-                "1/2",
-            ],
-            "timestamp": [
-                "2021-02-28 04:21:18",
-                "2021-08-26 23:19:37",
-                "2021-09-04 23:42:21",
-                "2021-09-08 23:57:27",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-                "2021-02-28 04:21:18",
-            ],
-            "age [y:d:h:m:s]": [
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-                "02:103:22:58:49",
-            ],
-        }
-    )
+    key_image_ring_members_DataFrame = pd.DataFrame()
     return html.Div(
         [
             html.P(
@@ -4337,16 +3839,10 @@ tab_selected_style = {
     "color": "black",
     "padding": "6px",
 }
-# Timestamp: 1666425153	Timestamp [UTC]: 2022-10-22 07:52:33	Age [y:d:h:m:s]: 00:228:02:08:24
-# Block: 2738885	Fee (per_kB): 0.000137980000 (0.000040965938)	Tx size: 3.3682 kB
-# Tx version: 2	No of confirmations: 163951	RingCT/type: yes/6
-# Extra: 01d1041b3ab9294e944c1c1b1a5d3424e2af8810fae0a1160bd51aa597203f60ae0209018ecf9de6d87a19f9
 
 
 # 2 output(s) for total of ? xmr
 # stealth address	amount	amount idx	tag
-# 00: 21e4b7d27dcdf46c7bfec7219ac8c6e82eaa8e586cf63d9f07467fec0be7d7e7	?	N/A of 74900354	<ba>
-# 01: 21d470eaec5c8deb6e11a73c1525883828217d62ae35993330bcf379eea25c80	?	N/A of 74900354	<2b>
 def make_page_5_1_tx(tx):
     transaction_pool_tx = {}
     transaction_pool_tx[
@@ -6877,30 +6373,37 @@ def update_switch_networks_i2p_change(n_clicks):
 @app.callback(
     Output("qr-code-clearnet", "children"),
     Input("input-networks-clearnet-port", "value"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def update_qr_code_i2p(value):
     return dqm.DashQrGenerator(data=get_ip() + ":" + str(value), framed=True)
 
+
 @app.callback(
     Output("qr-code-tor", "children"),
     Input("input-networks-tor-port", "value"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def update_qr_code_i2p(value):
     global page1_networks_i2p
 
-    return dqm.DashQrGenerator(data=page1_networks_tor["onion_addr"] + ":" + str(value), framed=True)
+    return dqm.DashQrGenerator(
+        data=page1_networks_tor["onion_addr"] + ":" + str(value), framed=True
+    )
+
 
 @app.callback(
     Output("qr-code-i2p", "children"),
     Input("input-networks-i2p-port", "value"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def update_qr_code_i2p(value):
     global page1_networks_i2p
 
-    return dqm.DashQrGenerator(data=page1_networks_i2p["i2p_b32_addr"] + ":" + str(value), framed=True)
+    return dqm.DashQrGenerator(
+        data=page1_networks_i2p["i2p_b32_addr"] + ":" + str(value), framed=True
+    )
+
 
 # ====================================================================
 # Page 1_3 Networks -> I2P -> Port (Input)
@@ -7691,6 +7194,7 @@ def update_active_card_components(n):
 # ====================================================================
 # Page 4_1 LWS -> Active -> Rescan Height (Input)
 # ====================================================================
+# TODO
 @app.callback(
     Output("active-card-input-rescan-height-hidden-div", "children"),
     Input({"type": "active-rescan-input", "index": ALL}, "value"),
