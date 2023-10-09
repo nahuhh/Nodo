@@ -91,15 +91,6 @@ services-stop() {
 	done
 }
 
-#Define Restart Monero Node
-# Key - bs
-# 2 = idle
-# 3 = Private node
-# 4 = tor
-# 5 = Public RPC pay
-# 6 = Public free
-# 7 = I2P
-# 8 = tor public
 services-start() {
 	for f in $services; do
 		if systemctl is-enabled "$f".service; then
