@@ -880,10 +880,10 @@ def make_page0_sync_status():
             dbc.CardHeader(
                 [
                     "",
-                    dbc.Label("Sync Status:", className="me-1 mt-1"),
+                    dbc.Label("Sync Status", className="me-1 mt-1"),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText("Sync Status:", className="homeBoxNodo"),
+                            dbc.InputGroupText("Sync Status", className="homeBoxNodo"),
                             dbc.Input(
                                 type="text",
                                 id="page0_sync_status_sync_status",
@@ -896,7 +896,7 @@ def make_page0_sync_status():
                     ),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText("Timestamp:", className="homeBoxNodo"),
+                            dbc.InputGroupText("Timestamp", className="homeBoxNodo"),
                             dbc.Input(
                                 type="text",
                                 id="page0_sync_status_timestamp",
@@ -910,7 +910,7 @@ def make_page0_sync_status():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText(
-                                "Current Sync Height:", className="homeBoxNodo"
+                                "Sync Height", className="homeBoxNodo"
                             ),
                             dbc.Input(
                                 type="number",
@@ -925,7 +925,7 @@ def make_page0_sync_status():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText(
-                                "Monero Version:", className="homeBoxNodo"
+                                "Monero Version", className="homeBoxNodo"
                             ),
                             dbc.Input(
                                 type="text",
@@ -940,7 +940,7 @@ def make_page0_sync_status():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText(
-                                "Outgoing Connections:", className="homeBoxNodo"
+                                "Outgoing Peers", className="homeBoxNodo"
                             ),
                             dbc.Input(
                                 type="number",
@@ -955,7 +955,7 @@ def make_page0_sync_status():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText(
-                                "Incoming Connections:", className="homeBoxNodo"
+                                "Incoming Peers", className="homeBoxNodo"
                             ),
                             dbc.Input(
                                 type="number",
@@ -970,7 +970,7 @@ def make_page0_sync_status():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText(
-                                "White Peerlist Size:", className="homeBoxNodo"
+                                "White Peerlist", className="homeBoxNodo"
                             ),
                             dbc.Input(
                                 type="number",
@@ -985,7 +985,7 @@ def make_page0_sync_status():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText(
-                                "Grey Peerlist Size:", className="homeBoxNodo"
+                                "Grey Peerlist", className="homeBoxNodo"
                             ),
                             dbc.Input(
                                 type="number",
@@ -1000,7 +1000,7 @@ def make_page0_sync_status():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText(
-                                "Update Available:", className="homeBoxNodo"
+                                "Update Available", className="homeBoxNodo"
                             ),
                             dbc.Input(
                                 type="text",
@@ -1041,11 +1041,11 @@ def make_page0_system_status():
             dbc.CardHeader(
                 [
                     "",
-                    dbc.Label("System Status:", className="me-0 mt-1"),
+                    dbc.Label("System Status", className="me-0 mt-1"),
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText(
-                                "Mainnet Node:", className="homeBoxNodo"
+                                "Mainnet Node", className="homeBoxNodo"
                             ),
                             dbc.Input(
                                 type="text",
@@ -1060,7 +1060,7 @@ def make_page0_system_status():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText(
-                                "Private Node:", className="homeBoxNodo"
+                                "Private Node", className="homeBoxNodo"
                             ),
                             dbc.Input(
                                 type="text",
@@ -1074,7 +1074,7 @@ def make_page0_system_status():
                     ),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText("Tor Node:", className="homeBoxNodo"),
+                            dbc.InputGroupText("Tor Node", className="homeBoxNodo"),
                             dbc.Input(
                                 type="text",
                                 id="page0_system_status_tor_node",
@@ -1087,7 +1087,7 @@ def make_page0_system_status():
                     ),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText("I2P Node:", className="homeBoxNodo"),
+                            dbc.InputGroupText("I2P Node", className="homeBoxNodo"),
                             dbc.Input(
                                 type="text",
                                 id="page0_system_status_i2p_node",
@@ -1101,7 +1101,7 @@ def make_page0_system_status():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText(
-                                "Monero-LWS-Admin:", className="homeBoxNodo"
+                                "Monero LWS", className="homeBoxNodo"
                             ),
                             dbc.Input(
                                 type="text",
@@ -1116,7 +1116,7 @@ def make_page0_system_status():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText(
-                                "Block Explorer:", className="homeBoxNodo"
+                                "Block Explorer", className="homeBoxNodo"
                             ),
                             dbc.Input(
                                 type="text",
@@ -1148,21 +1148,21 @@ def make_page0_hardware_status():
     global page0_sync_status
     global page0_system_status
     global page0_hardware_status
-    cpu_percentage = str(page0_hardware_status["cpu_percentage"]) + "%"
-    cpu_temp = str(page0_hardware_status["cpu_temp"]) + "°C"
-    primary_storage = str(page0_hardware_status["primary_storage"]) + "%% in use"
-    backup_storage = str(page0_hardware_status["backup_storage"]) + "%% in use"
-    ram_percentage = str(page0_hardware_status["ram_percentage"]) + "%% in use"
+    cpu_percentage = str(page0_hardware_status["cpu_percentage"]) + " %"
+    cpu_temp = str(page0_hardware_status["cpu_temp"]) + " °C"
+    primary_storage = str(page0_hardware_status["primary_storage"]) + " % in use"
+    backup_storage = str(page0_hardware_status["backup_storage"]) + " % in use"
+    ram_percentage = str(page0_hardware_status["ram_percentage"]) + " % in use"
 
     return dbc.Card(
         [
             dbc.CardHeader(
                 [
                     "",
-                    dbc.Label("Hardware Status:", className="me-0 mt-1"),
+                    dbc.Label("Hardware Status", className="me-0 mt-1"),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText("CPU:", className="homeBoxNodo"),
+                            dbc.InputGroupText("CPU", className="homeBoxNodo"),
                             dbc.Input(
                                 type="text",
                                 id="page0_hardware_status_cpu_percentage",
@@ -1175,7 +1175,7 @@ def make_page0_hardware_status():
                     ),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText("CPU temp:", className="homeBoxNodo"),
+                            dbc.InputGroupText("CPU Temp", className="homeBoxNodo"),
                             dbc.Input(
                                 type="text",
                                 id="page0_hardware_status_cpu_temp",
@@ -1189,7 +1189,7 @@ def make_page0_hardware_status():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText(
-                                "Primary Storage:", className="homeBoxNodo"
+                                "Primary Storage", className="homeBoxNodo"
                             ),
                             dbc.Input(
                                 type="text",
@@ -1204,7 +1204,7 @@ def make_page0_hardware_status():
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText(
-                                "Backup Storage:", className="homeBoxNodo"
+                                "Backup Storage", className="homeBoxNodo"
                             ),
                             dbc.Input(
                                 type="text",
@@ -1218,7 +1218,7 @@ def make_page0_hardware_status():
                     ),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText("RAM:", className="homeBoxNodo"),
+                            dbc.InputGroupText("RAM", className="homeBoxNodo"),
                             dbc.Input(
                                 type="text",
                                 id="page0_system_status_monero_lws_admin",
@@ -3174,7 +3174,7 @@ def make_page5_1():
                 "Server time: "
                 + str(transaction_pool_information["server_time"])
                 + " | Network difficulty: "
-                + str(transaction_pool_information["difficulty"])
+                + str(transaction_pool_information["difficulty"]) # TODO randomly null?
                 + " | Hard fork: v"
                 + str(transaction_pool_information["current_hf_version"])
                 + " | Hash rate: "
