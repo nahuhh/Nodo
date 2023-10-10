@@ -91,6 +91,16 @@ conf_file: str = "/home/nodo/variables/config.json"
 
 node_dict: dict = dict()
 
+statustable: dict = {
+    "dead\n": "Inactive",
+    "failed\n": "Inactive (failed)",
+    "exited\n": "Stopped",
+    "running\n": "Running",
+    "active\n": "Active",
+    "activating\n": "Starting",
+    "deactivating\n": "Stopping"
+}
+
 
 def node_info():
     global node_dict
@@ -209,30 +219,36 @@ def load_page0_values():
         else:
             page0_sync_status["sync_status"] = "Not syncing..."
 
-    s: list[str] = ["systemctl", "show", "--no-pager", "--property=SubState", ""]
+    s: list[str] = ["systemctl", "show",
+                    "--no-pager", "--property=SubState", ""]
     s[4] = "monerod"
     page0_system_status["mainnet_node"] = (
-        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+        statustable[proc.run(s,
+                             stdout=proc.PIPE).stdout.decode().split("=")[1]]
     )
 
     s[4] = "tor"
     page0_system_status["tor_node"] = (
-        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+        statustable[proc.run(s,
+                             stdout=proc.PIPE).stdout.decode().split("=")[1]]
     )
 
     s[4] = "i2pd"
     page0_system_status["i2p_node"] = (
-        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+        statustable[proc.run(s,
+                             stdout=proc.PIPE).stdout.decode().split("=")[1]]
     )
 
     s[4] = "monero-lws"
     page0_system_status["monero_lws_admin"] = (
-        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+        statustable[proc.run(s,
+                             stdout=proc.PIPE).stdout.decode().split("=")[1]]
     )
 
-    s[4] = "explorer"
+    s[4] = "block-explorer"
     page0_system_status["block_explorer"] = (
-        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+        statustable[proc.run(s,
+                             stdout=proc.PIPE).stdout.decode().split("=")[1]]
     )
 
     page0_hardware_status["cpu_percentage"] = psutil.cpu_percent()
@@ -909,9 +925,7 @@ def make_page0_sync_status():
                     ),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText(
-                                "Sync Height", className="homeBoxNodo"
-                            ),
+                            dbc.InputGroupText("Sync Height", className="homeBoxNodo"),
                             dbc.Input(
                                 type="number",
                                 id="page0_sync_status_current_sync_height",
@@ -1044,29 +1058,12 @@ def make_page0_system_status():
                     dbc.Label("System Status", className="me-0 mt-1"),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText(
-                                "Mainnet Node", className="homeBoxNodo"
-                            ),
+                            dbc.InputGroupText("Monero Node", className="homeBoxNodo"),
                             dbc.Input(
                                 type="text",
                                 id="page0_system_status_mainnet_node",
                                 className="homeBoxNodoInput",
                                 value=mainnet_node,
-                                disabled=True,
-                            ),
-                        ],
-                        className="me-0 mt-1",
-                    ),
-                    dbc.InputGroup(
-                        [
-                            dbc.InputGroupText(
-                                "Private Node", className="homeBoxNodo"
-                            ),
-                            dbc.Input(
-                                type="text",
-                                id="page0_system_status_private_node",
-                                className="homeBoxNodoInput",
-                                value=private_node,
                                 disabled=True,
                             ),
                         ],
@@ -1100,9 +1097,7 @@ def make_page0_system_status():
                     ),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText(
-                                "Monero LWS", className="homeBoxNodo"
-                            ),
+                            dbc.InputGroupText("Monero LWS", className="homeBoxNodo"),
                             dbc.Input(
                                 type="text",
                                 id="page0_system_status_monero_lws_admin",
@@ -2970,22 +2965,14 @@ def make_page5_1():
 
     transactionInTheLastBlock = pd.DataFrame(
         {
-            "height": [
-            ],
-            "age [h:m:s]": [
-            ],
-            "size [kB]": [
-            ],
-            "transaction hash": [
-            ],
-            "fee [µɱ]": [
-            ],
-            "outputs": [
-            ],
-            "in/out": [
-            ],
-            "tx size [kB]": [
-            ],
+            "height": [],
+            "age [h:m:s]": [],
+            "size [kB]": [],
+            "transaction hash": [],
+            "fee [µɱ]": [],
+            "outputs": [],
+            "in/out": [],
+            "tx size [kB]": [],
         }
     )
 
@@ -3044,10 +3031,15 @@ def make_page5_1():
                     + str(outputs_txs_DataFrame["tx_hash"][indexTXS])
                     + ")"
                 )
-                tx_fee = str(round(outputs_txs_DataFrame["tx_fee"][indexTXS] / 1000000, 0))
+                tx_fee = str(
+                    round(outputs_txs_DataFrame["tx_fee"][indexTXS] / 1000000, 0)
+                )
                 tx_size = str(round(outputs_txs_DataFrame["tx_size"][indexTXS], 0))
                 xmr_outputs = str(
-                    round(outputs_txs_DataFrame["xmr_outputs"][indexTXS] / 1000000000000, 3)
+                    round(
+                        outputs_txs_DataFrame["xmr_outputs"][indexTXS] / 1000000000000,
+                        3,
+                    )
                 )
                 transactionInTheLastBlock.loc[-1] = [
                     height,
@@ -3174,7 +3166,7 @@ def make_page5_1():
                 "Server time: "
                 + str(transaction_pool_information["server_time"])
                 + " | Network difficulty: "
-                + str(transaction_pool_information["difficulty"]) # TODO randomly null?
+                + str(transaction_pool_information["difficulty"])  # TODO randomly null?
                 + " | Hard fork: v"
                 + str(transaction_pool_information["current_hf_version"])
                 + " | Hash rate: "
@@ -7880,3 +7872,4 @@ if __name__ == "__main__":
     load_page4_values()
     app.run_server(host=host, port=str(port), debug=False)
     stopFlag.set()
+
