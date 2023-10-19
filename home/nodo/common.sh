@@ -5,6 +5,10 @@ DEBUG_LOG=debug.log
 CONFIG_FILE=/home/nodo/variables/config.json
 XMRPARTLABEL="NODO_BLOCKCHAIN"
 
+get_ip() {
+	ip route get 1.1.1.1 | sed -n '/src/{s/.*src *\([^ ]*\).*/\1/p;q}'
+}
+
 check_connection() {
 	touse="$(ip r | grep default | cut -d ' ' -f 3)"
 	for f in $touse; do

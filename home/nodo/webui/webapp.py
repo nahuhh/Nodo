@@ -8,6 +8,7 @@ import subprocess as proc
 import sys
 import json
 import requests
+import os
 from requests.auth import HTTPDigestAuth
 from requests import JSONDecodeError
 import dash
@@ -125,6 +126,7 @@ def load_config():
         conf_dict = json.load(json_file)
 
 
+lws_command = "/home/nodo/monero-lws/build/src/monero-lws-admin"
 update_time: datetime.datetime = datetime.datetime.now()
 written: bool = True
 applied: bool = True
@@ -175,33 +177,14 @@ def load_page0_values():
     global page0_sync_status
     global page0_system_status
     global page0_hardware_status
+    global page2_node_rpc
     ## Page 0
 
     # Sync Status
-    page0_sync_status["sync_status"] = "Synchronized"
-    page0_sync_status["start_time"] = "1685381909"
-    page0_sync_status["height"] = 0
-    page0_sync_status["version"] = "0.18.0.0"
-    page0_sync_status["outgoing_connections_count"] = 4
-    page0_sync_status["incoming_connections_count"] = 4
-    page0_sync_status["white_peerlist_size"] = 0
-    page0_sync_status["grey_peerlist_size"] = 0
-    page0_sync_status["update_available"] = "false"
+    page0_sync_status["sync_status"] = "Loading data"
 
-    # System Status
-    page0_system_status["mainnet_node"] = ""
-    page0_system_status["private_node"] = ""
-    page0_system_status["tor_node"] = ""
-    page0_system_status["i2p_node"] = ""
-    page0_system_status["monero_lws_admin"] = ""
-    page0_system_status["block_explorer"] = ""
-
-    # Hardware Status
-    page0_hardware_status["cpu_percentage"] = 30
-    page0_hardware_status["cpu_temp"] = 40.4
-    page0_hardware_status["primary_storage"] = 50.5
-    page0_hardware_status["backup_storage"] = 60.6
-    page0_hardware_status["ram_percentage"] = 70.7
+    # rpc_switch = (conf_dict["config"]["rpc_enabled"] == "TRUE")
+    # mode = {1: "Private", 2: "Public"}[rpc_switch]
 
     # ================================================================
     # Add query function here to load data from backend
@@ -224,7 +207,7 @@ def load_page0_values():
     s[4] = "monerod"
     page0_system_status["mainnet_node"] = (
         statustable[proc.run(s,
-                             stdout=proc.PIPE).stdout.decode().split("=")[1]]
+                             stdout=proc.PIPE).stdout.decode().split("=")[1]] # + " ({0})".format(mode)
     )
 
     s[4] = "tor"
@@ -277,26 +260,6 @@ def load_page1_values():
     global page1_networks_i2p
     ## Page 1
 
-    # Networks -> Clearnet
-    page1_networks_clearnet["address"] = "address.test.com"
-    page1_networks_clearnet["port"] = 18081
-    page1_networks_clearnet["peer"] = "clearnet.peer.com"
-
-    # Networks -> Tor
-    page1_networks_tor["tor_switch"] = 1  # 1: true, 0: false
-    page1_networks_tor[
-        "route_all_connections_through_tor_switch"
-    ] = 1  # 1: true, 0: false
-    page1_networks_tor["onion_addr"] = ".onion"
-    page1_networks_tor["port"] = 18083
-    page1_networks_tor["peer"] = "tor.peer.com"
-
-    # Networks -> I2P
-    page1_networks_i2p["i2p_switch"] = 1  # 1: true, 0: false
-    page1_networks_i2p["i2p_b32_addr"] = ".onion"
-    page1_networks_i2p["port"] = 18089
-    page1_networks_i2p["peer"] = "i2p.peer.com"
-
     # ================================================================
     # Add query function here to load data from backend
     # And convert datatype just like above python dictionary type
@@ -306,11 +269,15 @@ def load_page1_values():
     c: dict = conf_dict["config"]
     page1_networks_clearnet["address"] = get_ip()
     page1_networks_clearnet["port"] = c["monero_public_port"]
+    page1_networks_clearnet["peer"] = c["add_clearnet_peer"]
 
     page1_networks_tor["tor_switch"] = 1 if c["torproxy_enabled"] == "TRUE" else 0
     page1_networks_tor["port"] = c["tor_port"]
     page1_networks_tor["onion_addr"] = c["onion_addr"]
     page1_networks_tor["peer"] = c["add_tor_peer"]
+    page1_networks_tor[
+        "route_all_connections_through_tor_switch"
+    ] = 1 if c["tor_global_enabled"] == "TRUE" else 0
 
     page1_networks_i2p["i2p_switch"] = 1 if c["i2p_enabled"] == "TRUE" else 0
     page1_networks_i2p["port"] = c["i2p_port"]
@@ -327,18 +294,6 @@ def load_page2_values():
     global page2_node_rpc
     global page2_node_bandwidth
     ## Page 2
-
-    # Node -> RPC
-    page2_node_rpc["rpc_switch"] = 1  # 1: true, 0: false
-    page2_node_rpc["port"] = 1024
-    page2_node_rpc["username"] = "username"
-    page2_node_rpc["password"] = "password"
-
-    # Node -> Bandwidth
-    page2_node_bandwidth["incoming_peers_limit"] = 20
-    page2_node_bandwidth["outgoing_peers_limit"] = 20
-    page2_node_bandwidth["rate_limit_up"] = -1
-    page2_node_bandwidth["rate_limit_down"] = -1
 
     # ================================================================
     # Add query function here to load data from backend
@@ -371,25 +326,6 @@ def load_page3_values():
     global page3_device_system
     ## Page 3
 
-    # Device -> Wi-Fi
-    page3_device_wifi["wifi_switch"] = 1  # 1: true, 0: false
-    page3_device_wifi["ssid"] = "Nodo"
-    page3_device_wifi["ssids"] = ["Nodo", "Nodo01", "Nodo02"]
-    page3_device_wifi["passphrase"] = "password"
-    page3_device_wifi["status"] = "connected"
-    page3_device_wifi["automatic_switch"] = 1  # 1: true, 0: false
-    page3_device_wifi["ip_address"] = "192.168.0.10"
-    page3_device_wifi["subnet_mask"] = "255.255.255.0"
-    page3_device_wifi["router"] = "192.168.0.1"
-    page3_device_wifi["dhcp"] = "192.168.0.1"
-
-    # Device -> Bandwidth
-    page3_device_ethernet["automatic_switch"] = 1  # 1: true, 0: false
-    page3_device_ethernet["ip_address"] = "192.168.0.10"
-    page3_device_ethernet["subnet_mask"] = "255.255.255.0"
-    page3_device_ethernet["router"] = "192.168.0.1"
-    page3_device_ethernet["dhcp"] = "192.168.0.1"
-
     # Device -> System
     page3_device_system = {}
 
@@ -400,6 +336,8 @@ def load_page3_values():
     # ================================================================
     load_config()
     w: dict = conf_dict["config"]["wifi"]
+    page3_device_wifi["wifi_switch"] = 1 if w["enabled"] == "TRUE" else 0
+    page3_device_wifi["automatic_switch"] = 1 if w["auto"] == "TRUE" else 0
     page3_device_wifi["status"] = proc.run(
         ["nmcli", "-c", "no", "-t", "-f", "WIFI", "general"], stdout=proc.PIPE
     ).stdout.decode()
@@ -414,6 +352,7 @@ def load_page3_values():
     w: dict = conf_dict["config"]["ethernet"]
     f: TextIOWrapper = open("/sys/class/net/eth0/operstate", "r")
     page3_device_ethernet["status"] = f.read()
+    page3_device_ethernet["automatic_switch"] = 1 if w["auto"] == "TRUE" else 0
     page3_device_ethernet["ip_address"] = w["ip"]
     page3_device_ethernet["subnet_mask"] = w["subnet"]
     page3_device_ethernet["router"] = w["router"]
@@ -1045,7 +984,6 @@ def make_page0_sync_status():
 # Block Explorer: Running
 def make_page0_system_status():
     mainnet_node = page0_system_status["mainnet_node"]
-    private_node = page0_system_status["private_node"]
     tor_node = page0_system_status["tor_node"]
     i2p_node = page0_system_status["i2p_node"]
     monero_lws_admin = page0_system_status["monero_lws_admin"]
@@ -1071,7 +1009,7 @@ def make_page0_system_status():
                     ),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText("Tor Node", className="homeBoxNodo"),
+                            dbc.InputGroupText("Tor Service", className="homeBoxNodo"),
                             dbc.Input(
                                 type="text",
                                 id="page0_system_status_tor_node",
@@ -1084,7 +1022,7 @@ def make_page0_system_status():
                     ),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText("I2P Node", className="homeBoxNodo"),
+                            dbc.InputGroupText("I2P Service", className="homeBoxNodo"),
                             dbc.Input(
                                 type="text",
                                 id="page0_system_status_i2p_node",
@@ -2045,7 +1983,7 @@ def make_page3_1():
             ),
             html.Div(id="device-wifi-router-hidden-div", style={"display": "none"}),
             html.Div(id="device-wifi-dhcp-hidden-div", style={"display": "none"}),
-        ]
+        ],
     )
 
 
@@ -2210,10 +2148,13 @@ def make_page3_3():
                 ),
                 className="d-flex align-content-start",
             ),
+            html.Div(id="inactive_dummy_components3_1a", children=""),
+            html.Div(id="inactive_dummy_components3_1b", children=""),
+            html.Div(id="inactive_dummy_components3_1c", children=""),
             dbc.Label(""),
             dbc.Col(
                 dbc.Button(
-                    "Reset",
+                    "Restart",
                     className="me-1 mt-1 ms-auto fa fa-send buttonNodo",
                     id="submit-val-node-system-reset",
                     n_clicks=0,
@@ -2253,20 +2194,19 @@ def make_page3_3_2():
     return html.Div(
         [
             html.P("Device -> System -> Recovery", className="d-none"),
-            dbc.RadioItems(
+            dbc.Checklist(
                 options=[
-                    {"label": "  Attempt to repair filesystem", "value": "REPAIR"},
-                    {"label": "  Wipe and reformat file system", "value": "WIPE"},
+                    {"label": "  Attempt to repair the filesystem", "value": 1},
                 ],
-                value="REPAIR",
-                id="radioitems-inline-input",
+                value=[],
+                id="checklist-inline-input-repair",
             ),
             dbc.Checklist(
                 options=[
-                    {"label": "  Purge blockchain", "value": 1},
+                    {"label": "  Purge and resync blockchain", "value": 1},
                 ],
                 value=[],
-                id="checklist-inline-input",
+                id="checklist-inline-input-purge",
             ),
             dbc.Label(""),
             dbc.Button(
@@ -2286,7 +2226,7 @@ def make_page3_3_2():
     )
 
 
-def make_inactive_card(n_add, address, height, rescan_height):
+def make_inactive_card(n_add, address, height):
     return dbc.Card(
         [
             dbc.CardHeader(
@@ -2313,23 +2253,21 @@ def make_inactive_card(n_add, address, height, rescan_height):
                                             ),
                                             dbc.Col(
                                                 html.Div(
-                                                    address,
+                                                    truncate_address(address),
                                                     className="NodoLWSInput",
                                                     style={
                                                         "padding-left": "12px",
                                                         "padding-top": "6px",
                                                         "justify-content": "center",
                                                         "height": "100%",
-                                                        "min-width": "20%",
-                                                        "max-width": "850px",
-                                                        "word-break": "break-all",
-                                                        "overflow-wrap": "break-word",
+                                                        "max-width": "650px",
                                                         "border-radius": "0 5px 5px 0",
+                                                        "font-family": "monospace"
                                                     },
                                                 ),
                                                 style={
-                                                    "min-width": "100px",
-                                                    "max-width": "850px",
+                                                    "min-width": "50px",
+                                                    "max-width": "650px",
                                                 },
                                             ),
                                         ],
@@ -2337,47 +2275,42 @@ def make_inactive_card(n_add, address, height, rescan_height):
                                     ),
                                 ],
                                 className=" me-1 mt-1 g-0 account_card",  # style={"min-width":"300px","max-width": "65%"}
+                                style={"max-width": "28.75em"},
                             ),
                             dbc.InputGroup(
                                 [
                                     dbc.InputGroupText(
                                         "Height",
                                         className="LWSBoxNodo text-left",
-                                        style={"max-width": "110px", "height": "100%"},
+                                        style={"max-width": "70px", "min-width": "90px", "height": "100%"},
                                     ),
                                     dbc.Input(
                                         type="text",
                                         value=height,
                                         className="NodoLWSInput",
                                         disabled=True,
-                                        style={"height": "100%"},
+                                        style={"height": "100%", "font-family": "monospace"},
                                     ),
                                 ],
                                 className="d-flex align-content-start  me-1 mt-1 LWSCardBG",
-                                style={"max-width": "200px"},
+                                style={"max-width": "260px"},
+                            ),
+                            dbc.Label(""),
+                            dbc.Button(
+                                "Reactivate",
+                                className="buttonNodo me-1 mt-1 fa fa-send mt-1 ml-1 mr-1 pt-1 pl-1 pr-1",
+                                id={"type": "inactive-reactivate-button", "index": n_add},
+                                style={"margin-left": "4px"}
+                            ),
+                            dbc.Button(
+                                "Delete",
+                                className="buttonNodo me-1 mt-1 fa fa-send mt-1 ml-1 mr-1 pt-1 pl-1 pr-1 ",
+                                id={"type": "inactive-delete-button", "index": n_add},
                             ),
                         ],
                         className="d-flex align-content-start LWSCardBG",
                     ),
-                    dbc.Label("Rescan Height", className="me-1 mt-3 mb-0"),
-                    dbc.InputGroup(
-                        [
-                            dbc.Input(type="text", value=rescan_height, disabled=True),
-                        ],
-                        className="me-1 mt-0 mb-2",
-                        style={"width": "150px"},
-                    ),
                     dbc.Label(""),
-                    dbc.Button(
-                        "Reactivate",
-                        className="buttonNodo me-1 mt-1 ms-auto fa fa-send mt-1 ml-1 mr-1 pt-1 pl-1 pr-1",
-                        id={"type": "inactive-reactivate-button", "index": n_add},
-                    ),
-                    dbc.Button(
-                        "Delete",
-                        className="buttonNodo me-1 mt-1 ms-auto fa fa-send mt-1 ml-1 mr-1 pt-1 pl-1 pr-1 ",
-                        id={"type": "inactive-delete-button", "index": n_add},
-                    ),
                 ]
             ),
         ],
@@ -2389,6 +2322,9 @@ def make_inactive_card(n_add, address, height, rescan_height):
 
 def make_inactive_cards():
     global inactive_address_height
+    accounts = lws_admin_cmd("list_accounts")
+    if "inactive" in accounts:
+        inactive_address_height = accounts["inactive"]
     address = "4567"
     height = ""
     rescan_height = ""
@@ -2398,19 +2334,25 @@ def make_inactive_cards():
 
     account_create_request_lists = []
     for item in inactive_address_height:
-        print(item)
-        print(item[0])
-        print(item[1])
-        print(item[2])
-        address = str(item[0])
-        height = str(item[1])
-        rescan_height = str(item[2])
+        address = str(item["address"])
+        height = str(item["scan_height"])
         account_create_request_lists.append(
-            make_inactive_card(index, address, height, rescan_height)
+            make_inactive_card(index, address, height)
         )
         index = index + 1
 
     return account_create_request_lists
+
+
+def truncate_address(address):
+    return "{0} {1} {2} .. {3} {4} {5}".format(
+        address[:4],
+        address[4:8],
+        address[8:12],
+        address[-12:-8],
+        address[-8:-4],
+        address[-4:]
+    )
 
 
 def make_active_card(n_add, address, height, rescan_height):
@@ -2446,48 +2388,54 @@ def make_active_card(n_add, address, height, rescan_height):
                                             ),
                                             dbc.Col(
                                                 html.Div(
-                                                    address,
+                                                    truncate_address(address),
                                                     className="NodoLWSInput",
                                                     style={
                                                         "padding-left": "12px",
                                                         "padding-top": "6px",
                                                         "justify-content": "center",
                                                         "height": "100%",
-                                                        "min-width": "20%",
-                                                        "max-width": "850px",
-                                                        "word-break": "break-all",
-                                                        "overflow-wrap": "break-word",
+                                                        "max-width": "650px",
                                                         "border-radius": "0 5px 5px 0",
+                                                        "font-family": "monospace"
                                                     },
                                                 ),
                                                 style={
-                                                    "min-width": "100px",
-                                                    "max-width": "850px",
+                                                    "min-width": "50px",
+                                                    "max-width": "650px",
                                                 },
                                             ),
                                         ],
                                         className="flex-grow-1 g-0 w-100 LWSCardBG",
                                     ),
                                 ],
-                                className=" me-1 mt-1 g-0 account_card",  # style={"min-width":"300px","max-width": "65%"}
+                                className=" me-1 mt-1 g-0 account_card",
+                                style={"max-width": "28.75em"},
                             ),
                             dbc.InputGroup(
                                 [
                                     dbc.InputGroupText(
                                         "Height",
                                         className="LWSBoxNodo text-left",
-                                        style={"max-width": "110px", "height": "100%"},
+                                        style={"max-width": "70px", "min-width": "90px", "height": "100%"},
                                     ),
                                     dbc.Input(
                                         type="text",
                                         value=height,
                                         className="NodoLWSInput",
                                         disabled=True,
-                                        style={"height": "100%"},
+                                        style={"height": "100%", "font-family": "monospace"},
                                     ),
                                 ],
                                 className="d-flex align-content-start  me-1 mt-1 LWSCardBG",
-                                style={"max-width": "200px"},
+                                style={"max-width": "260px"},
+                            ),
+                            dbc.Label(""),
+                            dbc.Button(
+                                "Deactivate",
+                                className="buttonNodo me-1 mt-1 fa fa-send mt-1 ml-1 mr-1 pt-1 pl-1 pr-1 ",
+                                id={"type": "active-deactivate-button", "index": n_add},
+                                style={"margin-left": "4px"}
                             ),
                         ],
                         className="d-flex align-content-start LWSCardBG",
@@ -2504,17 +2452,11 @@ def make_active_card(n_add, address, height, rescan_height):
                         className="me-1 mt-0 mb-2 LWSCardBG",
                         style={"width": "150px"},
                     ),
-                    dbc.Label(""),
                     dbc.Button(
                         "Rescan",
                         className="buttonNodo me-1 mt-1 ms-auto fa fa-send mt-1 ml-1 mr-1 pt-1 pl-1 pr-1",
                         id={"type": "active-rescan-button", "index": n_add},
                         disabled=rescan_button_disable,
-                    ),
-                    dbc.Button(
-                        "Deactivate",
-                        className="buttonNodo me-1 mt-1 ms-auto fa fa-send mt-1 ml-1 mr-1 pt-1 pl-1 pr-1 ",
-                        id={"type": "active-deactivate-button", "index": n_add},
                     ),
                 ]
             ),
@@ -2525,8 +2467,35 @@ def make_active_card(n_add, address, height, rescan_height):
     )
 
 
+lws_cache: str = None
+lws_reparse: bool = True
+def lws_admin_cmd(*command) -> dict:
+    global lws_cache
+    global lws_reparse
+    if not lws_reparse and lws_cache != None and len(command) > 0:
+        if command[0] == "list_accounts":
+            return lws_cache
+        else:
+            lws_reparse = True
+    cmd = ["/home/nodo/monero-lws/build/src/monero-lws-admin",
+           "--db-path={0}/light_wallet_server"]
+    cmd[1] = cmd[1].format(conf_dict["config"]["data_dir"])
+    cmd += command
+    print(cmd)
+    resp = proc.run(cmd, stdout=proc.PIPE).stdout.decode()
+
+    print(resp)
+    lws_cache = json.loads(resp)
+    lws_reparse = False
+    return lws_cache
+
+
 def make_active_cards():
     global active_address_height
+    # print(lws_admin_cmd("list_requests"))
+    accounts = lws_admin_cmd("list_accounts")
+    if "active" in accounts:
+        active_address_height = accounts["active"]
     address = "4567"
     height = ""
     rescan_height = ""
@@ -2537,12 +2506,9 @@ def make_active_cards():
     account_create_request_lists = []
     for item in active_address_height:
         print(item)
-        print(item[0])
-        print(item[1])
-        print(item[2])
-        address = str(item[0])
-        height = str(item[1])
-        rescan_height = str(item[2])
+        address = str(item["address"])
+        height = str(item["scan_height"])
+        # rescan_height = str(item[2])
         account_create_request_lists.append(
             make_active_card(index, address, height, rescan_height)
         )
@@ -2578,7 +2544,7 @@ def make_account_create_request_card(n_add, address, height):
                                             ),
                                             dbc.Col(
                                                 html.Div(
-                                                    address,
+                                                    truncate_address(address),
                                                     className="NodoLWSInput",
                                                     style={
                                                         "padding-left": "12px",
@@ -2590,11 +2556,12 @@ def make_account_create_request_card(n_add, address, height):
                                                         "word-break": "break-all",
                                                         "overflow-wrap": "break-word",
                                                         "border-radius": "0 5px 5px 0",
+                                                        "font-family": "monospace"
                                                     },
                                                 ),
                                                 style={
-                                                    "min-width": "100px",
-                                                    "max-width": "850px",
+                                                    "min-width": "50px",
+                                                    "max-width": "650px",
                                                 },
                                             ),
                                         ],
@@ -2602,24 +2569,25 @@ def make_account_create_request_card(n_add, address, height):
                                     ),
                                 ],
                                 className=" me-1 mt-1 g-0 account_card",  # style={"min-width":"300px","max-width": "65%"}
+                                style={"max-width": "28.75em"},
                             ),
                             dbc.InputGroup(
                                 [
                                     dbc.InputGroupText(
                                         "Start Height",
                                         className="LWSBoxNodo text-left",
-                                        style={"max-width": "110px", "height": "100%"},
+                                        style={"max-width": "70px", "min-width": "110px", "height": "100%"},
                                     ),
                                     dbc.Input(
                                         type="text",
                                         value=height,
                                         className="NodoLWSInput",
                                         disabled=True,
-                                        style={"height": "100%"},
+                                        style={"height": "100%", "font-family": "monospace"},
                                     ),
                                 ],
                                 className="d-flex align-content-start  me-1 mt-1 LWSCardBG",
-                                style={"max-width": "200px"},
+                                style={"max-width": "260px"},
                             ),
                         ],
                         className="d-flex align-content-start LWSCardBG",
@@ -2645,22 +2613,20 @@ def make_account_create_request_card(n_add, address, height):
 
 def make_account_create_request_cards():
     global account_address_viewkey_height
+    requests: dict = lws_admin_cmd("list_requests")
+    if "create" in requests:
+        account_address_viewkey_height = lws_admin_cmd("list_requests")["create"]
+
     address = "4567"
     viewkey = "1234"
     height = "100"
     index = 0
-    print("----")
-    print("The pair list is :", account_address_viewkey_height)
 
     account_create_request_lists = []
     for item in account_address_viewkey_height:
-        print(item)
-        print(item[0])
-        print(item[1])
-        print(item[2])
-        address = str(item[0])
-        viewkey = str(item[1])
-        height = str(item[2])
+        address = str(item["address"])
+        viewkey = str(item["view_key"] if "view_key" in item else "hidden")
+        height = str(item["start_height"])
         account_create_request_lists.append(
             make_account_create_request_card(index, address, height)
         )
@@ -2938,20 +2904,6 @@ page4_4 = html.Div(
 def make_page5_1():
     # transaction_pool_information;
     transaction_pool_information = {}
-    transaction_pool_information["server_time"] = "2023-4-27 20:36:27"
-    transaction_pool_information["network_difficulty"] = "327906897405"
-    transaction_pool_information["current_hf_version"] = "v16"
-    transaction_pool_information["hash_rate"] = "2.732 GH/s"
-    transaction_pool_information["fee_per_byte"] = "0.000000020000"
-    transaction_pool_information["median_block_size_limit"] = "292.97 kB"
-    transaction_pool_information["monero_emission"] = "--"
-    transaction_pool_information["monero_emission_fees"] = "--"
-    transaction_pool_information["monero_emission_fees_as_of_block"] = "--"
-
-    transaction_pool_information["no_of_txs"] = "17"
-    transaction_pool_information["size_of_txs"] = "29.46kB"
-    transaction_pool_information["transactions_in_the_last_blocks"] = "11"
-    transaction_pool_information["median_size_of_100_blocks"] = "292.97 kB"
     ## parameters for transaction pool ( Page 5.1 Transaction Pool)
     transactionPoolDF = pd.DataFrame(
         {
@@ -3005,7 +2957,6 @@ def make_page5_1():
         transactionInTheLastBlock = transactionInTheLastBlock.iloc[0:0]
         data = r.json()
         outputs_DataFrame = json_normalize(data["data"]["blocks"])
-        print(outputs_DataFrame)
 
         for ind in outputs_DataFrame.index:
             outputs_txs_DataFrame = json_normalize(outputs_DataFrame["txs"][ind])
@@ -3056,7 +3007,6 @@ def make_page5_1():
                 )  # shifting index
 
     r = requests.get("http://127.0.0.1:8081/api/mempool?limit=40")
-    print("lmao")
     transactionPoolDF = transactionPoolDF.iloc[0:0]
     data = r.json()
     outputs_DataFrame = json_normalize(data["data"])
@@ -3580,7 +3530,6 @@ def make_page_5_1_tx_decode_or_prove_outputs_output(param1, param2, prove):
     # returns JSON object as
     # a dictionary
     data = json.load(f)
-    print(data)
     outputs_DataFrame = json_normalize(data["data"]["outputs"])
     outputs_DataFrame = outputs_DataFrame.reindex(
         columns=["output_pubkey", "amount", "match"]
@@ -3590,21 +3539,20 @@ def make_page_5_1_tx_decode_or_prove_outputs_output(param1, param2, prove):
         inplace=True,
     )
 
-    print(outputs_DataFrame)
+    # TODO check if these are still needed
+    # tx_decode_or_prove_outputs_output["address"] = data["data"]["address"]
+    # tx_decode_or_prove_outputs_output["tx_hash"] = data["data"]["tx_hash"]
+    # tx_decode_or_prove_outputs_output["viewkey"] = data["data"]["viewkey"]
+    # tx_decode_or_prove_outputs_output[
+    #     "tx_public_key"
+    # ] = "4463830f3d76317d8e3ef6a922c8ff9c480520b49b60144d6f88f2440c978ace"
+    # tx_decode_or_prove_outputs_output["paymentid"] = "1c4d48af4a071950"
 
-    tx_decode_or_prove_outputs_output["address"] = data["data"]["address"]
-    tx_decode_or_prove_outputs_output["tx_hash"] = data["data"]["tx_hash"]
-    tx_decode_or_prove_outputs_output["viewkey"] = data["data"]["viewkey"]
-    tx_decode_or_prove_outputs_output[
-        "tx_public_key"
-    ] = "4463830f3d76317d8e3ef6a922c8ff9c480520b49b60144d6f88f2440c978ace"
-    tx_decode_or_prove_outputs_output["paymentid"] = "1c4d48af4a071950"
-
-    tx_decode_or_prove_outputs_output["block"] = "2738885"
-    tx_decode_or_prove_outputs_output["timestamp_utc"] = "2022-10-22 07:52:33"
-    tx_decode_or_prove_outputs_output["age"] = "00:228:02:08:24"
-    tx_decode_or_prove_outputs_output["fee"] = "99595.517"
-    tx_decode_or_prove_outputs_output["tx_size"] = "1.50 kB"
+    # tx_decode_or_prove_outputs_output["block"] = "2738885"
+    # tx_decode_or_prove_outputs_output["timestamp_utc"] = "2022-10-22 07:52:33"
+    # tx_decode_or_prove_outputs_output["age"] = "00:228:02:08:24"
+    # tx_decode_or_prove_outputs_output["fee"] = "99595.517"
+    # tx_decode_or_prove_outputs_output["tx_size"] = "1.50 kB"
 
     # ================================================================
 
@@ -3613,7 +3561,6 @@ def make_page_5_1_tx_decode_or_prove_outputs_output(param1, param2, prove):
         description = "Checking which outputs belong to the given address and viewkey"
     else:
         description = "prove that you send this tx to the given address"
-    print("address ", tx_decode_or_prove_outputs_output["address"])
 
     num_of_xmrs = len(data["data"]["outputs"])
 
@@ -5897,8 +5844,6 @@ app.layout = html.Div(
 def render_page_content(pathname, value):
     # f=furl(pathname)
     # pathname = furl(pathname).netloc
-    print(pathname)
-    print(str(value))
     pattTx = re.compile(".*\/tx(.*)$")
     pattBlock = re.compile(".*\/block(.*)$")
     matchPattTx = pattTx.match(pathname)
@@ -7196,22 +7141,23 @@ def account_input_rescan_height(value):
     global account_address_viewkey_height
     ctx = dash.callback_context
 
-    if value != None:
+    if value != None and len(value) > 0:
         button_id, _ = ctx.triggered[0]["prop_id"].split(".")
 
-        print(button_id)
-        button_id = json.loads(button_id)
-        index_clicked = button_id["index"]
-        print(
-            "index clicked",
-            index_clicked,
-        )
-        print("active-rescan-input ", value)
-        (active_address_height[index_clicked])[2] = value[index_clicked]
+        if len(button_id) > 1:
+            button_id = json.loads(button_id)
+            index_clicked = button_id["index"]
+            print(
+                "index clicked",
+                index_clicked,
+            )
+            print("active-rescan-input ", value)
+            # (active_address_height[index_clicked])["scan_height"] = value[index_clicked]
+            #lws_admin_cmd("rescan", "--arguments", str(value[index_clicked]),
+            #             "--arguments", active_address_height[index_clicked]["address"])
         return ""
     else:
         return ""
-    return ""
 
 
 # ====================================================================
@@ -7279,6 +7225,8 @@ def account_creation_request_deactivate_button(n_clicks, close_id):
     print("n_clicks ", n_clicks[0])
     if n_clicks[0] != None or index_clicked > 0:
         print("do active-deactivate action!!")
+        addr = active_address_height[index_clicked]["address"]
+        lws_admin_cmd("modify_account_status", "--arguments", "inactive", "--arguments", addr)
         inactive_address_height.append(active_address_height[index_clicked])
         active_address_height.pop(index_clicked)
         # ============================================================
@@ -7308,6 +7256,66 @@ def update_active_card_components(n):
     some_stuff = make_inactive_cards()  # your custom function
     component = html.Div(some_stuff)  # create new children for some-output-component
     return component
+
+
+@app.callback(
+    Output("submit-val-node-system-shutdown", "children"),
+    [Input("submit-val-node-system-shutdown", "n_clicks")],
+    prevent_initial_call=True,
+)
+def poweroff_button(n_clicks):
+    print("callback triggered for shutdown")
+    if n_clicks == 1:
+        return "Click to Confirm"
+    if n_clicks == 2:
+        print("shutting down")
+        proc.run(["systemctl", "poweroff"])
+        return "Shutting down!"
+
+    return ""
+
+
+# submit-val-node-system-recovery-start
+@app.callback(
+    [Output("submit-val-node-system-recovery-start", "children"),
+     Output("submit-val-node-system-recovery-start", "disabled")],
+     Input("checklist-inline-input-purge", "value"),
+    [Input("checklist-inline-input-repair", "value"),
+     Input("submit-val-node-system-recovery-start", "n_clicks")],
+    prevent_initial_call=True,
+)
+def restart_button(purge_value, repair_value, n_clicks):
+    if n_clicks == 1:
+        return "Click to Confirm", False
+    if n_clicks == 2:
+        repair = True if len(repair_value) > 0 and repair_value[0] == 1 else False
+        purge = True if len(purge_value) > 0 and purge_value[0] == 1 else False
+        e = os.environ.copy()
+        if repair:
+            e["REPAIR_FILESYSTEM"] = '1'
+        if purge:
+            e["PURGE_BLOCKCHAIN"] = '1'
+
+        proc.Popen(["/usr/bin/bash", "/home/nodo/recovery.sh"], env=e)
+        return "Running!", True
+
+    return "Start", False
+
+
+@app.callback(
+    Output("submit-val-node-system-reset", "children"),
+    [Input("submit-val-node-system-reset", "n_clicks")],
+    prevent_initial_call=True,
+)
+def restart_button(n_clicks):
+    if n_clicks == 1:
+        return "Click to Confirm"
+    if n_clicks == 2:
+        print("shutting down")
+        proc.run(["systemctl", "reboot"])
+        return "Restarting!"
+
+    return ""
 
 
 # ====================================================================
@@ -7341,6 +7349,8 @@ def inactive_reactivate_button(n_clicks, close_id):
     print("n_clicks ", n_clicks[0])
     if n_clicks[0] != None or index_clicked > 0:
         print("do active-reactivate action!!")
+        addr = inactive_address_height[index_clicked]["address"]
+        lws_admin_cmd("modify_account_status", "--arguments", "active", "--arguments", addr)
         active_address_height.append(inactive_address_height[index_clicked])
         inactive_address_height.pop(index_clicked)
         # ============================================================
@@ -7383,6 +7393,7 @@ def inactive_delete_button(n_clicks, close_id):
     if n_clicks[0] != None or index_clicked > 0:
         print("do active-delete action!!")
         inactive_address_height.pop(index_clicked)
+
         # ============================================================
         # Add save function to write back
         # inactive_address_height into backend.
@@ -7541,11 +7552,14 @@ def account_creation_request_close_button(n_clicks, close_id):
     if n_clicks[0] != None or index_to_remove > 0:
         print("do remove item action!!")
         index = account_address_viewkey_height[index_to_remove]
-        address = index[0]
-        height = index[2]
+        print(index)
+        address = index["address"]
+        height = index["start_height"]
         rescan_height = ""
         active_address_height.append([address, height, rescan_height])
-        account_address_viewkey_height.pop(index_to_remove)
+        inactive_address_height.pop(index_to_remove)
+
+        lws_admin_cmd("accept_requests", "create", "--arguments", address)
         # ============================================================
         # Add save function to write back
         # account_address_viewkey_height / account_address_viewkey_height  into backend.
@@ -7594,6 +7608,8 @@ def account_creation_request_reject_button(n_clicks, reject_id):
         rescan_height = ""
         # active_address_height.append([address,height,rescan_height]);
         account_address_viewkey_height.pop(index_to_remove)
+
+        lws_admin_cmd("reject_requests", "create", "--arguments", address)
         # ============================================================
         # Add save function to write back
         # account_address_viewkey_height / account_address_viewkey_height  into backend.
@@ -7872,4 +7888,5 @@ if __name__ == "__main__":
     load_page4_values()
     app.run_server(host=host, port=str(port), debug=False)
     stopFlag.set()
+
 

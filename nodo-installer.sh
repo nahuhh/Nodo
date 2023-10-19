@@ -90,7 +90,7 @@ cp -r "${_cwd}"/home/nodo/* /home/nodo/
 cp -r "${_cwd}"/etc/* /etc/
 cp -r "${_cwd}"/HTML/* /var/www/html/
 chown httpd:httpd -R /var/www/html
-cp "${_cwd}"/update-*sh /home/nodo/
+cp "${_cwd}"/update-*sh "${_cwd}"/recovery.sh /home/nodo/
 chown nodo:nodo -R /home/nodo
 
 log "manual build of gtest for Monero"
@@ -139,6 +139,7 @@ showtext "Configuring apache server for access to Monero log file..."
 	cp "${_cwd}"/etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 	chmod 777 /etc/apache2/sites-enabled/000-default.conf
 	chown root /etc/apache2/sites-enabled/000-default.conf
+	openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/private/moneronodo.key -out /etc/ssl/certs/moneronodo.crt -sha256 -days 3650 -nodes -subj "/C=US/ST=StateName/L=CityName/O=Nodo/OU=CompanySectionName/CN=moneronodo.local" -addext "subjectAltName=DNS:moneronodo.lan,DNS:moneronodo"
 	systemctl restart apache2
 } 2>&1 | tee -a "$DEBUG_LOG"
 
@@ -199,6 +200,7 @@ showtext "Installing python dependencies..."
 	venv/bin/pip3.11 install furl
 	venv/bin/pip3.11 install psutil
 	venv/bin/pip3.11 install dash-qr-manager
+	venv/bin/python -m compileall .
 )
 } 2>&1 | tee -a "$DEBUG_LOG"
 

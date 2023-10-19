@@ -218,8 +218,8 @@ body, .ast-separate-container {
 .input-networks-i2p-peer {
 	max-width: 700px;
 }
-.input-group {
-	min-width: 125px;
+.input-group span {
+	min-width: 150px;
 }
 .input-device-wifi-eth:enabled,
 .input-device-wifi-eth[enabled]{
