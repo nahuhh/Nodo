@@ -266,7 +266,7 @@ showtext "Start services"
 
 systemctl daemon-reload
 systemctl enable --now tor i2pd
-systemctl enable monerod block-explorer monero-lws monero-lws-admin webui p2pool
+systemctl enable --now monerod block-explorer monero-lws monero-lws-admin webui p2pool
 
 services-start
 putvar 'i2p_b32_addr' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmr.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")

@@ -441,9 +441,9 @@ submenu_1 = [
     dbc.Collapse(
         dbc.Nav(
             [
-                dbc.NavLink(("Clearnet").upper(), href="/page-1.1", active="partial"),
-                dbc.NavLink(("Tor").upper(), href="/page-1.2", active="partial"),
-                dbc.NavLink(("I2P").upper(), href="/page-1.3", active="partial"),
+                dbc.NavLink(("Clearnet").upper(), href="/networks/clearnet", active="partial"),
+                dbc.NavLink(("Tor").upper(), href="/networks/tor", active="partial"),
+                dbc.NavLink(("I2P").upper(), href="/networks/i2p", active="partial"),
             ],
             pills=True,
             className="d-flex flex-column",
@@ -467,9 +467,9 @@ submenu_2 = [
         dbc.Nav(
             [
                 dbc.NavLink(
-                    ("Private Node").upper(), href="/page-2.1", active="partial"
+                    ("Private Node").upper(), href="/node/private-node", active="partial"
                 ),
-                dbc.NavLink(("Bandwidth").upper(), href="/page-2.2", active="partial"),
+                dbc.NavLink(("Bandwidth").upper(), href="/node/bandwidth", active="partial"),
             ],
             pills=True,
             className="d-flex flex-column",
@@ -492,9 +492,9 @@ submenu_3 = [
     dbc.Collapse(
         dbc.Nav(
             [
-                dbc.NavLink(("Wi-Fi").upper(), href="/page-3.1", active="partial"),
-                dbc.NavLink(("Ethernet").upper(), href="/page-3.2", active="partial"),
-                dbc.NavLink(("System").upper(), href="/page-3.3", active="partial"),
+                dbc.NavLink(("Wi-Fi").upper(), href="/device/wifi", active="partial"),
+                dbc.NavLink(("Ethernet").upper(), href="/device/ethernet", active="partial"),
+                dbc.NavLink(("System").upper(), href="/device/system", active="partial"),
             ],
             pills=True,
             className="d-flex flex-column",
@@ -517,14 +517,14 @@ submenu_4 = [
     dbc.Collapse(
         dbc.Nav(
             [
-                dbc.NavLink(("Active").upper(), href="/page-4.1", active="partial"),
-                dbc.NavLink(("Inactive").upper(), href="/page-4.2", active="partial"),
+                dbc.NavLink(("Active").upper(), href="/lws/active", active="partial"),
+                dbc.NavLink(("Inactive").upper(), href="/lws/inactive", active="partial"),
                 dbc.NavLink(
-                    ("Add Account").upper(), href="/page-4.3", active="partial"
+                    ("Add Account").upper(), href="/lws/add-account", active="partial"
                 ),
                 dbc.NavLink(
                     ("Account Creation Requests").upper(),
-                    href="/page-4.4",
+                    href="/lws/requests",
                     active="partial",
                 ),
             ],
@@ -551,16 +551,16 @@ submenu_5 = [
         dbc.Nav(
             [
                 dbc.NavLink(
-                    ("Transaction Pool").upper(), href="/page-5.1", active="partial"
+                    ("Transaction Pool").upper(), href="/block-explorer/tx-pool", active="partial"
                 ),
                 dbc.NavLink(
-                    ("Transaction Pusher").upper(), href="/page-5.2", active="partial"
+                    ("Transaction Pusher").upper(), href="/block-explorer/tx-pusher", active="partial"
                 ),
                 dbc.NavLink(
-                    ("Key Images Checker").upper(), href="/page-5.3", active="partial"
+                    ("Key Images Checker").upper(), href="/block-explorer/key-images-checker", active="partial"
                 ),
                 dbc.NavLink(
-                    ("Output Keys Checker").upper(), href="/page-5.4", active="partial"
+                    ("Output Keys Checker").upper(), href="/block-explorer/output-keys-checker", active="partial"
                 ),
             ],
             pills=True,
@@ -575,10 +575,10 @@ nav_item = dbc.NavItem(dbc.NavLink("Link", href="#"))
 # make a reuseable dropdown for the different examples
 NetworkDropdown = dbc.DropdownMenu(
     children=[
-        dbc.DropdownMenuItem(("Clearnet").upper(), href="/page-1.1"),
-        dbc.DropdownMenuItem(("Tor").upper(), href="/page-1.2"),
+        dbc.DropdownMenuItem(("Clearnet").upper(), href="/networks/clearnet"),
+        dbc.DropdownMenuItem(("Tor").upper(), href="/networks/tor"),
         dbc.DropdownMenuItem(divider=True),
-        dbc.DropdownMenuItem(("I2P").upper(), href="/page-1.3"),
+        dbc.DropdownMenuItem(("I2P").upper(), href="/networks/i2p"),
     ],
     nav=True,
     in_navbar=True,
@@ -593,8 +593,8 @@ NetworkDropdown = dbc.DropdownMenu(
 )
 NodeDropdown = dbc.DropdownMenu(
     children=[
-        dbc.DropdownMenuItem("RPC", href="/page-2.1"),
-        dbc.DropdownMenuItem("Bandwidth", href="/page-2.2"),
+        dbc.DropdownMenuItem("RPC", href="/node/private-node"),
+        dbc.DropdownMenuItem("Bandwidth", href="/node/bandwidth"),
     ],
     nav=True,
     in_navbar=True,
@@ -607,10 +607,10 @@ NodeDropdown = dbc.DropdownMenu(
 )
 DeviceDropdown = dbc.DropdownMenu(
     children=[
-        dbc.DropdownMenuItem("Wi-Fi", href="/page-3.1"),
-        dbc.DropdownMenuItem("Ethernet", href="/page-3.2"),
+        dbc.DropdownMenuItem("Wi-Fi", href="/device/wifi"),
+        dbc.DropdownMenuItem("Ethernet", href="/device/ethernet"),
         dbc.DropdownMenuItem(divider=True),
-        dbc.DropdownMenuItem("System", href="/page-3.3"),
+        dbc.DropdownMenuItem("System", href="/device/system"),
     ],
     nav=True,
     in_navbar=True,
@@ -623,11 +623,11 @@ DeviceDropdown = dbc.DropdownMenu(
 )
 LWSAdminDropdown = dbc.DropdownMenu(
     children=[
-        dbc.DropdownMenuItem("Active", href="/page-4.1"),
-        dbc.DropdownMenuItem("Inactive", href="/page-4.2"),
+        dbc.DropdownMenuItem("Active", href="/lws/active"),
+        dbc.DropdownMenuItem("Inactive", href="/lws/inactive"),
         dbc.DropdownMenuItem(divider=True),
-        dbc.DropdownMenuItem("Add Account", href="/page-4.3"),
-        dbc.DropdownMenuItem("Account Creation Requests", href="/page-4.4"),
+        dbc.DropdownMenuItem("Add Account", href="/lws/add-account"),
+        dbc.DropdownMenuItem("Account Creation Requests", href="/lws/requests"),
     ],
     nav=True,
     in_navbar=True,
@@ -640,11 +640,11 @@ LWSAdminDropdown = dbc.DropdownMenu(
 )
 BlockExplorerDropdown = dbc.DropdownMenu(
     children=[
-        dbc.DropdownMenuItem("Transaction Pool", href="/page-5.1"),
-        dbc.DropdownMenuItem("Transaction Pusher", href="/page-5.2"),
+        dbc.DropdownMenuItem("Transaction Pool", href="/block-explorer/tx-pool"),
+        dbc.DropdownMenuItem("Transaction Pusher", href="/block-explorer/tx-pusher"),
         dbc.DropdownMenuItem(divider=True),
-        dbc.DropdownMenuItem("Key Images Checker", href="/page-5.3"),
-        dbc.DropdownMenuItem("Output keys Checker", href="/page-5.4"),
+        dbc.DropdownMenuItem("Key Images Checker", href="/block-explorer/key-images-checker"),
+        dbc.DropdownMenuItem("Output keys Checker", href="/block-explorer/output-keys-checker"),
     ],
     nav=True,
     in_navbar=True,
@@ -678,7 +678,7 @@ search_bar = dbc.Row(
 )
 # here's how you can recreate the same thing using Navbar
 # (see also required callback at the end of the file)
-NODO_LOGO = "assets/colors-and-nodo-150px.png"
+NODO_LOGO = "/assets/colors-and-nodo-150px.png"
 nav = dbc.Container(
     [
         dbc.NavLink("Internal link", href="/l/components/nav"),
@@ -704,7 +704,7 @@ custom_default = dbc.Navbar(
                     ],
                     className="flex-grow-1 g-0 w-100",
                 ),
-                href="/page-0",
+                href="/status",
                 style={"padding-left": "15px", "padding-right": "30px"},
             ),
             dbc.Collapse(
@@ -712,35 +712,42 @@ custom_default = dbc.Navbar(
                     [
                         dbc.NavLink(
                             ("Networks").upper(),
-                            href="/page-1",
+                            href="/networks",
                             class_name="",
                             id="navbar-collapse-navlink-networks",
                             active="partial",
                         ),
                         dbc.NavLink(
-                            ("Node").upper(),
-                            href="/page-2",
-                            class_name="",
-                            id="navbar-collapse-navlink-node",
-                            active="partial",
-                        ),
-                        dbc.NavLink(
                             ("Device").upper(),
-                            href="/page-3",
+                            href="/device",
                             class_name="",
                             id="navbar-collapse-navlink-device",
                             active="partial",
                         ),
                         dbc.NavLink(
-                            ("Monero-LWS").upper(),
-                            href="/page-4",
+                            ("Node").upper(),
+                            href="/node",
+                            class_name="",
+                            id="navbar-collapse-navlink-node",
+                            active="partial",
+                        ),
+                        dbc.NavLink(
+                            ("Miner").upper(),
+                            href="/miner",
+                            class_name="",
+                            id="navbar-collapse-navlink-miner",
+                            active="partial",
+                        ),
+                        dbc.NavLink(
+                            ("LWS").upper(),
+                            href="/lws/add-account",
                             class_name="",
                             id="navbar-collapse-navlink-lws-admin",
                             active="partial",
                         ),
                         dbc.NavLink(
                             ("Block Explorer").upper(),
-                            href="/page-5",
+                            href="/block-explorer",
                             class_name="",
                             id="navbar-collapse-navlink-block-explorer",
                             active="partial",
@@ -1202,17 +1209,17 @@ def make_page1_1():
                                     [
                                         dbc.NavLink(
                                             ("Clearnet").upper(),
-                                            href="page-1.1",
+                                            href="/networks/clearnet",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                         dbc.NavLink(
                                             ("Tor").upper(),
-                                            href="page-1.2",
+                                            href="/networks/tor",
                                             class_name="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("I2P").upper(),
-                                            href="page-1.3",
+                                            href="/networks/i2p",
                                             class_name="sencondLevelNavlink",
                                         ),
                                     ],
@@ -1254,7 +1261,7 @@ def make_page1_1():
                     ),
                 ],
                 className="me-1 mt-1 pt-2 pb-2",
-                style={"max-width": "150px"},
+                style={"max-width": "350px"},
             ),
             dbc.InputGroup(
                 [
@@ -1324,17 +1331,17 @@ def make_page1_2():
                                     [
                                         dbc.NavLink(
                                             ("Clearnet").upper(),
-                                            href="page-1.1",
+                                            href="/networks/clearnet",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Tor").upper(),
-                                            href="page-1.2",
+                                            href="/networks/tor",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                         dbc.NavLink(
                                             ("I2P").upper(),
-                                            href="page-1.3",
+                                            href="/networks/i2p",
                                             className="sencondLevelNavlink",
                                         ),
                                     ],
@@ -1402,7 +1409,7 @@ def make_page1_2():
                     ),
                 ],
                 className="me-1 mt-1 pt-2 pb-2",
-                style={"max-width": "150px"},
+                style={"max-width": "350px"},
             ),
             dbc.InputGroup(
                 [
@@ -1469,17 +1476,17 @@ def make_page1_3():
                                     [
                                         dbc.NavLink(
                                             ("Clearnet").upper(),
-                                            href="page-1.1",
+                                            href="/networks/clearnet",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Tor").upper(),
-                                            href="page-1.2",
+                                            href="/networks/tor",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("I2P").upper(),
-                                            href="page-1.3",
+                                            href="/networks/i2p",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                     ],
@@ -1533,7 +1540,7 @@ def make_page1_3():
                     ),
                 ],
                 className="me-1 mt-1 pt-2 pb-2",
-                style={"max-width": "150px"},
+                style={"max-width": "350px"},
             ),
             dbc.InputGroup(
                 [
@@ -1596,12 +1603,12 @@ def make_page2_1():
                                     [
                                         dbc.NavLink(
                                             ("Private Node").upper(),
-                                            href="page-2.1",
+                                            href="/node/private-node",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                         dbc.NavLink(
                                             ("Bandwidth").upper(),
-                                            href="page-2.2",
+                                            href="/node/bandwidth",
                                             className="sencondLevelNavlink",
                                         ),
                                     ],
@@ -1643,7 +1650,7 @@ def make_page2_1():
                     ),
                 ],
                 className="me-1 mt-1",
-                style={"max-width": "150px"},
+                style={"max-width": "350px"},
             ),
             dbc.InputGroup(
                 [
@@ -1665,16 +1672,16 @@ def make_page2_1():
                 className="me-1 mt-1 pt-2",
                 style={"max-width": "300px"},
             ),
-            dbc.Col(
-                dbc.Button(
-                    "Apply",
-                    className="buttonNodo ms-auto fa fa-send ",
-                    id="button-node-rpc-apply",
-                    n_clicks=0,
-                ),
-                width="auto",
-                className="me-1 mt-1 pt-2",
-            ),
+            # dbc.Col(
+            #     dbc.Button(
+            #         "Apply",
+            #         className="buttonNodo ms-auto fa fa-send ",
+            #         id="button-node-rpc-apply",
+            #         n_clicks=0,
+            #     ),
+            #     width="auto",
+            #     className="me-1 mt-1 pt-2",
+            # ),
             html.Div(html.P("", className="text-center"), style={"width": "95vw"}),
             html.Div(id="node-rpc-hidden-div", style={"display": "none"}),
             html.Div(id="node-rpc-port-hidden-div", style={"display": "none"}),
@@ -1706,12 +1713,12 @@ def make_page2_2():
                                     [
                                         dbc.NavLink(
                                             ("Private Node").upper(),
-                                            href="page-2.1",
+                                            href="/node/private-node",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Bandwidth").upper(),
-                                            href="page-2.2",
+                                            href="/node/bandwidth",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                     ],
@@ -1833,17 +1840,17 @@ def make_page3_1():
                                     [
                                         dbc.NavLink(
                                             ("Wi-Fi").upper(),
-                                            href="page-3.1",
+                                            href="/device/wifi",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                         dbc.NavLink(
                                             ("Ethernet").upper(),
-                                            href="page-3.2",
+                                            href="/device/ethernet",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("System").upper(),
-                                            href="page-3.3",
+                                            href="/device/system",
                                             className="sencondLevelNavlink",
                                         ),
                                     ],
@@ -1870,7 +1877,7 @@ def make_page3_1():
                         id="switch-device-wifi",
                     ),
                 ],
-                style={"min-width": "150px"},
+                style={"min-width": "350px"},
             ),
             dcc.Dropdown(
                 ssids,
@@ -2009,17 +2016,17 @@ def make_page3_2():
                                     [
                                         dbc.NavLink(
                                             ("Wi-Fi").upper(),
-                                            href="page-3.1",
+                                            href="/device/wifi",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Ethernet").upper(),
-                                            href="page-3.2",
+                                            href="/device/ethernet",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                         dbc.NavLink(
                                             ("System").upper(),
-                                            href="page-3.3",
+                                            href="/device/system",
                                             className="sencondLevelNavlink",
                                         ),
                                     ],
@@ -2121,17 +2128,17 @@ def make_page3_3():
                                     [
                                         dbc.NavLink(
                                             ("Wi-Fi").upper(),
-                                            href="page-3.1",
+                                            href="/device/wifi",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Ethernet").upper(),
-                                            href="page-3.2",
+                                            href="/device/ethernet",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("System").upper(),
-                                            href="page-3.3",
+                                            href="/device/system",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                     ],
@@ -2175,7 +2182,7 @@ def make_page3_3():
             dbc.Col(
                 dbc.Button(
                     "Recovery",
-                    href="/page-3.3.2",
+                    href="/device/system/recovery",
                     className="me-1 mt-1 ms-auto fa fa-send node-system-recovery-button",
                     id="submit-val-node-system-recovery",
                     n_clicks=0,
@@ -2217,7 +2224,7 @@ def make_page3_3_2():
             ),
             dbc.Button(
                 "Cancel",
-                href="/page-3.3",
+                href="/device/system",
                 className="ml-8 me-1 mt-1 node-system-recovery-cancel-button",
                 id="submit-val-node-system-recovery-cancel",
                 n_clicks=0,
@@ -2647,22 +2654,22 @@ page4_1 = html.Div(
                                 [
                                     dbc.NavLink(
                                         ("Active").upper(),
-                                        href="page-4.1",
+                                        href="/lws/active",
                                         className="sencondLevelNavlinkActive",
                                     ),
                                     dbc.NavLink(
                                         ("Inactive").upper(),
-                                        href="page-4.2",
+                                        href="/lws/inactive",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Add Account").upper(),
-                                        href="page-4.3",
+                                        href="/lws/add-account",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Account Creation Requests").upper(),
-                                        href="page-4.4",
+                                        href="/lws/requests",
                                         className="sencondLevelNavlink",
                                     ),
                                 ],
@@ -2703,22 +2710,22 @@ page4_2 = html.Div(
                                 [
                                     dbc.NavLink(
                                         ("Active").upper(),
-                                        href="page-4.1",
+                                        href="/lws/active",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Inactive").upper(),
-                                        href="page-4.2",
+                                        href="/lws/inactive",
                                         className="sencondLevelNavlinkActive",
                                     ),
                                     dbc.NavLink(
                                         ("Add Account").upper(),
-                                        href="page-4.3",
+                                        href="/lws/add-account",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Account Creation Requests").upper(),
-                                        href="page-4.4",
+                                        href="/lws/requests",
                                         className="sencondLevelNavlink",
                                     ),
                                 ],
@@ -2756,22 +2763,22 @@ page4_3 = html.Div(
                                 [
                                     dbc.NavLink(
                                         ("Active").upper(),
-                                        href="page-4.1",
+                                        href="/lws/active",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Inactive").upper(),
-                                        href="page-4.2",
+                                        href="/lws/inactive",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Add Account").upper(),
-                                        href="page-4.3",
+                                        href="/lws/add-account",
                                         className="sencondLevelNavlinkActive",
                                     ),
                                     dbc.NavLink(
                                         ("Account Creation Requests").upper(),
-                                        href="page-4.4",
+                                        href="/lws/requests",
                                         className="sencondLevelNavlink",
                                     ),
                                 ],
@@ -2838,22 +2845,22 @@ page4_4 = html.Div(
                                 [
                                     dbc.NavLink(
                                         ("Active").upper(),
-                                        href="page-4.1",
+                                        href="/lws/active",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Inactive").upper(),
-                                        href="page-4.2",
+                                        href="/lws/inactive",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Add Account").upper(),
-                                        href="page-4.3",
+                                        href="/lws/add-account",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Account Creation Requests").upper(),
-                                        href="page-4.4",
+                                        href="/lws/requests",
                                         className="sencondLevelNavlinkActive",
                                     ),
                                 ],
@@ -3063,22 +3070,22 @@ def make_page5_1():
                                     [
                                         dbc.NavLink(
                                             ("Transaction Pool").upper(),
-                                            href="page-5.1",
+                                            href="/block-explorer/tx-pool",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                         dbc.NavLink(
                                             ("Transaction Pusher").upper(),
-                                            href="page-5.2",
+                                            href="/block-explorer/tx-pusher",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Key Images Checker").upper(),
-                                            href="page-5.3",
+                                            href="/block-explorer/key-images-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Output Keys Checker").upper(),
-                                            href="page-5.4",
+                                            href="/block-explorer/output-keys-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                     ],
@@ -3318,7 +3325,7 @@ tab_page5_1_tx_decode_outputs = html.Div(
                         [
                             dbc.Button(
                                 "Decode outputs",
-                                href="/page-5.1-tx-decode-outputs",
+                                href="/block-explorer/tx-pool/decode-outputs",
                                 className="d-flex justify-content-end text-center buttonNodo ml-8 me-1 mt-1 ",
                                 id="submit-val-page5_1_decode_outputs",
                                 n_clicks=0,
@@ -3717,22 +3724,22 @@ def make_page_5_1_tx_decode_or_prove_outputs(param1, param2, prove):
                                     [
                                         dbc.NavLink(
                                             "Transaction Pool",
-                                            href="page-5.1",
+                                            href="/block-explorer/tx-pool",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                         dbc.NavLink(
                                             "Transaction Pusher",
-                                            href="page-5.2",
+                                            href="/block-explorer/tx-pusher",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             "Key Images Checker",
-                                            href="page-5.3",
+                                            href="/block-explorer/key-images-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             "Output Keys Checker",
-                                            href="page-5.4",
+                                            href="/block-explorer/output-keys-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                     ],
@@ -3865,22 +3872,22 @@ def make_page_5_1_tx(tx):
                                     [
                                         dbc.NavLink(
                                             ("Transaction Pool").upper(),
-                                            href="page-5.1",
+                                            href="/block-explorer/tx-pool",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                         dbc.NavLink(
                                             ("Transaction Pusher").upper(),
-                                            href="page-5.2",
+                                            href="/block-explorer/tx-pusher",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Key Images Checker").upper(),
-                                            href="page-5.3",
+                                            href="/block-explorer/key-images-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Output Keys Checker").upper(),
-                                            href="page-5.4",
+                                            href="/block-explorer/output-keys-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                     ],
@@ -4647,22 +4654,22 @@ def make_page_5_1_block(block):
                                     [
                                         dbc.NavLink(
                                             ("Transaction Pool").upper(),
-                                            href="page-5.1",
+                                            href="/block-explorer/tx-pool",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                         dbc.NavLink(
                                             ("Transaction Pusher").upper(),
-                                            href="page-5.2",
+                                            href="/block-explorer/tx-pusher",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Key Images Checker").upper(),
-                                            href="page-5.3",
+                                            href="/block-explorer/key-images-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Output Keys Checker").upper(),
-                                            href="page-5.4",
+                                            href="/block-explorer/output-keys-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                     ],
@@ -4822,22 +4829,22 @@ def make_page_5_2_tx_check(param1):
                                     [
                                         dbc.NavLink(
                                             ("Transaction Pool").upper(),
-                                            href="page-5.1",
+                                            href="/block-explorer/tx-pool",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Transaction Pusher").upper(),
-                                            href="page-5.2",
+                                            href="/block-explorer/tx-pusher",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                         dbc.NavLink(
                                             ("Key Images Checker").upper(),
-                                            href="page-5.3",
+                                            href="/block-explorer/key-images-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Output Keys Checker").upper(),
-                                            href="page-5.4",
+                                            href="/block-explorer/output-keys-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                     ],
@@ -5016,22 +5023,22 @@ def make_page_5_2_tx_push(param1):
                                     [
                                         dbc.NavLink(
                                             ("Transaction Pool").upper(),
-                                            href="page-5.1",
+                                            href="/block-explorer/tx-pool",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Transaction Pusher").upper(),
-                                            href="page-5.2",
+                                            href="/block-explorer/tx-pusher",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                         dbc.NavLink(
                                             ("Key Images Checker").upper(),
-                                            href="page-5.3",
+                                            href="/block-explorer/key-images-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Output Keys Checker").upper(),
-                                            href="page-5.4",
+                                            href="/block-explorer/output-keys-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                     ],
@@ -5080,6 +5087,70 @@ def make_page_5_2_tx_push(param1):
         ]
     )
 
+def make_page6():
+    global conf_dict
+    m = conf_dict["config"]["mining"]
+    miner_enabled = True if m["enabled"] == "TRUE" else False
+    miner_address = m["address"]
+    miner_difficulty = m["difficulty"]
+
+    return html.Div(
+        [
+            html.Br(),
+            html.P("Miner", className="d-none"),
+            dbc.InputGroup(
+                [
+                    dbc.Label("Miner", className="me-1 mt-1"),
+                    daq.BooleanSwitch(
+                        on=miner_enabled,
+                        label="",
+                        color="#0d6efd",
+                        id="switch-miner-enabled",
+                    ),
+                ],
+                style={"min-width": "350px"},
+            ),
+            html.Div([
+                "Mining is done with ",
+                html.A("P2Pool", href="https://github.com/SChernykh/p2pool"),
+                " and ",
+                html.A("XMRig", href="https://github.com/xmrig/xmrig"),
+                ".",
+            ]),
+            html.Br(),
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText("Mining Difficulty"),
+                    dbc.Input(
+                        type="number",
+                        min=1024,
+                        max=65535,
+                        step=1,
+                        id="input-miner-difficulty",
+                        value=miner_difficulty,
+                    ),
+                ],
+                className="me-1 mt-1",
+                style={"max-width": "350px"},
+            ),
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText("Deposit Address"),
+                    dbc.Input(
+                        type="text", value=miner_address,
+                        style={"font-family": "monospace"},
+                        id="input-miner-address",
+                        pattern="^[4][1-9A-HJ-NP-Za-km-z]{94}$",
+                    ),
+                ],
+                className="me-1 mt-1 pt-2",
+                style={"max-width": "800px"},
+            ),
+            html.Br(),
+            dbc.Label("Warning: Your deposit address must start with a 4!"),
+            dbc.Label("Warning: The deposit address will be publicly viewable. For privacy, use a different wallet!"),
+        ]
+    )
 
 page5_2 = html.Div(
     [
@@ -5093,22 +5164,22 @@ page5_2 = html.Div(
                                 [
                                     dbc.NavLink(
                                         ("Transaction Pool").upper(),
-                                        href="page-5.1",
+                                        href="/block-explorer/tx-pool",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Transaction Pusher").upper(),
-                                        href="page-5.2",
+                                        href="/block-explorer/tx-pusher",
                                         className="sencondLevelNavlinkActive",
                                     ),
                                     dbc.NavLink(
                                         ("Key Images Checker").upper(),
-                                        href="page-5.3",
+                                        href="/block-explorer/key-images-checker",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Output Keys Checker").upper(),
-                                        href="page-5.4",
+                                        href="/block-explorer/output-keys-checker",
                                         className="sencondLevelNavlink",
                                     ),
                                 ],
@@ -5189,7 +5260,7 @@ page5_2 = html.Div(
                         [
                             dbc.Button(
                                 "Check",
-                                href="/page-5.2-tx-check",
+                                href="/block-explorer/tx-pusher/check",
                                 className="d-flex justify-content-end text-center buttonNodo me-1 mt-1 ",
                                 id="submit-val_explorer_transaction_pusher_check",
                                 n_clicks=0,
@@ -5197,7 +5268,7 @@ page5_2 = html.Div(
                             ),
                             dbc.Button(
                                 "Push",
-                                href="/page-5.2-tx-push",
+                                href="/block-explorer/tx-pusher/push",
                                 className="d-flex justify-content-end text-center buttonNodo ml-8 me-1 mt-1 ",
                                 id="submit-val_explorer_transaction_pusher_push",
                                 n_clicks=0,
@@ -5263,22 +5334,22 @@ def page5_3_key_images_checker_check(param1, param2):
                                     [
                                         dbc.NavLink(
                                             ("Transaction Pool").upper(),
-                                            href="page-5.1",
+                                            href="/block-explorer/tx-pool",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Transaction Pusher").upper(),
-                                            href="page-5.2",
+                                            href="/block-explorer/tx-pusher",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Key Images Checker").upper(),
-                                            href="page-5.3",
+                                            href="/block-explorer/key-images-checker",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                         dbc.NavLink(
                                             ("Output Keys Checker").upper(),
-                                            href="page-5.4",
+                                            href="/block-explorer/output-keys-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                     ],
@@ -5389,22 +5460,22 @@ page5_3 = html.Div(
                                 [
                                     dbc.NavLink(
                                         ("Transaction Pool").upper(),
-                                        href="page-5.1",
+                                        href="/block-explorer/tx-pool",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Transaction Pusher").upper(),
-                                        href="page-5.2",
+                                        href="/block-explorer/tx-pusher",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Key Images Checker").upper(),
-                                        href="page-5.3",
+                                        href="/block-explorer/key-images-checker",
                                         className="sencondLevelNavlinkActive",
                                     ),
                                     dbc.NavLink(
                                         ("Output Keys Checker").upper(),
-                                        href="page-5.4",
+                                        href="/block-explorer/output-keys-checker",
                                         className="sencondLevelNavlink",
                                     ),
                                 ],
@@ -5490,7 +5561,7 @@ page5_3 = html.Div(
                         [
                             dbc.Button(
                                 "Check",
-                                href="/page-5-3-key-images-checker-check",
+                                href="/block-explorer/key-images-checker/check",
                                 className="d-flex justify-content-end text-center buttonNodo me-1 mt-1 ",
                                 id="submit-val_explorer_transaction_key_images_checker_check",
                                 n_clicks=0,
@@ -5560,22 +5631,22 @@ def page5_4_signed_output_public_keys_checker_check(param1, param2):
                                     [
                                         dbc.NavLink(
                                             ("Transaction Pool").upper(),
-                                            href="page-5.1",
+                                            href="/block-explorer/tx-pool",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Transaction Pusher").upper(),
-                                            href="page-5.2",
+                                            href="/block-explorer/tx-pusher",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Key Images Checker").upper(),
-                                            href="page-5.3",
+                                            href="/block-explorer/key-images-checker",
                                             className="sencondLevelNavlink",
                                         ),
                                         dbc.NavLink(
                                             ("Output Keys Checker").upper(),
-                                            href="page-5.4",
+                                            href="/block-explorer/output-keys-checker",
                                             className="sencondLevelNavlinkActive",
                                         ),
                                     ],
@@ -5694,22 +5765,22 @@ page5_4 = html.Div(
                                 [
                                     dbc.NavLink(
                                         ("Transaction Pool").upper(),
-                                        href="page-5.1",
+                                        href="/block-explorer/tx-pool",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Transaction Pusher").upper(),
-                                        href="page-5.2",
+                                        href="/block-explorer/tx-pusher",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Key Images Checker").upper(),
-                                        href="page-5.3",
+                                        href="/block-explorer/key-images-checker",
                                         className="sencondLevelNavlink",
                                     ),
                                     dbc.NavLink(
                                         ("Output Keys Checker").upper(),
-                                        href="page-5.4",
+                                        href="/block-explorer/output-keys-checker",
                                         className="sencondLevelNavlinkActive",
                                     ),
                                 ],
@@ -5795,7 +5866,7 @@ page5_4 = html.Div(
                         [
                             dbc.Button(
                                 "Check",
-                                href="/page-5-4-signed-output-public-keys-checker-check",
+                                href="/block-explorer/output-keys-checker/check",
                                 className="d-flex justify-content-end text-center buttonNodo me-1 mt-1 ",
                                 id="submit-val_explorer_transaction_output_keys_checker_check",
                                 n_clicks=0,
@@ -5849,78 +5920,78 @@ def render_page_content(pathname, value):
     matchPattTx = pattTx.match(pathname)
     matchPattBlock = pattBlock.match(pathname)
     if pathname == "/":
+        return make_page0() #status
+    elif pathname == "/status": #/page-0
         return make_page0()
-    elif pathname == "/page-0":
-        return make_page0()
-    elif pathname == "/page-1":
+    elif pathname == "/networks": #/page-1
         return make_page1_1()
-    elif pathname == "/page-1.1":
+    elif pathname == "/networks/clearnet": #/page-1.1
         return make_page1_1()
-    elif pathname == "/page-1.2":
+    elif pathname == "/networks/tor": #/page-1.2
         return make_page1_2()
-    elif pathname == "/page-1.3":
+    elif pathname == "/networks/i2p": #/page-1.3
         return make_page1_3()
-    elif pathname == "/page-2":
+    elif pathname == "/node": #/page-2
         return make_page2_1()
-    elif pathname == "/page-2.1":
+    elif pathname == "/node/private-node": #/page-2.1
         return make_page2_1()
-    elif pathname == "/page-2.2":
+    elif pathname == "/node/bandwidth": #/page-2.2
         return make_page2_2()
-    elif pathname == "/page-3":
+    elif pathname == "/device": #/page-3
         return make_page3_1()
-    elif pathname == "/page-3.1":
+    elif pathname == "/device/wifi": #/page-3.1
         return make_page3_1()
-    elif pathname == "/page-3.2":
+    elif pathname == "/device/ethernet": #/page-3.2
         return make_page3_2()
-    elif pathname == "/page-3.3":
+    elif pathname == "/device/system": #/page-3.3
         return make_page3_3()
-    elif pathname == "/page-3.3.2":
+    elif pathname == "/device/system/recovery": #/page-3.3.2
         return make_page3_3_2()
-    elif pathname == "/page-4.1":
+    elif pathname == "/lws/active": #/page-4.1
         return page4_1
-    elif pathname == "/page-4.2":
+    elif pathname == "/lws/inactive": #/page-4.2
         return page4_2
-    elif pathname == "/page-4":
+    elif pathname == "/lws/add-account": #/page-4
         return page4_3
-    elif pathname == "/page-4.3":
+    elif pathname == "/lws/add-account": #/page-4.3
         return page4_3
-    elif pathname == "/page-4.4":
+    elif pathname == "/lws/requests": #/page-4.4
         return page4_4
-    elif pathname == "/page-5":
+    elif pathname == "/block-explorer": #/page-5
         return make_page5_1()
-    elif pathname == "/page-5.1":
+    elif pathname == "/block-explorer/tx-pool": #/page-5.1
         return make_page5_1()
-    elif pathname == "/page-5.2":
+    elif pathname == "/block-explorer/tx-pusher": #/page-5.2
         return page5_2
-    elif pathname == "/page-5.2-tx-check":
+    elif pathname == "/block-explorer/tx-pusher/check": #/page-5.2-tx-check
         f = furl(value)
         param1 = f.args["param1"]
         print(f.args["param1"])
         return make_page_5_2_tx_check(param1)
-    elif pathname == "/page-5.2-tx-push":
+    elif pathname == "/block-explorer/tx-pusher/push": #/page-5.2-tx-push
         f = furl(value)
         param1 = f.args["param1"]
         print(f.args["param1"])
         return make_page_5_2_tx_push(param1)
-    elif pathname == "/page-5.3":
+    elif pathname == "/block-explorer/key-images-checker": #/page-5.3
         return page5_3
-    elif pathname == "/page-5-3-key-images-checker-check":
+    elif pathname == "/block-explorer/key-images-checker/check": #/page-5-3-key-images-checker-check
         f = furl(value)
         param1 = f.args["param1"]
         param2 = f.args["param2"]
         print(f.args["param1"])
         print(f.args["param2"])
         return page5_3_key_images_checker_check(param1, param2)
-    elif pathname == "/page-5.4":
+    elif pathname == "/block-explorer/output-keys-checker": #/page-5.4
         return page5_4
-    elif pathname == "/page-5-4-signed-output-public-keys-checker-check":
+    elif pathname == "/block-explorer/output-keys-checker/check": #/page-5-4-signed-output-public-keys-checker-check
         f = furl(value)
         param1 = f.args["param1"]
         param2 = f.args["param2"]
         print(f.args["param1"])
         print(f.args["param2"])
         return page5_4_signed_output_public_keys_checker_check(param1, param2)
-    elif pathname == "/page-5.1-tx-decode-outputs":
+    elif pathname == "/block-explorer/tx-pool/decode-outputs": #/page-5.1-tx-decode-outputs
         prove = 0
         f = furl(value)
         param1 = f.args["param1"]
@@ -5928,7 +5999,7 @@ def render_page_content(pathname, value):
         print(f.args["param1"])
         print(f.args["param2"])
         return make_page_5_1_tx_decode_or_prove_outputs(param1, param2, prove)
-    elif pathname == "/page-5.1-tx-prove-sending":
+    elif pathname == "/block-explorer/tx-pool/prove-spend": #/page-5.1-tx-prove-sending
         prove = 1
         f = furl(value)
         param1 = f.args["param1"]
@@ -5940,6 +6011,8 @@ def render_page_content(pathname, value):
         return make_page_5_1_tx(matchPattTx.group(1))
     elif matchPattBlock:
         return make_page_5_1_block(matchPattBlock.group(1))
+    elif pathname == "/miner": #/page-6
+        return make_page6()
     # If the user tries to reach a different page, return a 404 message
     return html.Div(
         [
@@ -7071,6 +7144,36 @@ def validate_input_device_ethernet_router_by_regex(value, pattern):
 
 
 # ====================================================================
+# miner
+# ====================================================================
+@app.callback(
+    [
+        Output("input-miner-address", "valid"),
+        Output("input-miner-address", "invalid"),
+    ],
+    [Input("switch-miner-enabled", "on"),
+     Input("input-miner-difficulty", "value"),
+     Input("input-miner-address", "value")],
+    [State("input-miner-address", "pattern")],
+)
+def callback_miner(enabled, difficulty, address, pattern):
+    global page3_device_ethernet
+    patt = re.compile(pattern)
+
+    if patt.match(address):
+        # ================================================================
+        # Add save function to write back
+        # page3_device_ethernet["dhcp"] into backend.
+        # ...
+        w: dict = conf_dict["config"]["mining"]
+        w["address"] = address
+        w["enabled"] = "TRUE" if enabled else "FALSE"
+        w["difficulty"] = difficulty
+        save_config()
+        return True, False
+    return False, True
+
+# ====================================================================
 # Page 3_2 Device -> Ethernet -> dhcp text validation (Input)
 # Trigger by clicking the Ethernet -> dhcp text validation (Input)
 # ====================================================================
@@ -7635,7 +7738,7 @@ def update_button_decode_outputs_href(tx_monero_address_subaddress, tx_viewkey):
     print("tx_viewkey", tx_viewkey != None)
     if tx_monero_address_subaddress != None and tx_viewkey != None:
         if len(tx_monero_address_subaddress) > 0 and len(tx_viewkey) > 0:
-            f = furl("/page-5.1-tx-decode-outputs")
+            f = furl("/block-explorer/tx-pool/decode-outputs")
             f.add({"param1": tx_monero_address_subaddress})
             f.add({"param2": tx_viewkey})
             print(f.url)
@@ -7673,7 +7776,7 @@ def update_button_decode_outputs_href(
             len(tx_tx_private_key) > 0
             and len(tx_recipients_monero_address_subaddress) > 0
         ):
-            f = furl("/page-5.1-tx-prove-sending")
+            f = furl("/block-explorer/tx-pool/prove-spend")
             f.add({"param1": tx_tx_private_key})
             f.add({"param2": tx_recipients_monero_address_subaddress})
             print(f.url)
@@ -7705,9 +7808,9 @@ def update_button_explorer_transaction_pusher_check_href(
     )
     if textarea_explorer_transaction_pusher != None:
         if len(textarea_explorer_transaction_pusher) > 0:
-            f = furl("/page-5.2-tx-check")
+            f = furl("/block-explorer/tx-pusher/check")
             f.add({"param1": textarea_explorer_transaction_pusher})
-            f2 = furl("/page-5.2-tx-push")
+            f2 = furl("/block-explorer/tx-pusher/push")
             f2.add({"param1": textarea_explorer_transaction_pusher})
             print(f.url)
             print(f2.url)
@@ -7757,7 +7860,7 @@ def update_button_explorer_transaction_key_images_checker_check_href(
             len(textarea_explorer_transaction_key_images_checker) > 0
             and len(input_explorer_transaction_key_images_checker) > 0
         ):
-            f = furl("/page-5-3-key-images-checker-check")
+            f = furl("/block-explorer/key-images-checker/check")
             f.add({"param1": textarea_explorer_transaction_key_images_checker})
             f.add({"param2": input_explorer_transaction_key_images_checker})
             print(f.url)
@@ -7807,7 +7910,7 @@ def update_button_explorer_transaction_output_keys_checker_href(
             len(textarea_explorer_transaction_output_keys_checker) > 0
             and len(input_explorer_transaction_output_keys_checker) > 0
         ):
-            f = furl("/page-5-4-signed-output-public-keys-checker-check")
+            f = furl("/block-explorer/output-keys-checker/check")
             f.add({"param1": textarea_explorer_transaction_output_keys_checker})
             f.add({"param2": input_explorer_transaction_output_keys_checker})
             print(f.url)
@@ -7888,5 +7991,3 @@ if __name__ == "__main__":
     load_page4_values()
     app.run_server(host=host, port=str(port), debug=False)
     stopFlag.set()
-
-

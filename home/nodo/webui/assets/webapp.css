@@ -171,6 +171,15 @@ body, .ast-separate-container {
 	background-color: 000000;
 	text-decoration: none;
 }
+#navbar-collapse-navlink-miner {
+	color: #CFCFCF;
+	background-color: 000000;
+}
+#navbar-collapse-navlink-miner:hover {
+	color: #EF8141;
+	background-color: 000000;
+	text-decoration: none;
+}
 #navbar-collapse-navlink-lws-admin {
 	color: #CFCFCF;
 	background-color: 000000;

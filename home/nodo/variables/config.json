@@ -34,7 +34,8 @@
 		"sync_mode": "fast:async",
 		"mining": {
 			"enabled": "FALSE",
-			"address": ""
+			"address": "",
+			"difficulty": 1234
 		},
 		"ethernet": {
 			"enabled": "TRUE",
