@@ -26,6 +26,7 @@ from dash import dash_table
 import pandas as pd
 from pandas import json_normalize
 from furl import furl
+from dataclasses import dataclass
 
 
 def get_ip():
@@ -84,6 +85,30 @@ inactive_address_height = []
 # Page 4.4 ( AWS Admin -> Account Creation Requests )
 account_address_viewkey_height = []
 
+
+@dataclass
+class Feed:
+    url: str
+    label: str
+    _id: str
+    articles: int = 5
+
+
+feeds = [
+    Feed("https://monerotalk.live/rss",
+         "Monero Talk", "switch-feed-monero-talk"),
+    Feed("https://www.getmonero.org/feed.xml",
+         "Monero (Official)", "switch-feed-monero-official", articles=2),
+    Feed("https://monero.observer/feed-messages.xml",
+         "Monero Observer (Messages)", "switch-feed-mo-messages"),
+    Feed("https://monero.observer/feed-stories-mini.xml",
+         "Monero Observer (News stories)", "switch-feed-mo-stories"),
+    Feed("https://revuo-xmr.com/atom.xml",
+         "Revuo Monero", "switch-feed-revuo-monero", articles=1),
+    Feed("https://www.themoneromoon.com/feed",
+         "The Monero Moon", "switch-feed-monero-moon", articles=1)
+]
+
 # Page 5.1 ( BLOCK EXPLORER -> TRANSACTION POOL )
 # transaction_pool_information={}
 
@@ -99,7 +124,7 @@ statustable: dict = {
     "running\n": "Running",
     "active\n": "Active",
     "activating\n": "Starting",
-    "deactivating\n": "Stopping"
+    "deactivating\n": "Stopping",
 }
 
 
@@ -157,6 +182,10 @@ def update_config():
                 "block-explorer.service",
             ]
         )
+        miner: bool = conf_dict["config"]["mining"]["enabled"] == "TRUE"
+        proc.run(
+            ["systemctl", "enable" if miner else "disable", "--now", "xmrig.service"]
+        )
         applied = True
 
 
@@ -165,7 +194,6 @@ def save_config():
     global written, applied
     update_time = datetime.datetime.now() + timedelta_config
     written = applied = False
-
 
 # ====================================================================
 # Description: load values for page0 web ui
@@ -202,37 +230,31 @@ def load_page0_values():
         else:
             page0_sync_status["sync_status"] = "Not syncing..."
 
-    s: list[str] = ["systemctl", "show",
-                    "--no-pager", "--property=SubState", ""]
+    s: list[str] = ["systemctl", "show", "--no-pager", "--property=SubState", ""]
     s[4] = "monerod"
-    page0_system_status["mainnet_node"] = (
-        statustable[proc.run(s,
-                             stdout=proc.PIPE).stdout.decode().split("=")[1]] # + " ({0})".format(mode)
-    )
+    page0_system_status["mainnet_node"] = statustable[
+        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+    ]  # + " ({0})".format(mode)
 
     s[4] = "tor"
-    page0_system_status["tor_node"] = (
-        statustable[proc.run(s,
-                             stdout=proc.PIPE).stdout.decode().split("=")[1]]
-    )
+    page0_system_status["tor_node"] = statustable[
+        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+    ]
 
     s[4] = "i2pd"
-    page0_system_status["i2p_node"] = (
-        statustable[proc.run(s,
-                             stdout=proc.PIPE).stdout.decode().split("=")[1]]
-    )
+    page0_system_status["i2p_node"] = statustable[
+        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+    ]
 
     s[4] = "monero-lws"
-    page0_system_status["monero_lws_admin"] = (
-        statustable[proc.run(s,
-                             stdout=proc.PIPE).stdout.decode().split("=")[1]]
-    )
+    page0_system_status["monero_lws_admin"] = statustable[
+        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+    ]
 
     s[4] = "block-explorer"
-    page0_system_status["block_explorer"] = (
-        statustable[proc.run(s,
-                             stdout=proc.PIPE).stdout.decode().split("=")[1]]
-    )
+    page0_system_status["block_explorer"] = statustable[
+        proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
+    ]
 
     page0_hardware_status["cpu_percentage"] = psutil.cpu_percent()
     if "soc-thermal" in psutil.sensors_temperatures():
@@ -275,9 +297,9 @@ def load_page1_values():
     page1_networks_tor["port"] = c["tor_port"]
     page1_networks_tor["onion_addr"] = c["onion_addr"]
     page1_networks_tor["peer"] = c["add_tor_peer"]
-    page1_networks_tor[
-        "route_all_connections_through_tor_switch"
-    ] = 1 if c["tor_global_enabled"] == "TRUE" else 0
+    page1_networks_tor["route_all_connections_through_tor_switch"] = (
+        1 if c["tor_global_enabled"] == "TRUE" else 0
+    )
 
     page1_networks_i2p["i2p_switch"] = 1 if c["i2p_enabled"] == "TRUE" else 0
     page1_networks_i2p["port"] = c["i2p_port"]
@@ -441,7 +463,9 @@ submenu_1 = [
     dbc.Collapse(
         dbc.Nav(
             [
-                dbc.NavLink(("Clearnet").upper(), href="/networks/clearnet", active="partial"),
+                dbc.NavLink(
+                    ("Clearnet").upper(), href="/networks/clearnet", active="partial"
+                ),
                 dbc.NavLink(("Tor").upper(), href="/networks/tor", active="partial"),
                 dbc.NavLink(("I2P").upper(), href="/networks/i2p", active="partial"),
             ],
@@ -467,9 +491,13 @@ submenu_2 = [
         dbc.Nav(
             [
                 dbc.NavLink(
-                    ("Private Node").upper(), href="/node/private-node", active="partial"
+                    ("Private Node").upper(),
+                    href="/node/private-node",
+                    active="partial",
                 ),
-                dbc.NavLink(("Bandwidth").upper(), href="/node/bandwidth", active="partial"),
+                dbc.NavLink(
+                    ("Bandwidth").upper(), href="/node/bandwidth", active="partial"
+                ),
             ],
             pills=True,
             className="d-flex flex-column",
@@ -493,8 +521,12 @@ submenu_3 = [
         dbc.Nav(
             [
                 dbc.NavLink(("Wi-Fi").upper(), href="/device/wifi", active="partial"),
-                dbc.NavLink(("Ethernet").upper(), href="/device/ethernet", active="partial"),
-                dbc.NavLink(("System").upper(), href="/device/system", active="partial"),
+                dbc.NavLink(
+                    ("Ethernet").upper(), href="/device/ethernet", active="partial"
+                ),
+                dbc.NavLink(
+                    ("System").upper(), href="/device/system", active="partial"
+                ),
             ],
             pills=True,
             className="d-flex flex-column",
@@ -518,7 +550,9 @@ submenu_4 = [
         dbc.Nav(
             [
                 dbc.NavLink(("Active").upper(), href="/lws/active", active="partial"),
-                dbc.NavLink(("Inactive").upper(), href="/lws/inactive", active="partial"),
+                dbc.NavLink(
+                    ("Inactive").upper(), href="/lws/inactive", active="partial"
+                ),
                 dbc.NavLink(
                     ("Add Account").upper(), href="/lws/add-account", active="partial"
                 ),
@@ -551,16 +585,24 @@ submenu_5 = [
         dbc.Nav(
             [
                 dbc.NavLink(
-                    ("Transaction Pool").upper(), href="/block-explorer/tx-pool", active="partial"
+                    ("Transaction Pool").upper(),
+                    href="/block-explorer/tx-pool",
+                    active="partial",
                 ),
                 dbc.NavLink(
-                    ("Transaction Pusher").upper(), href="/block-explorer/tx-pusher", active="partial"
+                    ("Transaction Pusher").upper(),
+                    href="/block-explorer/tx-pusher",
+                    active="partial",
                 ),
                 dbc.NavLink(
-                    ("Key Images Checker").upper(), href="/block-explorer/key-images-checker", active="partial"
+                    ("Key Images Checker").upper(),
+                    href="/block-explorer/key-images-checker",
+                    active="partial",
                 ),
                 dbc.NavLink(
-                    ("Output Keys Checker").upper(), href="/block-explorer/output-keys-checker", active="partial"
+                    ("Output Keys Checker").upper(),
+                    href="/block-explorer/output-keys-checker",
+                    active="partial",
                 ),
             ],
             pills=True,
@@ -643,8 +685,12 @@ BlockExplorerDropdown = dbc.DropdownMenu(
         dbc.DropdownMenuItem("Transaction Pool", href="/block-explorer/tx-pool"),
         dbc.DropdownMenuItem("Transaction Pusher", href="/block-explorer/tx-pusher"),
         dbc.DropdownMenuItem(divider=True),
-        dbc.DropdownMenuItem("Key Images Checker", href="/block-explorer/key-images-checker"),
-        dbc.DropdownMenuItem("Output keys Checker", href="/block-explorer/output-keys-checker"),
+        dbc.DropdownMenuItem(
+            "Key Images Checker", href="/block-explorer/key-images-checker"
+        ),
+        dbc.DropdownMenuItem(
+            "Output keys Checker", href="/block-explorer/output-keys-checker"
+        ),
     ],
     nav=True,
     in_navbar=True,
@@ -1360,26 +1406,28 @@ def make_page1_2():
             ),
             dbc.InputGroup(
                 [
-                    dbc.Label("Tor", className="me-1 mt-1"),
                     daq.BooleanSwitch(
                         on=tor_switch,
                         label="",
                         color="#0d6efd",
                         id="switch-networks-tor",
+                        style={"min-width": "80px"}
                     ),
+                    dbc.Label("Tor", className="me-1 mt-1"),
                 ],
                 style={"min-width": "150px"},
             ),
             dbc.InputGroup(
                 [
-                    dbc.Label(
-                        "Route all connections through Tor", className="me-1 mt-1"
-                    ),
                     daq.BooleanSwitch(
                         on=route_all_connections_through_tor_switch,
                         label="",
                         color="#0d6efd",
                         id="switch-networks-tor-route-all-connections-through-tor-switch",
+                        style={"min-width": "80px"}
+                    ),
+                    dbc.Label(
+                        "Route all connections through Tor", className="me-1 mt-1"
                     ),
                 ],
                 style={"min-width": "150px"},
@@ -1505,13 +1553,14 @@ def make_page1_3():
             ),
             dbc.InputGroup(
                 [
-                    dbc.Label("I2P", className="me-1 mt-1"),
                     daq.BooleanSwitch(
                         on=i2p_switch,
                         label="",
                         color="#0d6efd",
                         id="switch-networks-i2p",
+                        style={"min-width": "80px"}
                     ),
+                    dbc.Label("I2P", className="me-1 mt-1"),
                 ],
                 style={"min-width": "150px"},
             ),
@@ -1853,6 +1902,11 @@ def make_page3_1():
                                             href="/device/system",
                                             className="sencondLevelNavlink",
                                         ),
+                                        # dbc.NavLink(
+                                        #     ("News feeds").upper(),
+                                        #     href="/device/newsfeeds",
+                                        #     className="sencondLevelNavlink",
+                                        # ),
                                     ],
                                     className="d-flex align-content-start bg-black",
                                     navbar=True,
@@ -2029,6 +2083,11 @@ def make_page3_2():
                                             href="/device/system",
                                             className="sencondLevelNavlink",
                                         ),
+                                        # dbc.NavLink(
+                                        #     ("News feeds").upper(),
+                                        #     href="/device/newsfeeds",
+                                        #     className="sencondLevelNavlink",
+                                        # ),
                                     ],
                                     className="d-flex align-content-start bg-black",
                                     navbar=True,
@@ -2141,6 +2200,11 @@ def make_page3_3():
                                             href="/device/system",
                                             className="sencondLevelNavlinkActive",
                                         ),
+                                        # dbc.NavLink(
+                                        #     ("News feeds").upper(),
+                                        #     href="/device/newsfeeds",
+                                        #     className="sencondLevelNavlink",
+                                        # ),
                                     ],
                                     className="d-flex align-content-start bg-black",
                                     navbar=True,
@@ -2201,6 +2265,47 @@ def make_page3_3_2():
     return html.Div(
         [
             html.P("Device -> System -> Recovery", className="d-none"),
+            html.Div(
+                dbc.Navbar(
+                    dbc.Container(
+                        [
+                            dbc.Collapse(
+                                dbc.Nav(
+                                    [
+                                        dbc.NavLink(
+                                            ("Wi-Fi").upper(),
+                                            href="/device/wifi",
+                                            className="sencondLevelNavlink",
+                                        ),
+                                        dbc.NavLink(
+                                            ("Ethernet").upper(),
+                                            href="/device/ethernet",
+                                            className="sencondLevelNavlink",
+                                        ),
+                                        dbc.NavLink(
+                                            ("System").upper(),
+                                            href="/device/system",
+                                            className="sencondLevelNavlinkActive",
+                                        ),
+                                        # dbc.NavLink(
+                                        #     ("News feeds").upper(),
+                                        #     href="/device/newsfeeds",
+                                        #     className="sencondLevelNavlink",
+                                        # ),
+                                    ],
+                                    className="d-flex align-content-start bg-black",
+                                    navbar=True,
+                                ),
+                                className="d-sm-none d-md-none pt-0 pl-0 pr-0 pb-0",
+                                id="navbar-collapse1",
+                                navbar=True,
+                            ),
+                        ]
+                    ),
+                    color="black",
+                ),
+                className="d-flex align-content-start",
+            ),
             dbc.Checklist(
                 options=[
                     {"label": "  Attempt to repair the filesystem", "value": 1},
@@ -2228,6 +2333,82 @@ def make_page3_3_2():
                 className="ml-8 me-1 mt-1 node-system-recovery-cancel-button",
                 id="submit-val-node-system-recovery-cancel",
                 n_clicks=0,
+            ),
+        ]
+    )
+
+
+def make_page3_4():
+    global page3_device_wifi
+    global page3_device_ethernet
+    global page3_device_system
+    global feeds
+
+    feed_elements = []
+    for f in feeds:
+        feed_elements.append(
+            dbc.InputGroup(
+                [
+                    daq.BooleanSwitch(
+                        on=conf_dict["config"]["feeds"][f.url],
+                        color="#0d6efd",
+                        id=f._id,
+                        style={"min-width": "80px"}
+                    ),
+                    dbc.Label(f.label),
+                ]
+            )
+        )
+
+    return html.Div(
+        [
+            html.P("Device -> System", className="d-none"),
+            html.Div(
+                dbc.Navbar(
+                    dbc.Container(
+                        [
+                            dbc.Collapse(
+                                dbc.Nav(
+                                    [
+                                        dbc.NavLink(
+                                            ("Wi-Fi").upper(),
+                                            href="/device/wifi",
+                                            className="sencondLevelNavlink",
+                                        ),
+                                        dbc.NavLink(
+                                            ("Ethernet").upper(),
+                                            href="/device/ethernet",
+                                            className="sencondLevelNavlink",
+                                        ),
+                                        dbc.NavLink(
+                                            ("System").upper(),
+                                            href="/device/system",
+                                            className="sencondLevelNavlink",
+                                        ),
+                                        dbc.NavLink(
+                                            ("News feeds").upper(),
+                                            href="/device/newsfeeds",
+                                            className="sencondLevelNavlinkActive",
+                                        ),
+                                    ],
+                                    className="d-flex align-content-start bg-black",
+                                    navbar=True,
+                                ),
+                                className="d-sm-none d-md-none pt-0 pl-0 pr-0 pb-0",
+                                id="navbar-collapse1",
+                                navbar=True,
+                            ),
+                        ]
+                    ),
+                    color="black",
+                ),
+                className="d-flex align-content-start",
+            ),
+            html.Div(id="inactive_dummy_components3_4a", children=""),
+            dbc.Label(""),
+            dbc.Col(
+                feed_elements,
+                width="auto",
             ),
         ]
     )
@@ -2269,7 +2450,7 @@ def make_inactive_card(n_add, address, height):
                                                         "height": "100%",
                                                         "max-width": "650px",
                                                         "border-radius": "0 5px 5px 0",
-                                                        "font-family": "monospace"
+                                                        "font-family": "monospace",
                                                     },
                                                 ),
                                                 style={
@@ -2289,14 +2470,21 @@ def make_inactive_card(n_add, address, height):
                                     dbc.InputGroupText(
                                         "Height",
                                         className="LWSBoxNodo text-left",
-                                        style={"max-width": "70px", "min-width": "90px", "height": "100%"},
+                                        style={
+                                            "max-width": "70px",
+                                            "min-width": "90px",
+                                            "height": "100%",
+                                        },
                                     ),
                                     dbc.Input(
                                         type="text",
                                         value=height,
                                         className="NodoLWSInput",
                                         disabled=True,
-                                        style={"height": "100%", "font-family": "monospace"},
+                                        style={
+                                            "height": "100%",
+                                            "font-family": "monospace",
+                                        },
                                     ),
                                 ],
                                 className="d-flex align-content-start  me-1 mt-1 LWSCardBG",
@@ -2306,8 +2494,11 @@ def make_inactive_card(n_add, address, height):
                             dbc.Button(
                                 "Reactivate",
                                 className="buttonNodo me-1 mt-1 fa fa-send mt-1 ml-1 mr-1 pt-1 pl-1 pr-1",
-                                id={"type": "inactive-reactivate-button", "index": n_add},
-                                style={"margin-left": "4px"}
+                                id={
+                                    "type": "inactive-reactivate-button",
+                                    "index": n_add,
+                                },
+                                style={"margin-left": "4px"},
                             ),
                             dbc.Button(
                                 "Delete",
@@ -2343,9 +2534,7 @@ def make_inactive_cards():
     for item in inactive_address_height:
         address = str(item["address"])
         height = str(item["scan_height"])
-        account_create_request_lists.append(
-            make_inactive_card(index, address, height)
-        )
+        account_create_request_lists.append(make_inactive_card(index, address, height))
         index = index + 1
 
     return account_create_request_lists
@@ -2358,7 +2547,7 @@ def truncate_address(address):
         address[8:12],
         address[-12:-8],
         address[-8:-4],
-        address[-4:]
+        address[-4:],
     )
 
 
@@ -2404,7 +2593,7 @@ def make_active_card(n_add, address, height, rescan_height):
                                                         "height": "100%",
                                                         "max-width": "650px",
                                                         "border-radius": "0 5px 5px 0",
-                                                        "font-family": "monospace"
+                                                        "font-family": "monospace",
                                                     },
                                                 ),
                                                 style={
@@ -2424,14 +2613,21 @@ def make_active_card(n_add, address, height, rescan_height):
                                     dbc.InputGroupText(
                                         "Height",
                                         className="LWSBoxNodo text-left",
-                                        style={"max-width": "70px", "min-width": "90px", "height": "100%"},
+                                        style={
+                                            "max-width": "70px",
+                                            "min-width": "90px",
+                                            "height": "100%",
+                                        },
                                     ),
                                     dbc.Input(
                                         type="text",
                                         value=height,
                                         className="NodoLWSInput",
                                         disabled=True,
-                                        style={"height": "100%", "font-family": "monospace"},
+                                        style={
+                                            "height": "100%",
+                                            "font-family": "monospace",
+                                        },
                                     ),
                                 ],
                                 className="d-flex align-content-start  me-1 mt-1 LWSCardBG",
@@ -2442,7 +2638,7 @@ def make_active_card(n_add, address, height, rescan_height):
                                 "Deactivate",
                                 className="buttonNodo me-1 mt-1 fa fa-send mt-1 ml-1 mr-1 pt-1 pl-1 pr-1 ",
                                 id={"type": "active-deactivate-button", "index": n_add},
-                                style={"margin-left": "4px"}
+                                style={"margin-left": "4px"},
                             ),
                         ],
                         className="d-flex align-content-start LWSCardBG",
@@ -2476,6 +2672,8 @@ def make_active_card(n_add, address, height, rescan_height):
 
 lws_cache: str = None
 lws_reparse: bool = True
+
+
 def lws_admin_cmd(*command) -> dict:
     global lws_cache
     global lws_reparse
@@ -2484,8 +2682,10 @@ def lws_admin_cmd(*command) -> dict:
             return lws_cache
         else:
             lws_reparse = True
-    cmd = ["/home/nodo/monero-lws/build/src/monero-lws-admin",
-           "--db-path={0}/light_wallet_server"]
+    cmd = [
+        "/home/nodo/monero-lws/build/src/monero-lws-admin",
+        "--db-path={0}/light_wallet_server",
+    ]
     cmd[1] = cmd[1].format(conf_dict["config"]["data_dir"])
     cmd += command
     print(cmd)
@@ -2563,7 +2763,7 @@ def make_account_create_request_card(n_add, address, height):
                                                         "word-break": "break-all",
                                                         "overflow-wrap": "break-word",
                                                         "border-radius": "0 5px 5px 0",
-                                                        "font-family": "monospace"
+                                                        "font-family": "monospace",
                                                     },
                                                 ),
                                                 style={
@@ -2583,14 +2783,21 @@ def make_account_create_request_card(n_add, address, height):
                                     dbc.InputGroupText(
                                         "Start Height",
                                         className="LWSBoxNodo text-left",
-                                        style={"max-width": "70px", "min-width": "110px", "height": "100%"},
+                                        style={
+                                            "max-width": "70px",
+                                            "min-width": "110px",
+                                            "height": "100%",
+                                        },
                                     ),
                                     dbc.Input(
                                         type="text",
                                         value=height,
                                         className="NodoLWSInput",
                                         disabled=True,
-                                        style={"height": "100%", "font-family": "monospace"},
+                                        style={
+                                            "height": "100%",
+                                            "font-family": "monospace",
+                                        },
                                     ),
                                 ],
                                 className="d-flex align-content-start  me-1 mt-1 LWSCardBG",
@@ -5087,6 +5294,7 @@ def make_page_5_2_tx_push(param1):
         ]
     )
 
+
 def make_page6():
     global conf_dict
     m = conf_dict["config"]["mining"]
@@ -5100,23 +5308,26 @@ def make_page6():
             html.P("Miner", className="d-none"),
             dbc.InputGroup(
                 [
-                    dbc.Label("Miner", className="me-1 mt-1"),
                     daq.BooleanSwitch(
                         on=miner_enabled,
                         label="",
                         color="#0d6efd",
                         id="switch-miner-enabled",
+                        style={"min-width": "80px"}
                     ),
+                    dbc.Label("Miner", className="me-1 mt-1"),
                 ],
                 style={"min-width": "350px"},
             ),
-            html.Div([
-                "Mining is done with ",
-                html.A("P2Pool", href="https://github.com/SChernykh/p2pool"),
-                " and ",
-                html.A("XMRig", href="https://github.com/xmrig/xmrig"),
-                ".",
-            ]),
+            html.Div(
+                [
+                    "Mining is done with ",
+                    html.A("P2Pool", href="https://github.com/SChernykh/p2pool"),
+                    " and ",
+                    html.A("XMRig", href="https://github.com/xmrig/xmrig"),
+                    ".",
+                ]
+            ),
             html.Br(),
             dbc.InputGroup(
                 [
@@ -5137,20 +5348,24 @@ def make_page6():
                 [
                     dbc.InputGroupText("Deposit Address"),
                     dbc.Input(
-                        type="text", value=miner_address,
+                        type="text",
+                        value=miner_address,
                         style={"font-family": "monospace"},
                         id="input-miner-address",
                         pattern="^[4][1-9A-HJ-NP-Za-km-z]{94}$",
                     ),
                 ],
                 className="me-1 mt-1 pt-2",
-                style={"max-width": "800px"},
+                # style={"max-width": "800px"},
             ),
             html.Br(),
             dbc.Label("Warning: Your deposit address must start with a 4!"),
-            dbc.Label("Warning: The deposit address will be publicly viewable. For privacy, use a different wallet!"),
+            dbc.Label(
+                "Warning: The deposit address will be publicly viewable. For privacy, use a different wallet!"
+            ),
         ]
     )
+
 
 page5_2 = html.Div(
     [
@@ -5920,78 +6135,86 @@ def render_page_content(pathname, value):
     matchPattTx = pattTx.match(pathname)
     matchPattBlock = pattBlock.match(pathname)
     if pathname == "/":
-        return make_page0() #status
-    elif pathname == "/status": #/page-0
+        return make_page0()  # status
+    elif pathname == "/status":  # /page-0
         return make_page0()
-    elif pathname == "/networks": #/page-1
+    elif pathname == "/networks":  # /page-1
         return make_page1_1()
-    elif pathname == "/networks/clearnet": #/page-1.1
+    elif pathname == "/networks/clearnet":  # /page-1.1
         return make_page1_1()
-    elif pathname == "/networks/tor": #/page-1.2
+    elif pathname == "/networks/tor":  # /page-1.2
         return make_page1_2()
-    elif pathname == "/networks/i2p": #/page-1.3
+    elif pathname == "/networks/i2p":  # /page-1.3
         return make_page1_3()
-    elif pathname == "/node": #/page-2
+    elif pathname == "/node":  # /page-2
         return make_page2_1()
-    elif pathname == "/node/private-node": #/page-2.1
+    elif pathname == "/node/private-node":  # /page-2.1
         return make_page2_1()
-    elif pathname == "/node/bandwidth": #/page-2.2
+    elif pathname == "/node/bandwidth":  # /page-2.2
         return make_page2_2()
-    elif pathname == "/device": #/page-3
+    elif pathname == "/device":  # /page-3
         return make_page3_1()
-    elif pathname == "/device/wifi": #/page-3.1
+    elif pathname == "/device/wifi":  # /page-3.1
         return make_page3_1()
-    elif pathname == "/device/ethernet": #/page-3.2
+    elif pathname == "/device/ethernet":  # /page-3.2
         return make_page3_2()
-    elif pathname == "/device/system": #/page-3.3
+    elif pathname == "/device/system":  # /page-3.3
         return make_page3_3()
-    elif pathname == "/device/system/recovery": #/page-3.3.2
+    elif pathname == "/device/system/recovery":  # /page-3.3.2
         return make_page3_3_2()
-    elif pathname == "/lws/active": #/page-4.1
+    # elif pathname == "/device/newsfeeds":  # /page-3.3
+    #     return make_page3_4()
+    elif pathname == "/lws/active":  # /page-4.1
         return page4_1
-    elif pathname == "/lws/inactive": #/page-4.2
+    elif pathname == "/lws/inactive":  # /page-4.2
         return page4_2
-    elif pathname == "/lws/add-account": #/page-4
+    elif pathname == "/lws/add-account":  # /page-4
         return page4_3
-    elif pathname == "/lws/add-account": #/page-4.3
+    elif pathname == "/lws/add-account":  # /page-4.3
         return page4_3
-    elif pathname == "/lws/requests": #/page-4.4
+    elif pathname == "/lws/requests":  # /page-4.4
         return page4_4
-    elif pathname == "/block-explorer": #/page-5
+    elif pathname == "/block-explorer":  # /page-5
         return make_page5_1()
-    elif pathname == "/block-explorer/tx-pool": #/page-5.1
+    elif pathname == "/block-explorer/tx-pool":  # /page-5.1
         return make_page5_1()
-    elif pathname == "/block-explorer/tx-pusher": #/page-5.2
+    elif pathname == "/block-explorer/tx-pusher":  # /page-5.2
         return page5_2
-    elif pathname == "/block-explorer/tx-pusher/check": #/page-5.2-tx-check
+    elif pathname == "/block-explorer/tx-pusher/check":  # /page-5.2-tx-check
         f = furl(value)
         param1 = f.args["param1"]
         print(f.args["param1"])
         return make_page_5_2_tx_check(param1)
-    elif pathname == "/block-explorer/tx-pusher/push": #/page-5.2-tx-push
+    elif pathname == "/block-explorer/tx-pusher/push":  # /page-5.2-tx-push
         f = furl(value)
         param1 = f.args["param1"]
         print(f.args["param1"])
         return make_page_5_2_tx_push(param1)
-    elif pathname == "/block-explorer/key-images-checker": #/page-5.3
+    elif pathname == "/block-explorer/key-images-checker":  # /page-5.3
         return page5_3
-    elif pathname == "/block-explorer/key-images-checker/check": #/page-5-3-key-images-checker-check
+    elif (
+        pathname == "/block-explorer/key-images-checker/check"
+    ):  # /page-5-3-key-images-checker-check
         f = furl(value)
         param1 = f.args["param1"]
         param2 = f.args["param2"]
         print(f.args["param1"])
         print(f.args["param2"])
         return page5_3_key_images_checker_check(param1, param2)
-    elif pathname == "/block-explorer/output-keys-checker": #/page-5.4
+    elif pathname == "/block-explorer/output-keys-checker":  # /page-5.4
         return page5_4
-    elif pathname == "/block-explorer/output-keys-checker/check": #/page-5-4-signed-output-public-keys-checker-check
+    elif (
+        pathname == "/block-explorer/output-keys-checker/check"
+    ):  # /page-5-4-signed-output-public-keys-checker-check
         f = furl(value)
         param1 = f.args["param1"]
         param2 = f.args["param2"]
         print(f.args["param1"])
         print(f.args["param2"])
         return page5_4_signed_output_public_keys_checker_check(param1, param2)
-    elif pathname == "/block-explorer/tx-pool/decode-outputs": #/page-5.1-tx-decode-outputs
+    elif (
+        pathname == "/block-explorer/tx-pool/decode-outputs"
+    ):  # /page-5.1-tx-decode-outputs
         prove = 0
         f = furl(value)
         param1 = f.args["param1"]
@@ -5999,7 +6222,9 @@ def render_page_content(pathname, value):
         print(f.args["param1"])
         print(f.args["param2"])
         return make_page_5_1_tx_decode_or_prove_outputs(param1, param2, prove)
-    elif pathname == "/block-explorer/tx-pool/prove-spend": #/page-5.1-tx-prove-sending
+    elif (
+        pathname == "/block-explorer/tx-pool/prove-spend"
+    ):  # /page-5.1-tx-prove-sending
         prove = 1
         f = furl(value)
         param1 = f.args["param1"]
@@ -6011,7 +6236,7 @@ def render_page_content(pathname, value):
         return make_page_5_1_tx(matchPattTx.group(1))
     elif matchPattBlock:
         return make_page_5_1_block(matchPattBlock.group(1))
-    elif pathname == "/miner": #/page-6
+    elif pathname == "/miner":  # /page-6
         return make_page6()
     # If the user tries to reach a different page, return a 404 message
     return html.Div(
@@ -7143,6 +7368,51 @@ def validate_input_device_ethernet_router_by_regex(value, pattern):
         return False, True
 
 
+def get_feed_by_label(label: str) -> Feed:
+    for f in feeds:
+        if f.label == label:
+            return f
+
+    return feeds[0]
+
+
+def get_inputs_from_feeds() -> []:
+    inputs = []
+    for f in feeds:
+        inputs.append(Input(f.label, "on"))
+
+    return inputs
+
+# ====================================================================
+# miner
+# ====================================================================
+@app.callback(
+
+    Output("inactive_dummy_components3_4a", "children"),
+    get_inputs_from_feeds()
+    # [
+    #     Input("switch-feed-monero-talk", "on"),
+    #     Input("switch-feed-monero-official", "on"),
+    #     Input("switch-feed-mo-stories", "on"),
+    #     Input("switch-feed-mo-messages", "on"),
+    #     Input("switch-feed-revuo-monero", "on"),
+    #     Input("switch-feed-monero-moon", "on"),
+    # ]
+)
+def callback_feeds(monero_talk, monero_official,
+                   mo_stories, mo_messages, revuo, moon):
+    global conf_dict
+    ctx = dash.callback_context
+    # I wish there was a better way to do this
+    for i in ctx.args_grouping:
+        u = get_feed_by_label(i.str_id).url
+        conf_dict["config"]["feeds"][u] = i.value
+        print(i.value)
+
+    save_config()
+    return ""
+
+
 # ====================================================================
 # miner
 # ====================================================================
@@ -7151,9 +7421,11 @@ def validate_input_device_ethernet_router_by_regex(value, pattern):
         Output("input-miner-address", "valid"),
         Output("input-miner-address", "invalid"),
     ],
-    [Input("switch-miner-enabled", "on"),
-     Input("input-miner-difficulty", "value"),
-     Input("input-miner-address", "value")],
+    [
+        Input("switch-miner-enabled", "on"),
+        Input("input-miner-difficulty", "value"),
+        Input("input-miner-address", "value"),
+    ],
     [State("input-miner-address", "pattern")],
 )
 def callback_miner(enabled, difficulty, address, pattern):
@@ -7172,6 +7444,7 @@ def callback_miner(enabled, difficulty, address, pattern):
         save_config()
         return True, False
     return False, True
+
 
 # ====================================================================
 # Page 3_2 Device -> Ethernet -> dhcp text validation (Input)
@@ -7256,7 +7529,7 @@ def account_input_rescan_height(value):
             )
             print("active-rescan-input ", value)
             # (active_address_height[index_clicked])["scan_height"] = value[index_clicked]
-            #lws_admin_cmd("rescan", "--arguments", str(value[index_clicked]),
+            # lws_admin_cmd("rescan", "--arguments", str(value[index_clicked]),
             #             "--arguments", active_address_height[index_clicked]["address"])
         return ""
     else:
@@ -7329,7 +7602,9 @@ def account_creation_request_deactivate_button(n_clicks, close_id):
     if n_clicks[0] != None or index_clicked > 0:
         print("do active-deactivate action!!")
         addr = active_address_height[index_clicked]["address"]
-        lws_admin_cmd("modify_account_status", "--arguments", "inactive", "--arguments", addr)
+        lws_admin_cmd(
+            "modify_account_status", "--arguments", "inactive", "--arguments", addr
+        )
         inactive_address_height.append(active_address_height[index_clicked])
         active_address_height.pop(index_clicked)
         # ============================================================
@@ -7380,11 +7655,15 @@ def poweroff_button(n_clicks):
 
 # submit-val-node-system-recovery-start
 @app.callback(
-    [Output("submit-val-node-system-recovery-start", "children"),
-     Output("submit-val-node-system-recovery-start", "disabled")],
-     Input("checklist-inline-input-purge", "value"),
-    [Input("checklist-inline-input-repair", "value"),
-     Input("submit-val-node-system-recovery-start", "n_clicks")],
+    [
+        Output("submit-val-node-system-recovery-start", "children"),
+        Output("submit-val-node-system-recovery-start", "disabled"),
+    ],
+    Input("checklist-inline-input-purge", "value"),
+    [
+        Input("checklist-inline-input-repair", "value"),
+        Input("submit-val-node-system-recovery-start", "n_clicks"),
+    ],
     prevent_initial_call=True,
 )
 def restart_button(purge_value, repair_value, n_clicks):
@@ -7395,9 +7674,9 @@ def restart_button(purge_value, repair_value, n_clicks):
         purge = True if len(purge_value) > 0 and purge_value[0] == 1 else False
         e = os.environ.copy()
         if repair:
-            e["REPAIR_FILESYSTEM"] = '1'
+            e["REPAIR_FILESYSTEM"] = "1"
         if purge:
-            e["PURGE_BLOCKCHAIN"] = '1'
+            e["PURGE_BLOCKCHAIN"] = "1"
 
         proc.Popen(["/usr/bin/bash", "/home/nodo/recovery.sh"], env=e)
         return "Running!", True
@@ -7453,7 +7732,9 @@ def inactive_reactivate_button(n_clicks, close_id):
     if n_clicks[0] != None or index_clicked > 0:
         print("do active-reactivate action!!")
         addr = inactive_address_height[index_clicked]["address"]
-        lws_admin_cmd("modify_account_status", "--arguments", "active", "--arguments", addr)
+        lws_admin_cmd(
+            "modify_account_status", "--arguments", "active", "--arguments", addr
+        )
         active_address_height.append(inactive_address_height[index_clicked])
         inactive_address_height.pop(index_clicked)
         # ============================================================
@@ -7991,3 +8272,5 @@ if __name__ == "__main__":
     load_page4_values()
     app.run_server(host=host, port=str(port), debug=False)
     stopFlag.set()
+
+
