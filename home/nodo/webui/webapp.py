@@ -724,7 +724,7 @@ search_bar = dbc.Row(
 )
 # here's how you can recreate the same thing using Navbar
 # (see also required callback at the end of the file)
-NODO_LOGO = "/assets/colors-and-nodo-150px.png"
+NODO_LOGO = "/assets/nodologo_original150.png"
 nav = dbc.Container(
     [
         dbc.NavLink("Internal link", href="/l/components/nav"),
