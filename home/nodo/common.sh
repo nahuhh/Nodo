@@ -5,6 +5,28 @@ DEBUG_LOG=debug.log
 CONFIG_FILE=/home/nodo/variables/config.json
 XMRPARTLABEL="NODO_BLOCKCHAIN"
 
+get_tag_commit() {
+	project="$1"
+	repo="$2"
+	tag=$(curl -ls "https://api.github.com/repos/$project/$repo/tags" | jq -r '.[0].commit.sha')
+	printf '%s' "$tag"
+}
+
+get_release_commit() {
+	project="$1"
+	repo="$2"
+	tag=$(curl -ls "https://api.github.com/repos/$project/$repo/releases/latest" | jq -r '.tag_name')
+	read -r type tag_sha < <(echo $(curl -s "https://api.github.com/repos/$project/$repo/git/ref/tags/$tag" |
+		jq -r '.object.type,.object.sha'))
+
+	if [ $type == "commit" ]; then
+		printf "%s" "$tag_sha"
+	else
+		sha=$(curl -s "https://api.github.com/repos/$project/$repo/git/tags/$tag_sha" | jq -r '.object.sha')
+		printf "%s" "$sha"
+	fi
+}
+
 get_ip() {
 	ip route get 1.1.1.1 | sed -n '/src/{s/.*src *\([^ ]*\).*/\1/p;q}'
 }

@@ -6,7 +6,7 @@ cd /home/nodo || exit 1
 
 OLD_VERSION_XMRIG="${1:-$(getvar "versions.xmrig")}"
 
-RELEASE="$(curl -fs https://raw.githubusercontent.com/MoneroNodo/Nodo/master/release-xmrig.txt)"
+RELEASE=$(get_release_commit "xmrig" "xmrig")
 #RELEASE="release-v0.18" # TODO remove when live
 
 if [ -z "$RELEASE" ]; then # Release somehow not set or empty
@@ -36,7 +36,9 @@ showtext "Building Monero xmrig..."
 {
 	git clone -b master https://github.com/xmrig/xmrig.git
 	cd xmrig || exit
-	git pull
+	git reset --hard HEAD
+	git pull --rebase
+	git checkout "$RELEASE"
 	mkdir build
 	cd build || exit
 	cmake ..

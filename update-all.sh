@@ -7,7 +7,8 @@
 cd /home/nodo && /home/nodo/update-nodo.sh
 sudo -u nodo bash /home/nodo/update-monero.sh
 sudo -u nodo bash /home/nodo/update-monero-lws.sh
-sudo -u nodo bash /home/nodo/update-lws-admin.sh
+sudo -u nodo bash /home/nodo/update-p2pool.sh
+sudo -u nodo bash /home/nodo/update-xmrig.sh
 sudo -u nodo bash /home/nodo/update-explorer.sh
 
 # Restart services afterwards,

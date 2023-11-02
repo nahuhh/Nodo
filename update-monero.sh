@@ -17,7 +17,7 @@ Start update-monero.sh script $(date)
 #Download variable for current monero release version
 #FIXME: change url
 # wget -q https://raw.githubusercontent.com/monero-ecosystem/PiNode-XMR/master/release.sh -O /home/nodo/release.sh
-RELEASE="$(curl -fs https://raw.githubusercontent.com/MoneroNodo/Nodo/master/release-monero.txt)"
+RELEASE=$(get_release_commit "monero-project" "monero")
 # RELEASE="release-v0.18" # TODO remove when live
 
 if [ -z "$RELEASE" ]; then # Release somehow not set or empty
@@ -33,12 +33,13 @@ fi
 showtext "Building Monero..."
 
 {
-	# first install monero dependancies
-	git clone --recursive -b "$RELEASE" https://github.com/monero-project/monero.git
-	git reset --hard HEAD
+	# first install monero dependencies
+	git clone --recursive https://github.com/monero-project/monero.git
 
 	cd monero/ || exit 1
-	git pull
+	git reset --hard HEAD
+	git pull --rebase
+	git checkout "$RELEASE"
 	USE_SINGLE_BUILDDIR=1 make -j$(nproc --ignore=2) && cp build/release/bin/monero* /usr/bin/ && chmod a+x /usr/bin/monero*
 } 2>&1 | tee -a "$DEBUG_LOG"
 

@@ -6,7 +6,7 @@ cd /home/nodo || exit 1
 
 OLD_VERSION_P2POOL="${1:-$(getvar "versions.p2pool")}"
 
-RELEASE="$(curl -fs https://raw.githubusercontent.com/MoneroNodo/Nodo/master/release-p2pool.txt)"
+RELEASE=$(get_release_commit "SChernykh" "p2pool")
 #RELEASE="release-v0.18" # TODO remove when live
 
 if [ -z "$RELEASE" ]; then # Release somehow not set or empty
@@ -33,7 +33,9 @@ showtext "Building Monero p2pool..."
 {
 	git clone --recursive -b master https://github.com/SChernykh/p2pool.git
 	cd p2pool || exit
-	git pull
+	git reset --hard HEAD
+	git pull --rebase
+	git checkout "$RELEASE"
 	mkdir build
 	cd build || exit
 	cmake ..
