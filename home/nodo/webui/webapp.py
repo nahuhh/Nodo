@@ -1491,6 +1491,7 @@ def make_page1_2():
                     dbc.InputGroupText("Port"),
                     dbc.Input(
                         id="input-networks-tor-port",
+                        disabled=True,
                         type="number",
                         min=1024,
                         max=65535,
@@ -1623,6 +1624,7 @@ def make_page1_3():
                     dbc.InputGroupText("Port"),
                     dbc.Input(
                         type="number",
+                        disabled=True,
                         min=1024,
                         max=65535,
                         step=1,

@@ -8,12 +8,12 @@ RELEASE="$(curl -fs https://raw.githubusercontent.com/MoneroNodo/Nodo/master/rel
 #RELEASE="release-v0.18" # TODO remove when live
 
 if [ -z "$RELEASE" ]; then # Release somehow not set or empty
-	showtext "Failed to check for update for LWS Admin"
+	showtext "Failed to check for update for LWS"
 	exit 0
 fi
 
 if [ "$RELEASE" == "$OLD_VERSION_LWS" ]; then
-	showtext "No update for LWS Admin"
+	showtext "No update for LWS"
 	exit 0
 fi
 
@@ -37,7 +37,7 @@ showtext "Downloading VTNerd Monero-LWS"
 	mkdir build
 	cd build || exit 1
 	cmake -DMONERO_SOURCE_DIR=/home/nodo/monero -DMONERO_BUILD_DIR=/home/nodo/monero/build/release ..
-	showtext "Building VTNerd Monero-LW"
+	showtext "Building VTNerd Monero-LWS"
 	make -j$(nproc --ignore=2)
 } 2>&1 | tee -a "$DEBUG_LOG"
 cd || exit 1
