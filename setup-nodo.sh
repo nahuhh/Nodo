@@ -185,15 +185,16 @@ showtext "Setting up crontab..."
 crontab -u nodo var/spool/cron/crontabs/nodo 2>&1 | tee -a "$DEBUG_LOG"
 crontab -u root var/spool/cron/crontabs/root 2>&1 | tee -a "$DEBUG_LOG"
 
+showtext "Resetting and setting up UFW..."
+ufw reset
+ufw disable
+ufw allow 22
 ufw allow 80
 ufw allow 443
-ufw allow 18080
-ufw allow 18081
-ufw allow 18083
-ufw allow 18089
+ufw allow 18080:18090
 ufw allow 4200
-ufw allow 22
 ufw allow 37888 #p2pool
+ufw allow 8135 #lws
 ufw enable
 
 showtext "Start services"
