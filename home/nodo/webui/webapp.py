@@ -28,6 +28,14 @@ from pandas import json_normalize
 from furl import furl
 from dataclasses import dataclass
 
+api: str = "https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies={0}&precision=2"
+
+
+def get_rate(cur="usd") -> str:
+    r = requests.get(api.format(cur))
+    resp = r.json()
+    return resp["monero"][cur] or "???.??"
+
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -85,6 +93,8 @@ inactive_address_height = []
 # Page 4.4 ( AWS Admin -> Account Creation Requests )
 account_address_viewkey_height = []
 
+switch_col: str = "#ff5100"
+
 
 @dataclass
 class Feed:
@@ -95,18 +105,35 @@ class Feed:
 
 
 feeds = [
-    Feed("https://monerotalk.live/rss",
-         "Monero Talk", "switch-feed-monero-talk"),
-    Feed("https://www.getmonero.org/feed.xml",
-         "Monero (Official)", "switch-feed-monero-official", articles=2),
-    Feed("https://monero.observer/feed-messages.xml",
-         "Monero Observer (Messages)", "switch-feed-mo-messages"),
-    Feed("https://monero.observer/feed-stories-mini.xml",
-         "Monero Observer (News stories)", "switch-feed-mo-stories"),
-    Feed("https://revuo-xmr.com/atom.xml",
-         "Revuo Monero", "switch-feed-revuo-monero", articles=1),
-    Feed("https://www.themoneromoon.com/feed",
-         "The Monero Moon", "switch-feed-monero-moon", articles=1)
+    Feed("https://monerotalk.live/rss", "Monero Talk", "switch-feed-monero-talk"),
+    Feed(
+        "https://www.getmonero.org/feed.xml",
+        "Monero (Official)",
+        "switch-feed-monero-official",
+        articles=2,
+    ),
+    Feed(
+        "https://monero.observer/feed-messages.xml",
+        "Monero Observer (Messages)",
+        "switch-feed-mo-messages",
+    ),
+    Feed(
+        "https://monero.observer/feed-stories-mini.xml",
+        "Monero Observer (News stories)",
+        "switch-feed-mo-stories",
+    ),
+    Feed(
+        "https://revuo-xmr.com/atom.xml",
+        "Revuo Monero",
+        "switch-feed-revuo-monero",
+        articles=1,
+    ),
+    Feed(
+        "https://www.themoneromoon.com/feed",
+        "The Monero Moon",
+        "switch-feed-monero-moon",
+        articles=1,
+    ),
 ]
 
 # Page 5.1 ( BLOCK EXPLORER -> TRANSACTION POOL )
@@ -158,6 +185,19 @@ applied: bool = True
 timedelta_config: datetime.timedelta = datetime.timedelta(seconds=10)
 timedelta_restart: datetime.timedelta = datetime.timedelta(seconds=30)
 
+timedelta_ticker: datetime.timedelta = datetime.timedelta(hours=6)
+time_ticker: datetime.datetime = datetime.datetime.now()
+price: str = "$" + str(get_rate())
+
+
+def update_price():
+    global price
+    global timedelta_ticker
+    global time_ticker
+    if time_ticker < datetime.datetime.now() - timedelta_ticker:
+        time_ticker = datetime.datetime.now()
+        price = "$" + str(get_rate())
+
 
 def write_config():
     global written
@@ -194,6 +234,7 @@ def save_config():
     global written, applied
     update_time = datetime.datetime.now() + timedelta_config
     written = applied = False
+
 
 # ====================================================================
 # Description: load values for page0 web ui
@@ -808,6 +849,7 @@ custom_default = dbc.Navbar(
                 navbar=True,
             ),
             search_bar,
+            html.Div([], id="label-time", style={"padding-right": "20px"}),
         ],
         fluid=True,
     ),
@@ -1409,9 +1451,9 @@ def make_page1_2():
                     daq.BooleanSwitch(
                         on=tor_switch,
                         label="",
-                        color="#0d6efd",
+                        color=switch_col,
                         id="switch-networks-tor",
-                        style={"min-width": "80px"}
+                        style={"min-width": "80px"},
                     ),
                     dbc.Label("Tor", className="me-1 mt-1"),
                 ],
@@ -1422,9 +1464,9 @@ def make_page1_2():
                     daq.BooleanSwitch(
                         on=route_all_connections_through_tor_switch,
                         label="",
-                        color="#0d6efd",
+                        color=switch_col,
                         id="switch-networks-tor-route-all-connections-through-tor-switch",
-                        style={"min-width": "80px"}
+                        style={"min-width": "80px"},
                     ),
                     dbc.Label(
                         "Route all connections through Tor", className="me-1 mt-1"
@@ -1556,9 +1598,9 @@ def make_page1_3():
                     daq.BooleanSwitch(
                         on=i2p_switch,
                         label="",
-                        color="#0d6efd",
+                        color=switch_col,
                         id="switch-networks-i2p",
-                        style={"min-width": "80px"}
+                        style={"min-width": "80px"},
                     ),
                     dbc.Label("I2P", className="me-1 mt-1"),
                 ],
@@ -1680,7 +1722,7 @@ def make_page2_1():
                     daq.BooleanSwitch(
                         on=rpc_switch,
                         label="",
-                        color="#0d6efd",
+                        color=switch_col,
                         id="switch-node-rpc",
                     ),
                 ],
@@ -1927,7 +1969,7 @@ def make_page3_1():
                     daq.BooleanSwitch(
                         on=wifi_switch,
                         label="",
-                        color="#0d6efd",
+                        color=switch_col,
                         id="switch-device-wifi",
                     ),
                 ],
@@ -1975,7 +2017,7 @@ def make_page3_1():
                     daq.BooleanSwitch(
                         on=automatic_switch,
                         label="",
-                        color="#0d6efd",
+                        color=switch_col,
                         id="switch-device-wifi-automatic",
                     ),
                 ],
@@ -2108,7 +2150,7 @@ def make_page3_2():
                     daq.BooleanSwitch(
                         on=automatic_switch,
                         label="",
-                        color="#0d6efd",
+                        color=switch_col,
                         id="switch-device-ethernet-automatic",
                     ),
                 ],
@@ -2351,9 +2393,9 @@ def make_page3_4():
                 [
                     daq.BooleanSwitch(
                         on=conf_dict["config"]["feeds"][f.url],
-                        color="#0d6efd",
+                        color=switch_col,
                         id=f._id,
-                        style={"min-width": "80px"}
+                        style={"min-width": "80px"},
                     ),
                     dbc.Label(f.label),
                 ]
@@ -5311,9 +5353,9 @@ def make_page6():
                     daq.BooleanSwitch(
                         on=miner_enabled,
                         label="",
-                        color="#0d6efd",
+                        color=switch_col,
                         id="switch-miner-enabled",
-                        style={"min-width": "80px"}
+                        style={"min-width": "80px"},
                     ),
                     dbc.Label("Miner", className="me-1 mt-1"),
                 ],
@@ -7383,11 +7425,11 @@ def get_inputs_from_feeds() -> []:
 
     return inputs
 
+
 # ====================================================================
 # miner
 # ====================================================================
 @app.callback(
-
     Output("inactive_dummy_components3_4a", "children"),
     get_inputs_from_feeds()
     # [
@@ -7399,8 +7441,7 @@ def get_inputs_from_feeds() -> []:
     #     Input("switch-feed-monero-moon", "on"),
     # ]
 )
-def callback_feeds(monero_talk, monero_official,
-                   mo_stories, mo_messages, revuo, moon):
+def callback_feeds(monero_talk, monero_official, mo_stories, mo_messages, revuo, moon):
     global conf_dict
     ctx = dash.callback_context
     # I wish there was a better way to do this
@@ -7478,6 +7519,18 @@ def validate_input_device_ethernet_dhcp_by_regex(value, pattern):
         return True, False
     else:
         return False, True
+
+
+@app.callback(
+    Output("label-time", "children"),
+    [Input("interval-component", "n_intervals")],
+)
+def callback_time(n):
+    time = datetime.datetime.now().strftime("%a %b %d, %I:%M %p")
+    return [
+        dbc.Label("XMR/USD: " + price, style={"padding-right": "20px"}),
+        dbc.Label(time),
+    ]
 
 
 # ====================================================================
@@ -7878,21 +7931,12 @@ def account_creation_request_accept_all_button(n):
     global account_address_viewkey_height
     if n == 0:
         return ""
-    print("==== ==== press_request_accept_button")
-    print(n)
-    print("++++")
-    print("The pair list is :", account_address_viewkey_height)
-    print("-----")
-    for index in account_address_viewkey_height:
-        address = index[0]
-        height = index[2]
-        rescan_height = ""
-        active_address_height.append([address, height, rescan_height])
-    print("The active_address_height pair list is :", active_address_height)
-    account_address_viewkey_height.clear()
-    print("++++")
-    print("The pair list is :", account_address_viewkey_height)
-    print("-----")
+    requests: dict = lws_admin_cmd("list_requests")
+    if "create" in requests:
+        requests = lws_admin_cmd("list_requests")["create"]
+    for item in requests:
+        address = str(item["address"])
+        lws_admin_cmd("accept_requests", "create", "--arguments", address)
     # ============================================================
     # Add save function to write back
     # account_address_viewkey_height / account_address_viewkey_height  into backend.
@@ -7940,8 +7984,8 @@ def account_creation_request_close_button(n_clicks, close_id):
         address = index["address"]
         height = index["start_height"]
         rescan_height = ""
-        active_address_height.append([address, height, rescan_height])
-        inactive_address_height.pop(index_to_remove)
+        # active_address_height.append([address, height, rescan_height])
+        # account_create_request_lists.pop(index_to_remove)
 
         lws_admin_cmd("accept_requests", "create", "--arguments", address)
         # ============================================================
@@ -7990,8 +8034,6 @@ def account_creation_request_reject_button(n_clicks, reject_id):
         address = index[0]
         height = index[2]
         rescan_height = ""
-        # active_address_height.append([address,height,rescan_height]);
-        account_address_viewkey_height.pop(index_to_remove)
 
         lws_admin_cmd("reject_requests", "create", "--arguments", address)
         # ============================================================
@@ -8272,5 +8314,3 @@ if __name__ == "__main__":
     load_page4_values()
     app.run_server(host=host, port=str(port), debug=False)
     stopFlag.set()
-
-
