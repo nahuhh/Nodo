@@ -32,6 +32,7 @@
 		"rpcu": "nodo",
 		"data_dir": "/media/monero/bitmonero",
 		"sync_mode": "fast:async",
+		"night_mode": false,
 		"mining": {
 			"enabled": "FALSE",
 			"address": "",
