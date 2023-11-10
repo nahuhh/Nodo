@@ -128,12 +128,12 @@ feeds = [
         "switch-feed-revuo-monero",
         articles=1,
     ),
-    Feed(
-        "https://www.themoneromoon.com/feed",
-        "The Monero Moon",
-        "switch-feed-monero-moon",
-        articles=1,
-    ),
+    # Feed(
+    #     "https://www.themoneromoon.com/feed",
+    #     "The Monero Moon",
+    #     "switch-feed-monero-moon",
+    #     articles=1,
+    # ),
 ]
 
 # Page 5.1 ( BLOCK EXPLORER -> TRANSACTION POOL )
@@ -188,6 +188,7 @@ timedelta_restart: datetime.timedelta = datetime.timedelta(seconds=30)
 timedelta_ticker: datetime.timedelta = datetime.timedelta(hours=6)
 time_ticker: datetime.datetime = datetime.datetime.now()
 price: str = "$" + str(get_rate())
+lockfile: str = "/home/nodo/variables/config.json.lock"
 
 
 def update_price():
@@ -203,9 +204,14 @@ def write_config():
     global written
     if conf_dict == None:
         return
-    with open(conf_file, "w") as outfile:
-        outfile.write(json.dumps(conf_dict, indent=2))
-    written = True
+    if os.path.isfile(lockfile):
+        print("Config.json locked...")
+    else:
+        open(lockfile, 'a').close()
+        with open(conf_file, "w") as outfile:
+            outfile.write(json.dumps(conf_dict, indent=2))
+        os.remove(lockfile)
+        written = True
 
 
 def update_config():
