@@ -18,7 +18,7 @@ chmod 777 "$DEBUG_LOG"
 
 apt-get update
 
-apt-get install git build-essential ccache cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libuv1-dev libhwloc-dev -y
+apt-get install git build-essential ccache cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libuv1-dev libhwloc-dev apparmor apparmor-utils apparmor-profiles -y
 
 #force confnew by default everywhere
 echo "force-confnew" > /etc/dpkg/dpkg.cfg.d/force-confnew
@@ -200,7 +200,7 @@ ufw enable
 showtext "Start services"
 
 systemctl daemon-reload
-systemctl enable --now tor i2pd
+systemctl enable --now tor i2pd apparmor
 systemctl enable --now monerod block-explorer monero-lws monero-lws-admin webui p2pool
 
 services-start
