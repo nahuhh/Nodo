@@ -40,7 +40,7 @@ showtext "Building Monero..."
 	git reset --hard HEAD
 	git pull --rebase
 	git checkout "$RELEASE"
-	USE_SINGLE_BUILDDIR=1 make -j$(nproc --ignore=2) && cp build/release/bin/monero* /usr/bin/ && chmod a+x /usr/bin/monero*
+	USE_SINGLE_BUILDDIR=1 make -j$(nproc --ignore=2) && cp build/release/bin/monero* /usr/bin/ && chmod a+x /usr/bin/monero* &&	putvar "versions.monero" "$RELEASE"
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 # {
@@ -52,7 +52,7 @@ showtext "Building Monero..."
 # } 2>&1 | tee -a "$DEBUG_LOG"
 
 #Update system version number
-putvar "versions.monero" "$RELEASE"
+# putvar "versions.monero" "$RELEASE"
 #cleanup old version number file
 
 ##End debug log

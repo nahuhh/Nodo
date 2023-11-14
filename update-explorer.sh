@@ -40,10 +40,9 @@ showtext "Building Monero Blockchain Explorer..."
 	mkdir build
 	cd build || exit
 	cmake ..
-	make -j$(nproc --ignore=2) && cp xmrblocks /usr/bin/ && chmod a+x /usr/bin/xmrblocks
+	make -j$(nproc --ignore=2) && cp xmrblocks /usr/bin/ && chmod a+x /usr/bin/xmrblocks && putvar "versions.exp" "$RELEASE"
 } 2>&1 | tee -a "$DEBUG_LOG"
 
-putvar "versions.exp" "$RELEASE"
 #
 ##End debug log
 showtext "
