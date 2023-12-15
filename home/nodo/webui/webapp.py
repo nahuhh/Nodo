@@ -95,47 +95,6 @@ account_address_viewkey_height = []
 
 switch_col: str = "#ff5100"
 
-
-@dataclass
-class Feed:
-    url: str
-    label: str
-    _id: str
-    articles: int = 5
-
-
-feeds = [
-    Feed("https://monerotalk.live/rss", "Monero Talk", "switch-feed-monero-talk"),
-    Feed(
-        "https://www.getmonero.org/feed.xml",
-        "Monero (Official)",
-        "switch-feed-monero-official",
-        articles=2,
-    ),
-    Feed(
-        "https://monero.observer/feed-messages.xml",
-        "Monero Observer (Messages)",
-        "switch-feed-mo-messages",
-    ),
-    Feed(
-        "https://monero.observer/feed-stories-mini.xml",
-        "Monero Observer (News stories)",
-        "switch-feed-mo-stories",
-    ),
-    Feed(
-        "https://revuo-xmr.com/atom.xml",
-        "Revuo Monero",
-        "switch-feed-revuo-monero",
-        articles=1,
-    ),
-    # Feed(
-    #     "https://www.themoneromoon.com/feed",
-    #     "The Monero Moon",
-    #     "switch-feed-monero-moon",
-    #     articles=1,
-    # ),
-]
-
 # Page 5.1 ( BLOCK EXPLORER -> TRANSACTION POOL )
 # transaction_pool_information={}
 
@@ -204,6 +163,7 @@ def write_config():
     global written
     if conf_dict == None:
         return
+
     if os.path.isfile(lockfile):
         print("Config.json locked...")
     else:
@@ -1187,6 +1147,7 @@ def make_page0_hardware_status():
     primary_storage = str(page0_hardware_status["primary_storage"]) + " % in use"
     backup_storage = str(page0_hardware_status["backup_storage"]) + " % in use"
     ram_percentage = str(page0_hardware_status["ram_percentage"]) + " % in use"
+    uptime = proc.run(["uptime", "-p"], stdout=proc.PIPE).stdout.decode()[3:]
 
     return dbc.Card(
         [
@@ -1255,9 +1216,22 @@ def make_page0_hardware_status():
                             dbc.InputGroupText("RAM", className="homeBoxNodo"),
                             dbc.Input(
                                 type="text",
-                                id="page0_system_status_monero_lws_admin",
+                                id="page0_hardware_status_memory",
                                 className="homeBoxNodoInput",
                                 value=ram_percentage,
+                                disabled=True,
+                            ),
+                        ],
+                        className="me-0 mt-1",
+                    ),
+                    dbc.InputGroup(
+                        [
+                            dbc.InputGroupText("Uptime", className="homeBoxNodo"),
+                            dbc.Input(
+                                type="text",
+                                id="page0_hardware_status_uptime",
+                                className="homeBoxNodoInput",
+                                value=uptime,
                                 disabled=True,
                             ),
                         ],
@@ -1952,11 +1926,6 @@ def make_page3_1():
                                             href="/device/system",
                                             className="sencondLevelNavlink",
                                         ),
-                                        # dbc.NavLink(
-                                        #     ("News feeds").upper(),
-                                        #     href="/device/newsfeeds",
-                                        #     className="sencondLevelNavlink",
-                                        # ),
                                     ],
                                     className="d-flex align-content-start bg-black",
                                     navbar=True,
@@ -2133,11 +2102,6 @@ def make_page3_2():
                                             href="/device/system",
                                             className="sencondLevelNavlink",
                                         ),
-                                        # dbc.NavLink(
-                                        #     ("News feeds").upper(),
-                                        #     href="/device/newsfeeds",
-                                        #     className="sencondLevelNavlink",
-                                        # ),
                                     ],
                                     className="d-flex align-content-start bg-black",
                                     navbar=True,
@@ -2392,23 +2356,6 @@ def make_page3_4():
     global page3_device_wifi
     global page3_device_ethernet
     global page3_device_system
-    global feeds
-
-    feed_elements = []
-    for f in feeds:
-        feed_elements.append(
-            dbc.InputGroup(
-                [
-                    daq.BooleanSwitch(
-                        on=conf_dict["config"]["feeds"][f.url],
-                        color=switch_col,
-                        id=f._id,
-                        style={"min-width": "80px"},
-                    ),
-                    dbc.Label(f.label),
-                ]
-            )
-        )
 
     return html.Div(
         [
@@ -2435,11 +2382,6 @@ def make_page3_4():
                                             href="/device/system",
                                             className="sencondLevelNavlink",
                                         ),
-                                        dbc.NavLink(
-                                            ("News feeds").upper(),
-                                            href="/device/newsfeeds",
-                                            className="sencondLevelNavlinkActive",
-                                        ),
                                     ],
                                     className="d-flex align-content-start bg-black",
                                     navbar=True,
@@ -2455,11 +2397,6 @@ def make_page3_4():
                 className="d-flex align-content-start",
             ),
             html.Div(id="inactive_dummy_components3_4a", children=""),
-            dbc.Label(""),
-            dbc.Col(
-                feed_elements,
-                width="auto",
-            ),
         ]
     )
 
@@ -6212,8 +6149,6 @@ def render_page_content(pathname, value):
         return make_page3_3()
     elif pathname == "/device/system/recovery":  # /page-3.3.2
         return make_page3_3_2()
-    # elif pathname == "/device/newsfeeds":  # /page-3.3
-    #     return make_page3_4()
     elif pathname == "/lws/active":  # /page-4.1
         return page4_1
     elif pathname == "/lws/inactive":  # /page-4.2
@@ -7416,50 +7351,6 @@ def validate_input_device_ethernet_router_by_regex(value, pattern):
         return True, False
     else:
         return False, True
-
-
-def get_feed_by_label(label: str) -> Feed:
-    for f in feeds:
-        if f.label == label:
-            return f
-
-    return feeds[0]
-
-
-def get_inputs_from_feeds() -> []:
-    inputs = []
-    for f in feeds:
-        inputs.append(Input(f.label, "on"))
-
-    return inputs
-
-
-# ====================================================================
-# miner
-# ====================================================================
-@app.callback(
-    Output("inactive_dummy_components3_4a", "children"),
-    get_inputs_from_feeds()
-    # [
-    #     Input("switch-feed-monero-talk", "on"),
-    #     Input("switch-feed-monero-official", "on"),
-    #     Input("switch-feed-mo-stories", "on"),
-    #     Input("switch-feed-mo-messages", "on"),
-    #     Input("switch-feed-revuo-monero", "on"),
-    #     Input("switch-feed-monero-moon", "on"),
-    # ]
-)
-def callback_feeds(monero_talk, monero_official, mo_stories, mo_messages, revuo, moon):
-    global conf_dict
-    ctx = dash.callback_context
-    # I wish there was a better way to do this
-    for i in ctx.args_grouping:
-        u = get_feed_by_label(i.str_id).url
-        conf_dict["config"]["feeds"][u] = i.value
-        print(i.value)
-
-    save_config()
-    return ""
 
 
 # ====================================================================
