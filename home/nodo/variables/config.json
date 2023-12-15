@@ -65,14 +65,6 @@
 			"p2pool": "unset",
 			"xmrig": "unset",
 			"lws-admin": "unset"
-		},
-		"feeds": {
-			"https://www.getmonero.org/feed.xml": true,
-			"https://monerotalk.live/rss": true,
-			"https://monero.observer/feed-mini.xml": true,
-			"https://revuo-xmr.com/atom.xml": true,
-			"https://www.themoneromoon.com/feed": true,
-			"https://localmonero.co/static/rss/the-monero-standard/feed.xml": true
 		}
 	}
 }
