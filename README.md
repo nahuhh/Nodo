@@ -11,11 +11,10 @@ Monero Node.
 
 [MoneroNodo.com](https://moneronodo.com/)
 
-Nodo is currently a prototype and due for production and fabrication. Design,
-specifications, and appearance are subject to change by the time we reach
-production. We expect production models to ship in December. All
-images are 3D renders of actual prototype. If minimum sales numbers are not met,
-your funds will be returned to you in full Monero amount.
+Nodo is currently a prototype and in production sample hardware test phase. We
+expect production models to be assembled and delivered February. All images are
+3D renders. If minimum sales numbers are not met, your funds will be returned to
+you in full Monero amount.
 
 Introducing our state-of-the-art Monero Node, designed for seamless integration
 and optimal performance. This full, unpruned, and dedicated node comes equipped
