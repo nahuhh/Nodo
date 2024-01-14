@@ -1,5 +1,8 @@
 #!/bin/bash
 
+_cwd=$PWD
+test "$_cwd" = "" && exit 1
+
 ##Disable IPv6 (confuses Monero start script if IPv6 is present)
 #and IPv6 sucks
 showtext "Disabling IPv6..."
