@@ -12,7 +12,7 @@ Monero Node.
 [MoneroNodo.com](https://moneronodo.com/)
 
 Nodo is currently a prototype and in production sample hardware test phase. We
-expect production models to be assembled and delivered February. All images are
+expect production models to be assembled and delivered March. All images are
 3D renders. If minimum sales numbers are not met, your funds will be returned to
 you in full Monero amount.
 
