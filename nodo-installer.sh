@@ -24,6 +24,7 @@ systemctl disable --now gdm.service # no gnome-shell necessary
 ##Create new user 'nodo'
 showtext "Creating user 'nodo'..."
 adduser --gecos "" --disabled-password --home /home/nodo nodo
+usermod -a -G sudo nodo
 adduser --system --no-create-home --shell /bin/false --group monero
 
 #Set nodo password 'MoneroNodo'
