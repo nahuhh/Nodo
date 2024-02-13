@@ -74,5 +74,17 @@ showtext "Setting up Monero..."
 	# Install monero block explorer for the first time
 	sudo -u nodo bash ./update-xmrig.sh
 )
+showtext "Start services"
+
+systemctl daemon-reload
+systemctl enable --now tor i2pd apparmor
+systemctl enable --now monerod block-explorer monero-lws monero-lws-admin webui p2pool
+
+services-start
+sleep 3
+putvar 'i2p_b32_addr' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmr.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
+putvar 'i2p_b32_addr_rpc' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmrRpc.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
+putvar 'onion_addr' "$(cat /var/lib/tor/hidden_service/hostname)"
+
 ## Install complete
 showtext "Installation Complete"

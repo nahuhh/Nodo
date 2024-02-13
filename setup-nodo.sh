@@ -30,8 +30,8 @@ echo "force-confnew" > /etc/dpkg/dpkg.cfg.d/force-confnew
 showtext "Downloading and installing OS updates..."
 {
 	apt-get update
-	apt-get dist-upgrade -y
-	apt-get upgrade -y
+	apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade -y
+	apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade -y
 	##Auto remove any obsolete packages
 	apt-get autoremove -y 2>&1 | tee -a "$DEBUG_LOG"
 } 2>&1 | tee -a "$DEBUG_LOG"
@@ -66,7 +66,7 @@ log "manual build of gtest for Monero"
 ##Checking all dependencies are installed for --- miscellaneous (security tools-fail2ban-ufw, menu tool-dialog, screen, mariadb)
 showtext "Checking all dependencies are installed..."
 {
-	apt-get install git mariadb-client mariadb-server screen fail2ban ufw dialog jq libcurl4-openssl-dev libpthread-stubs0-dev cron -y
+	apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git mariadb-client mariadb-server screen fail2ban ufw dialog jq libcurl4-openssl-dev libpthread-stubs0-dev cron -y
 	apt-get install exfat-fuse exfat-utils -y
 } 2>&1 | tee -a "$DEBUG_LOG"
 #libcurl4-openssl-dev & libpthread-stubs0-dev for block-explorer
@@ -189,26 +189,15 @@ crontab -u nodo var/spool/cron/crontabs/nodo 2>&1 | tee -a "$DEBUG_LOG"
 crontab -u root var/spool/cron/crontabs/root 2>&1 | tee -a "$DEBUG_LOG"
 
 showtext "Resetting and setting up UFW..."
-ufw reset
+ufw reset --force
 ufw disable
 ufw allow 22
 ufw allow 80
 ufw allow 443
-ufw allow 18080:18090
+ufw allow 18080:18090/tcp
+ufw allow 18080:18090/udp
 ufw allow 4200
 ufw allow 37888 #p2pool
 ufw allow 8135 #lws
 ufw enable
-
-showtext "Start services"
-
-systemctl daemon-reload
-systemctl enable --now tor i2pd apparmor
-systemctl enable --now monerod block-explorer monero-lws monero-lws-admin webui p2pool
-
-services-start
-sleep 3
-putvar 'i2p_b32_addr' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmr.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
-putvar 'i2p_b32_addr_rpc' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmrRpc.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
-putvar 'onion_addr' "$(cat /var/lib/tor/hidden_service/hostname)"
 
