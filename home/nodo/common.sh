@@ -16,16 +16,19 @@ get_release_commit() {
 	project="$1"
 	repo="$2"
 	tag=$(curl -ls "https://api.github.com/repos/$project/$repo/releases/latest" | jq -r '.tag_name')
-	read -r type tag_sha < <(curl -s "https://api.github.com/repos/$project/$repo/git/ref/tags/$tag" |
-		jq -r '.object.type,.object.sha')
+	{
+		read -r type
+		read -r tag_sha
 
-	if [ "$type" == "commit" ]; then
-		printf "%s" "$tag_sha"
-	else
-		sha=$(curl -s "https://api.github.com/repos/$project/$repo/git/tags/$tag_sha" | jq -r '.object.sha')
-		printf "%s" "$sha"
-	fi
-}
+		if [ "$type" == "commit" ]; then
+			printf "%s" "$tag_sha"
+		else
+			sha=$(curl -s "https://api.github.com/repos/$project/$repo/git/tags/$tag_sha" | jq -r '.object.sha')
+			printf "%s" "$sha"
+		fi
+	} < <(curl -s "https://api.github.com/repos/$project/$repo/git/ref/tags/$tag" |
+		jq -r '.object.type,.object.sha')
+	}
 
 get_ip() {
 	ip route get 1.1.1.1 | sed -n '/src/{s/.*src *\([^ ]*\).*/\1/p;q}'

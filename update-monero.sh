@@ -40,6 +40,7 @@ showtext "Building Monero..."
 	git reset --hard HEAD
 	git pull --rebase
 	git checkout "$RELEASE"
+	git submodule update --init --force
 	USE_SINGLE_BUILDDIR=1 make -j$(nproc --ignore=2) && cp build/release/bin/monero* /usr/bin/ && chmod a+x /usr/bin/monero* &&	putvar "versions.monero" "$RELEASE"
 } 2>&1 | tee -a "$DEBUG_LOG"
 
