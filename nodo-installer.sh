@@ -9,6 +9,11 @@
 
 #shellcheck source=home/nodo/common.sh
 
+if [ ! "$EUID" = 0 ]; then
+	printf '!! %s' "Please run as root"
+	exit 1
+fi
+
 _cwd=$PWD
 test "$_cwd" = "" && exit 1
 
@@ -43,9 +48,6 @@ hostname MoneroNodo
 #showtext "Downloading MoneroNodo files..."
 #git clone --single-branch https://github.com/MoneroNodo/Nodo.git 2>&1 | tee -a "$DEBUG_LOG"
 
-#Stop Node to make system resources available.
-services-stop
-
 showtext "setup-nodo.sh..."
 . "$_cwd"/setup-nodo.sh
 
@@ -73,6 +75,10 @@ showtext "Setting up Monero..."
 	showtext "Setting up XMRig"
 	# Install monero block explorer for the first time
 	sudo -u nodo bash ./update-xmrig.sh
+
+	showtext "Setting up Embedded UI"
+	# Install monero block explorer for the first time
+	sudo -u nodo bash ./update-embeddedui.sh
 )
 showtext "Start services"
 

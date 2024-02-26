@@ -21,7 +21,7 @@ chmod 777 "$DEBUG_LOG"
 
 apt-get update
 
-apt-get install git build-essential ccache cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libuv1-dev libhwloc-dev apparmor apparmor-utils apparmor-profiles -y
+apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git chrony xorg mingetty build-essential ccache cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libuv1-dev libhwloc-dev apparmor apparmor-utils apparmor-profiles -y
 
 #force confnew by default everywhere
 echo "force-confnew" > /etc/dpkg/dpkg.cfg.d/force-confnew
@@ -151,6 +151,7 @@ showtext "Installing python dependencies..."
 	venv/bin/pip3.11 install numpy
 	venv/bin/pip3.11 install dash
 	venv/bin/pip3.11 install dash_bootstrap_components dash_mantine_components dash_iconify
+	venv/bin/pip3.11 install Pyarrow
 	venv/bin/pip3.11 install pandas
 	venv/bin/pip3.11 install dash_breakpoints dash_daq
 	venv/bin/pip3.11 install furl
@@ -201,3 +202,5 @@ ufw allow 37888 #p2pool
 ufw allow 8135 #lws
 ufw enable
 
+chmod o+rx /home/nodo
+chmod o+rx /home/nodo/execScripts
