@@ -10,6 +10,7 @@ sudo -u nodo bash /home/nodo/update-monero-lws.sh
 sudo -u nodo bash /home/nodo/update-p2pool.sh
 sudo -u nodo bash /home/nodo/update-xmrig.sh
 sudo -u nodo bash /home/nodo/update-explorer.sh
+sudo -u nodo bash /home/nodo/update-embeddedui.sh
 
 # Restart services afterwards,
 # otherwise the device would be nothing more than a very warm brick
