@@ -22,6 +22,21 @@ apt update
 
 services-stop
 
+while :; do
+	case "$1" in
+	'-purge')
+		PURGE_BLOCKCHAIN=1
+		;;
+	'-repair')
+		REPAIR_FILESYSTEM=1
+		;;
+	*)
+		break
+		;;
+	esac
+	shift
+done
+
 if [ -n "$REPAIR_FILESYSTEM" ]; then
 	# awfully crude way to find SSD
 	uuid=$(lsblk -o UUID,MOUNTPOINT | grep nodo | awk '{print $1}')
