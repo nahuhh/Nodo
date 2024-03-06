@@ -45,7 +45,7 @@ cryptocurrency game to the next level.
 | Wi-Fi          | Intel AX210 on M.2 2230 slot                                                          |
 | Ethernet       | 2.5 Gbit                                                                              |
 | Display        | 5.5" AMOLED                                                                           |
-| OS             | Ubuntu LTS 22.04 with support for long term updates                                   |
+| OS             | Debian 12 (Bookworm)                                                                  |
 | Case           | Custom CNC machined aluminum                                                          |
 
 ## Features
