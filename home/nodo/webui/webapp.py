@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from io import TextIOWrapper
+from pydbus import SessionBus
 import socket
 import psutil
 import threading
@@ -149,6 +150,12 @@ time_ticker: datetime.datetime = datetime.datetime.now()
 price: str = "$" + str(get_rate())
 lockfile: str = "/home/nodo/variables/config.json.lock"
 
+bus = SessionBus()
+
+backend_obj = bus.get(
+    "com.monero.nodo",
+    "/com/monero/nodo"
+)
 
 def update_price():
     global price
@@ -215,7 +222,7 @@ def load_page0_values():
     global page2_node_rpc
     ## Page 0
 
-    # Sync Status
+    # Monero
     page0_sync_status["sync_status"] = "Loading data"
 
     # rpc_switch = (conf_dict["config"]["rpc_enabled"] == "TRUE")
@@ -870,8 +877,8 @@ offcanvas = dbc.Row(
 )
 
 
-# Sync Status
-# Sync Status: Synchronized/Synchronizing
+# Monero
+# Monero: Synchronized/Synchronizing
 # Timestamp:
 # Current Sync Height: int
 # Monero Version: string
@@ -896,10 +903,10 @@ def make_page0_sync_status():
             dbc.CardHeader(
                 [
                     "",
-                    dbc.Label("Sync Status", className="me-1 mt-1"),
+                    dbc.Label("Monero", className="me-1 mt-1"),
                     dbc.InputGroup(
                         [
-                            dbc.InputGroupText("Sync Status", className="homeBoxNodo"),
+                            dbc.InputGroupText("Monero", className="homeBoxNodo"),
                             dbc.Input(
                                 type="text",
                                 id="page0_sync_status_sync_status",
@@ -1036,7 +1043,7 @@ def make_page0_sync_status():
     )
 
 
-# System Status
+# Services
 # Mainnet Node: Running/Inactive
 # Private Node: Running/Inactive
 # Tor Node: Running/Inactive
@@ -1054,7 +1061,7 @@ def make_page0_system_status():
             dbc.CardHeader(
                 [
                     "",
-                    dbc.Label("System Status", className="me-0 mt-1"),
+                    dbc.Label("Services", className="me-0 mt-1"),
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText("Monero Node", className="homeBoxNodo"),
@@ -1132,7 +1139,7 @@ def make_page0_system_status():
     )
 
 
-# Hardware Status
+# System
 # CPU("%"): int
 # CPU temp("°C"): float
 # Primary Storage: Used SSD/Total SSD ("GB")
@@ -1154,7 +1161,7 @@ def make_page0_hardware_status():
             dbc.CardHeader(
                 [
                     "",
-                    dbc.Label("Hardware Status", className="me-0 mt-1"),
+                    dbc.Label("System", className="me-0 mt-1"),
                     dbc.InputGroup(
                         [
                             dbc.InputGroupText("CPU", className="homeBoxNodo"),
@@ -1838,7 +1845,7 @@ def make_page2_2():
             ),
             dbc.InputGroup(
                 [
-                    dbc.InputGroupText("Rate-limit up"),
+                    dbc.InputGroupText("Bandwidth Up"),
                     dbc.Input(
                         type="number",
                         min=-1,
@@ -1852,7 +1859,7 @@ def make_page2_2():
             ),
             dbc.InputGroup(
                 [
-                    dbc.InputGroupText("Rate-limit down"),
+                    dbc.InputGroupText("Bandwidth down"),
                     dbc.Input(
                         type="number",
                         min=-1,
