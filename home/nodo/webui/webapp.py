@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from io import TextIOWrapper
-from pydbus import SessionBus
+from pydbus import SystemBus
 import socket
 import psutil
 import threading
@@ -150,9 +150,9 @@ time_ticker: datetime.datetime = datetime.datetime.now()
 price: str = "$" + str(get_rate())
 lockfile: str = "/home/nodo/variables/config.json.lock"
 
-bus = SessionBus()
+bus = SystemBus()
 
-backend_obj = bus.get(
+backend_obj = bus.get_object(
     "com.monero.nodo",
     "/com/monero/nodo"
 )
@@ -186,19 +186,10 @@ def update_config():
     if not written and update_time < datetime.datetime.now():
         write_config()
     if not applied and update_time < datetime.datetime.now() - timedelta_restart:
-        proc.run(
-            [
-                "systemctl",
-                "restart",
-                "monerod.service",
-                "monero-lws.service",
-                "block-explorer.service",
-            ]
-        )
+        bus.serviceManager("restart", "monero-lws block-explorer monerod")
         miner: bool = conf_dict["config"]["mining"]["enabled"] == "TRUE"
-        proc.run(
-            ["systemctl", "enable" if miner else "disable", "--now", "xmrig.service"]
-        )
+        bus.serviceManager("enable" if miner else "disable", "xmrig")
+        bus.serviceManager("start" if miner else "stop", "xmrig")
         applied = True
 
 
@@ -7606,7 +7597,7 @@ def poweroff_button(n_clicks):
         return "Click to Confirm"
     if n_clicks == 2:
         print("shutting down")
-        proc.run(["systemctl", "poweroff"])
+        bus.shutdown();
         return "Shutting down!"
 
     return ""
@@ -7653,7 +7644,7 @@ def restart_button(n_clicks):
         return "Click to Confirm"
     if n_clicks == 2:
         print("shutting down")
-        proc.run(["systemctl", "reboot"])
+        bus.reboot()
         return "Restarting!"
 
     return ""
