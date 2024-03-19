@@ -11,7 +11,7 @@ WALLET_ADDRESS=$(getvar "mining.address")
 	read -r RPCU
 	read -r RPC_PORT
 } < <(
-jq -r '.config | .mining.address, .rpc_enabled, .rpcp, .rpcu, .monero_rpc_port' $CONFIG_FILE
+jq -r '.config | .mining.address, .rpc_enabled, .rpcp, .rpcu, .monero_public_port' $CONFIG_FILE
 )
 
 if [ -n "$RPC_ENABLED" ]; then
