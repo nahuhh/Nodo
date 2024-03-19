@@ -2325,6 +2325,7 @@ def make_page3_3_2():
                 value=[],
                 id="checklist-inline-input-repair",
             ),
+            dbc.Label("In case this fails, it will reformat the drive entirely. This means the blockchain will be re-synced, and LWS data will be reset."),
             dbc.Checklist(
                 options=[
                     {"label": "  Purge and resync blockchain", "value": 1},

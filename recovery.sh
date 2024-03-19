@@ -22,6 +22,8 @@ apt update
 
 services-stop
 
+REFORMAT_ON_FAILURE=${REFORMAT_ON_FAILURE:-1}
+
 while :; do
 	case "$1" in
 	'-purge')
@@ -37,19 +39,43 @@ while :; do
 	shift
 done
 
-if [ -n "$REPAIR_FILESYSTEM" ]; then
+if [ "$REPAIR_FILESYSTEM" != "" ]; then
 	# awfully crude way to find SSD
 	uuid=$(lsblk -o UUID,MOUNTPOINT | grep nodo | awk '{print $1}')
 	device="/dev/disk/by-uuid/$uuid"
+	failcounter=0
 	umount "$uuid"
-	xfs_repair "$device"
-	mount "$uuid"
+	while :; do
+		xfs_repair -e "$device"
+		_result=$?
+		case $_result in
+			1) # runtime error, should be restarted according to manual
+				failcounter=$((failcounter+1))
+				if [ $failcounter -gt 5 ]; then
+					bash /home/nodo/setup-drive.sh
+					exit 2
+				fi
+				continue
+				;;
+			2) # dirty log: mount and unmount, then re-run xfs_repair
+				mount "$uuid"
+				umount "$uuid"
+				continue
+				;;
+			4) # issues were found and fixed
+				break
+				;;
+			*)
+				break
+				;;
+		esac
+		break
+	done
 fi
 
 # if $PURGE_BLOCKCHAIN is set (to anything), purge the blockchain
-if [ -n "$PURGE_BLOCKCHAIN" ]; then
+if [ "$PURGE_BLOCKCHAIN" != "" ]; then
 	rm -rf "$(getvar "data_dir")"/lmdb
 fi
 
 services-start
-
