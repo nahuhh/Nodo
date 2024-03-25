@@ -92,5 +92,12 @@ putvar 'i2p_b32_addr' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmr.
 putvar 'i2p_b32_addr_rpc' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmrRpc.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
 putvar 'onion_addr' "$(cat /var/lib/tor/hidden_service/hostname)"
 
+swapfile=/media/monero/swap
+showtext "Setting up swap on $swapfile"
+dd if=/dev/zero of="$swapfile" bs=1M count=2048 conv=sync
+mkswap "$swapfile"
+printf '%s none swap defaults 0 0' "$swapfile" | tee -a /etc/fstab
+swapon "$swapfile"
+
 ## Install complete
 showtext "Installation Complete"
