@@ -60,4 +60,4 @@ cryptocurrency game to the next level.
 - Wi-Fi & Ethernet
 - Designed to run 24/7 with zero-interaction automatic updates
 
-*The codebase is largely based off of [PiNode-XMR](https://github.com/monero-ecosystem/PiNode-XMR). All credits to the original developers.*
+*The codebase is largely based off of [PiNodeXMR](https://github.com/shermand100/PiNodeXMR). All credits to the original developers.*
