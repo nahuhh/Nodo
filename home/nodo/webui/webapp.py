@@ -108,6 +108,7 @@ statustable: dict = {
     "dead\n": "Inactive",
     "failed\n": "Inactive (failed)",
     "exited\n": "Stopped",
+    "auto-restart\n": "Stopped",
     "running\n": "Running",
     "active\n": "Active",
     "activating\n": "Starting",
@@ -7738,30 +7739,6 @@ def inactive_delete_button(n_clicks, close_id):
 
 
 # ====================================================================
-# Page 4_3 LWS Admin -> Add Account -> Address (Input)
-# ====================================================================
-@app.callback(
-    Output("button-lwsadmin-add-account", "disabled"),
-    Input("input-lwsadmin-add-account-address", "value"),
-    Input("input-lwsadmin-add-account-private-viewkey", "value"),
-)
-def update_add_account(addressValue, privateViewkeyValue):
-    global account_address_viewkey_height
-    print(addressValue)
-    print(privateViewkeyValue)
-    if addressValue != None and privateViewkeyValue != None:
-        matchObj = re.match(r"^4", addressValue, re.M | re.I)
-        if matchObj:
-            return False
-        else:
-            print("Address must be started with 4.")
-            return True
-
-    print("Address must be started with 4.")
-    return True
-
-
-# ====================================================================
 # Page 4_3 LWS Admin -> Add Account (Button)
 # ====================================================================
 @app.callback(
@@ -7785,6 +7762,7 @@ def update_add_account(n_clicks, addressValue, privateViewkeyValue):
 
             # ...
             # ========================================================
+            lws_admin_cmd("add_account", addressValue, privateViewkeyValue)
             account_address_viewkey_height.append(
                 (addressValue, privateViewkeyValue, start_height)
             )
