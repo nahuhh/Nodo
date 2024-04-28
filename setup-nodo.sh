@@ -21,7 +21,7 @@ chmod 777 "$DEBUG_LOG"
 
 apt-get update
 
-apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git chrony xorg mingetty build-essential ccache cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libuv1-dev libhwloc-dev apparmor apparmor-utils apparmor-profiles -y
+apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git chrony xorg mingetty build-essential ccache cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libuv1-dev libhwloc-dev apparmor apparmor-utils apparmor-profiles libcairo2-dev libxt-dev libgirepository1.0-dev -y
 
 #force confnew by default everywhere
 echo "force-confnew" > /etc/dpkg/dpkg.cfg.d/force-confnew
@@ -43,7 +43,7 @@ usermod -a -G nodo www-data
 ##Installing dependencies for --- Monero
 # showtext "Installing dependencies for --- Monero"
 # apt-get update
-apt-get install gdisk xfsprogs build-essential cmake pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libpgm-dev qttools5-dev-tools libhidapi-dev libusb-1.0-0-dev libprotobuf-dev protobuf-compiler libudev-dev libboost-chrono-dev libboost-date-time-dev libboost-filesystem-dev libboost-locale-dev libboost-program-options-dev libboost-regex-dev libboost-all-dev libboost-serialization-dev libboost-system-dev libboost-thread-dev ccache doxygen graphviz -y 2>&1 | tee -a "$DEBUG_LOG"
+apt-get install gdisk xfsprogs build-essential cmake pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libpgm-dev qttools5-dev-tools libhidapi-dev libusb-1.0-0-dev libprotobuf-dev protobuf-compiler libudev-dev libboost-chrono-dev libboost-date-time-dev libboost-filesystem-dev libboost-locale-dev libboost-program-options-dev libboost-regex-dev libboost-all-dev libboost-serialization-dev libboost-system-dev libboost-thread-dev ccache doxygen graphviz pipx -y 2>&1 | tee -a "$DEBUG_LOG"
 
 showtext "Install home contents"
 cp -r "${_cwd}"/home/nodo/* /home/nodo/
@@ -134,7 +134,6 @@ showtext "Installing log.io..."
 
 #Install webui
 showtext "Installing python dependencies..."
-
 {
 	mkdir /home/nodo/webui
 	chown nodo:nodo /home/nodo/webui
@@ -157,8 +156,16 @@ showtext "Installing python dependencies..."
 	venv/bin/pip3.11 install furl
 	venv/bin/pip3.11 install psutil
 	venv/bin/pip3.11 install dash-qr-manager
+	venv/bin/pip3.11 install pycairo
+	venv/bin/pip3.11 install PyGObject
 	venv/bin/python -m compileall .
 )
+} 2>&1 | tee -a "$DEBUG_LOG"
+
+showtext "Installing LibreTranslate"
+{
+	pipx install libretranslate
+	systemctl enable --now libretranslate
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 #Install tor and i2p
