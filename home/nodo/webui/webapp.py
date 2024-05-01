@@ -1359,11 +1359,6 @@ def make_page1_1():
             html.Br(),
             html.Br(),
             html.Div(
-                children=[
-                    html.P("Scan to add Nodo to your wallet app:"),
-                ]
-            ),
-            html.Div(
                 id="qr-code-clearnet",
                 children=[
                     dqm.DashQrGenerator(
@@ -1510,11 +1505,6 @@ def make_page1_2():
             html.Br(),
             html.Br(),
             html.Div(
-                children=[
-                    html.P("Scan to add Nodo to your wallet app:"),
-                ]
-            ),
-            html.Div(
                 id="qr-code-tor",
                 children=[
                     dqm.DashQrGenerator(
@@ -1638,11 +1628,6 @@ def make_page1_3():
             html.Div(id="networks-i2p-add-peer-hidden-div", style={"display": "none"}),
             html.Br(),
             html.Br(),
-            html.Div(
-                children=[
-                    html.P("Scan to add Nodo to your wallet app:"),
-                ]
-            ),
             html.Div(
                 id="qr-code-i2p",
                 children=[
