@@ -23,7 +23,9 @@ chmod 777 "$DEBUG_LOG"
 
 apt-get update
 
-apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git chrony xorg mingetty build-essential ccache cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libuv1-dev libhwloc-dev apparmor apparmor-utils apparmor-profiles libcairo2-dev libxt-dev libgirepository1.0-dev gobject-introspection python3-yaml python3-pyyaml-env-tag -y
+_APTGET='DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef -y --allow-downgrades --allow-remove-essential --allow-change-held-packages'
+
+eval "$_APTGET" install tor i2pd nodejs npm mariadb-client mariadb-server screen fail2ban ufw dialog jq libcurl4-openssl-dev libpthread-stubs0-dev cron exfat-fuse exfat-utils git chrony xorg mingetty build-essential ccache cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libuv1-dev libhwloc-dev apparmor apparmor-utils apparmor-profiles libcairo2-dev libxt-dev libgirepository1.0-dev gobject-introspection python3-yaml python3-pyyaml-env-tag gdisk xfsprogs build-essential cmake pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libpgm-dev qttools5-dev-tools libhidapi-dev libusb-1.0-0-dev libprotobuf-dev protobuf-compiler libudev-dev libboost-chrono-dev libboost-date-time-dev libboost-filesystem-dev libboost-locale-dev libboost-program-options-dev libboost-regex-dev libboost-all-dev libboost-serialization-dev libboost-system-dev libboost-thread-dev ccache doxygen graphviz pipx apache2 shellinabox php php-common avahi-daemon libgtest-dev 2>&1 | tee -a "$DEBUG_LOG"
 
 #force confnew by default everywhere
 echo "force-confnew" > /etc/dpkg/dpkg.cfg.d/force-confnew
@@ -32,46 +34,30 @@ echo "force-confnew" > /etc/dpkg/dpkg.cfg.d/force-confnew
 showtext "Downloading and installing OS updates..."
 {
 	apt-get update
-	apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade -y
-	apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade -y
+	eval "$_APTGET" dist-upgrade
+	eval "$_APTGET" upgrade
 	##Auto remove any obsolete packages
-	apt-get autoremove -y 2>&1 | tee -a "$DEBUG_LOG"
+	eval "$_APTGET" apt-get autoremove
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 ##Installing dependencies for --- Web Interface
 showtext "Installing dependencies for Web Interface..."
-apt-get install apache2 shellinabox php php-common avahi-daemon -y 2>&1 | tee -a "$DEBUG_LOG"
 usermod -a -G nodo www-data
-##Installing dependencies for --- Monero
-# showtext "Installing dependencies for --- Monero"
-# apt-get update
-apt-get install gdisk xfsprogs build-essential cmake pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libpgm-dev qttools5-dev-tools libhidapi-dev libusb-1.0-0-dev libprotobuf-dev protobuf-compiler libudev-dev libboost-chrono-dev libboost-date-time-dev libboost-filesystem-dev libboost-locale-dev libboost-program-options-dev libboost-regex-dev libboost-all-dev libboost-serialization-dev libboost-system-dev libboost-thread-dev ccache doxygen graphviz pipx -y 2>&1 | tee -a "$DEBUG_LOG"
 
 showtext "Install home contents"
 cp -r "${_cwd}"/home/nodo/* /home/nodo/
 cp -r "${_cwd}"/etc/* /etc/
-cp -r "${_cwd}"/HTML/* /var/www/html/
-chown httpd:httpd -R /var/www/html
 cp "${_cwd}"/update-*sh "${_cwd}"/recovery.sh /home/nodo/
 chown nodo:nodo -R /home/nodo
 
 log "manual build of gtest for Monero"
 {
 	cd /home/nodo/gtest || exit 1
-	apt-get install libgtest-dev -y
 	cmake .
 	make
 	cp "${_cwd}"/libg* /usr/lib/
 	cd || exit 1
 } 2>&1 | tee -a "$DEBUG_LOG"
-
-##Checking all dependencies are installed for --- miscellaneous (security tools-fail2ban-ufw, menu tool-dialog, screen, mariadb)
-showtext "Checking all dependencies are installed..."
-{
-	apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git mariadb-client mariadb-server screen fail2ban ufw dialog jq libcurl4-openssl-dev libpthread-stubs0-dev cron -y
-	apt-get install exfat-fuse exfat-utils -y
-} 2>&1 | tee -a "$DEBUG_LOG"
-#libcurl4-openssl-dev & libpthread-stubs0-dev for block-explorer
 
 ##Configure ssh security. Allows only user 'nodo'. Also 'root' login disabled via ssh, restarts config to make changes
 showtext "Configuring SSH security..."
@@ -120,7 +106,6 @@ DEVICE_IP=$(getip)
 showtext "Installing log.io..."
 
 {
-	apt-get install nodejs npm -y
 	npm install -g log.io
 	npm install -g log.io-file-input
 	mkdir -p ~/.log.io/inputs/
@@ -170,8 +155,6 @@ showtext "Installing LibreTranslate"
 	systemctl enable --now libretranslate
 } 2>&1 | tee -a "$DEBUG_LOG"
 
-#Install tor and i2p
-apt-get install -y tor i2pd
 #Attempt update of tor hidden service settings
 {
 	if [ -f /usr/bin/tor ]; then #Crude way of detecting tor installed
