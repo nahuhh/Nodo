@@ -153,7 +153,7 @@ lockfile: str = "/home/nodo/variables/config.json.lock"
 
 bus = SystemBus()
 
-backend_obj = bus.get_object(
+backend_obj = bus.get(
     "com.monero.nodo",
     "/com/monero/nodo"
 )
