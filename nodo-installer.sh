@@ -49,7 +49,7 @@ hostname MoneroNodo
 #git clone --single-branch https://github.com/MoneroNodo/Nodo.git 2>&1 | tee -a "$DEBUG_LOG"
 
 showtext "setup-nodo.sh..."
-. "$_cwd"/setup-nodo.sh
+bash "$_cwd"/setup-nodo.sh
 
 showtext "Setting up Monero..."
 # Install monero for the first time
