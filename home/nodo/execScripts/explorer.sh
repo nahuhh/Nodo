@@ -15,7 +15,6 @@ fi
 jq -r '.config | .data_dir, .monero_rpc_port, .rpc_enabled, .rpcu, .rpcp' < $CONFIG_FILE
 )
 
-exploc=/home/nodo/onion-monero-blockchain-explorer/build/
 MONEROD="127.0.0.1:$MONERO_RPC_PORT}"
 
-eval "$exploc/xmrblocks --daemon-url=$MONEROD ${RPCp:+--daemon-login $RPCu:$RPCp} --enable-json-api=1 -b $DATA_DIR/lmdb"
+eval "/home/nodo/bin/xmrblocks --daemon-url=$MONEROD ${RPCp:+--daemon-login $RPCu:$RPCp} --enable-json-api=1 -b $DATA_DIR/lmdb"

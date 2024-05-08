@@ -34,10 +34,10 @@ git pull
 ##Update and Upgrade systemhtac
 showtext "Receiving and applying Ubuntu updates to the latest version..."
 {
-	apt-get update
-	apt-get --yes upgrade
-	apt-get --yes dist-upgrade
-	apt-get autoremove -y
+	eval "$_APTGET" update
+	eval "$_APTGET" upgrade
+	eval "$_APTGET" dist-upgrade
+	eval "$_APTGET" autoremove -y
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 ##Auto remove any obsolete packages

@@ -6,6 +6,8 @@
 
 cd /home/nodo && /home/nodo/update-nodo.sh
 chown nodo:nodo -R EmbeddedUI monero monero-lws p2pool xmrig onion-monero-block-explorer
+mkdir -p /home/nodo/bin
+chown nodo:nodo /home/nodo/bin
 sudo -u nodo bash /home/nodo/update-monero.sh
 sudo -u nodo bash /home/nodo/update-monero-lws.sh
 sudo -u nodo bash /home/nodo/update-p2pool.sh

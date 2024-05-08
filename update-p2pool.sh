@@ -39,7 +39,7 @@ showtext "Building Monero p2pool..."
 	mkdir build
 	cd build || exit
 	cmake ..
-	make -j$(nproc --ignore=2) && cp p2pool /usr/bin/ && chmod a+x /usr/bin/p2pool && putvar "versions.p2pool" "$RELEASE"
+	make -j"$(nproc --ignore=2)" && cp p2pool /home/nodo/bin/ && chmod a+x /home/nodo/bin/p2pool && putvar "versions.p2pool" "$RELEASE"
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 #

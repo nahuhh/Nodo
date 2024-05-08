@@ -42,7 +42,7 @@ showtext "Building Monero xmrig..."
 	mkdir build
 	cd build || exit
 	cmake ..
-	make -j$(nproc --ignore=2) && cp xmrig /usr/bin/ && chmod a+x /usr/bin/xmrig putvar "versions.xmrig" "$RELEASE"
+	make -j$(nproc --ignore=2) && cp xmrig /home/nodo/bin && chmod a+x /home/nodo/bin/xmrig putvar "versions.xmrig" "$RELEASE"
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 #
