@@ -175,7 +175,7 @@ crontab -u nodo var/spool/cron/crontabs/nodo 2>&1 | tee -a "$DEBUG_LOG"
 crontab -u root var/spool/cron/crontabs/root 2>&1 | tee -a "$DEBUG_LOG"
 
 showtext "Resetting and setting up UFW..."
-ufw reset --force
+ufw --force reset
 ufw disable
 ufw allow 22
 ufw allow 80
