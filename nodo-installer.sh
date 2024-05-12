@@ -57,27 +57,21 @@ showtext "Setting up Monero..."
 	cd /home/nodo || exit 1
 
 	showtext "Setting up Monero Daemon"
-	# Install monero block explorer for the first time
 	sudo -u nodo bash ./update-monero.sh
 
 	showtext "Setting up Block Explorer"
-	# Install monero block explorer for the first time
 	sudo -u nodo bash ./update-explorer.sh
 
 	showtext "Setting up Monero LWS"
-	# Install monero block explorer for the first time
 	sudo -u nodo bash ./update-monero-lws.sh
 
 	showtext "Setting up P2Pool"
-	# Install monero block explorer for the first time
 	sudo -u nodo bash ./update-p2pool.sh
 
 	showtext "Setting up XMRig"
-	# Install monero block explorer for the first time
 	sudo -u nodo bash ./update-xmrig.sh
 
 	showtext "Setting up Embedded UI"
-	# Install monero block explorer for the first time
 	sudo -u nodo bash ./update-embeddedui.sh
 )
 showtext "Start services"
