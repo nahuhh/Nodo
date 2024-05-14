@@ -29,6 +29,7 @@ systemctl disable --now gdm.service # no gnome-shell necessary
 ##Create new user 'nodo'
 showtext "Creating user 'nodo'..."
 adduser --gecos "" --disabled-password --home /home/nodo nodo
+chmod a+rx /home/nodo
 usermod -a -G sudo nodo
 adduser --system --no-create-home --shell /bin/false --group monero
 
@@ -55,6 +56,10 @@ showtext "Setting up Monero..."
 # Install monero for the first time
 (
 	cd /home/nodo || exit 1
+
+	mkdir -p /home/nodo/bin
+	chown nodo:nodo /home/nodo/bin
+	chmod a+rx /home/nodo/bin
 
 	showtext "Setting up Monero Daemon"
 	sudo -u nodo bash ./update-monero.sh
