@@ -76,8 +76,8 @@ showtext "Setting up Monero..."
 	showtext "Setting up XMRig"
 	sudo -u nodo bash ./update-xmrig.sh
 
-	showtext "Setting up Embedded UI"
-	sudo -u nodo bash ./update-embeddedui.sh
+	showtext "Setting up Nodo UI"
+	sudo -u nodo bash ./update-nodoui.sh
 )
 showtext "Start services"
 
