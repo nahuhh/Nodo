@@ -57,6 +57,7 @@ showtext "Setting up Monero..."
 (
 	cd /home/nodo || exit 1
 
+	export FIRSTINSTALL=1
 	mkdir -p /home/nodo/bin
 	chown nodo:nodo /home/nodo/bin
 	chmod a+rx /home/nodo/bin
@@ -87,16 +88,17 @@ systemctl enable --now monerod block-explorer monero-lws monero-lws-admin webui 
 
 services-start
 sleep 3
-putvar 'i2p_b32_addr' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmr.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
-putvar 'i2p_b32_addr_rpc' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmrRpc.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
-putvar 'onion_addr' "$(cat /var/lib/tor/hidden_service/hostname)"
-
 swapfile=/media/monero/swap
+sleep 1
 showtext "Setting up swap on $swapfile"
-dd if=/dev/zero of="$swapfile" bs=1M count=2048 conv=sync
+dd if=/dev/zero of="$swapfile" bs=1M count=1024 conv=sync
 mkswap "$swapfile"
 printf '%s none swap defaults 0 0' "$swapfile" | tee -a /etc/fstab
 swapon "$swapfile"
+
+putvar 'i2p_b32_addr' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmr.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
+putvar 'i2p_b32_addr_rpc' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmrRpc.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
+putvar 'onion_addr' "$(cat /var/lib/tor/hidden_service/hostname)"
 
 ## Install complete
 showtext "Installation Complete"
