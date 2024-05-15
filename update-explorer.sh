@@ -9,7 +9,7 @@ OLD_VERSION_EXP="${1:-$(getvar "versions.exp")}"
 RELEASE="$(curl -fs https://raw.githubusercontent.com/MoneroNodo/Nodo/master/release-exp.txt)"
 #RELEASE="release-v0.18" # TODO remove when live
 
-if [ -z "$RELEASE" ]; then # Release somehow not set or empty
+if [ -z "$RELEASE" ] && [ -z "$FIRSTINSTALL" ]; then # Release somehow not set or empty
 	showtext "Failed to check for update for Monero Explorer"
 	exit 0
 fi

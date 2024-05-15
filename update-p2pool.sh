@@ -9,7 +9,7 @@ OLD_VERSION_P2POOL="${1:-$(getvar "versions.p2pool")}"
 RELEASE=$(get_release_commit "SChernykh" "p2pool")
 #RELEASE="release-v0.18" # TODO remove when live
 
-if [ -z "$RELEASE" ]; then # Release somehow not set or empty
+if [ -z "$RELEASE" ] && [ -z "$FIRSTINSTALL" ]; then # Release somehow not set or empty
 	showtext "Failed to check for update for Monero p2pool"
 	exit 0
 fi

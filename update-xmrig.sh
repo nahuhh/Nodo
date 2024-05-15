@@ -9,7 +9,7 @@ OLD_VERSION_XMRIG="${1:-$(getvar "versions.xmrig")}"
 RELEASE=$(get_release_commit "xmrig" "xmrig")
 #RELEASE="release-v0.18" # TODO remove when live
 
-if [ -z "$RELEASE" ]; then # Release somehow not set or empty
+if [ -z "$RELEASE" ] && [ -z "$FIRSTINSTALL" ]; then # Release somehow not set or empty
 	showtext "Failed to check for update for Monero xmrig"
 	exit 0
 fi

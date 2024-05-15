@@ -20,7 +20,7 @@ Start update-monero.sh script $(date)
 RELEASE=$(get_release_commit "monero-project" "monero")
 # RELEASE="release-v0.18" # TODO remove when live
 
-if [ -z "$RELEASE" ]; then # Release somehow not set or empty
+if [ -z "$RELEASE" ] && [ -z "$FIRSTINSTALL" ]; then # Release somehow not set or empty
 	showtext "Failed to check for update for Monero"
 	exit 0
 fi

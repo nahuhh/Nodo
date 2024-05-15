@@ -7,7 +7,7 @@ OLD_VERSION_LWS="${1:-$(getvar "versions.lws")}"
 RELEASE="$(curl -fs https://raw.githubusercontent.com/MoneroNodo/Nodo/master/release-monero-lws.txt)"
 #RELEASE="release-v0.18" # TODO remove when live
 
-if [ -z "$RELEASE" ]; then # Release somehow not set or empty
+if [ -z "$RELEASE" ] && [ -z "$FIRSTINSTALL" ]; then # Release somehow not set or empty
 	showtext "Failed to check for update for LWS"
 	exit 0
 fi
@@ -38,8 +38,8 @@ showtext "Downloading VTNerd Monero-LWS"
 	cd build || exit 1
 	cmake -DMONERO_SOURCE_DIR=/home/nodo/monero -DMONERO_BUILD_DIR=/home/nodo/monero/build/release ..
 	showtext "Building VTNerd Monero-LWS"
-	make -j"$(nproc --ignore=2)" && \
-		cp src/monero-lws* /home/nodo/bin/ && \
+	make -j$(nproc --ignore=2) && \
+		cp && \
 		putvar "versions.lws" "$RELEASE"
 } 2>&1 | tee -a "$DEBUG_LOG"
 cd || exit 1
