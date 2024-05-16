@@ -115,31 +115,31 @@ showtext "Installing log.io..."
 #Install webui
 showtext "Installing python dependencies..."
 {
-	mkdir /home/nodo/webui
-	chown nodo:nodo /home/nodo/webui
-	chmod gu+rx /home/nodo/webui
-	cd /home/nodo/webui || exit 1
+	cd /home/nodo/webui || return 1
 	apt-get install -y software-properties-common
 	apt-get install -y python3.11 python3.11-dev python3-pip python3.11-venv
 	showtext "Creating virtualenv, may take a minute..."
 	python3.11 -m venv venv
 	(
 	. venv/bin/activate
-	venv/bin/pip3.11 install --upgrade pip
-	venv/bin/pip3.11 install Cython
-	venv/bin/pip3.11 install numpy
-	venv/bin/pip3.11 install dash
-	venv/bin/pip3.11 install dash_bootstrap_components dash_mantine_components dash_iconify
-	venv/bin/pip3.11 install Pyarrow
-	venv/bin/pip3.11 install pandas
-	venv/bin/pip3.11 install dash_breakpoints dash_daq
-	venv/bin/pip3.11 install furl
-	venv/bin/pip3.11 install psutil
-	venv/bin/pip3.11 install dash-qr-manager
-	venv/bin/pip3.11 install pycairo
-	venv/bin/pip3.11 install PyGObject
+	venv/bin/pip install --upgrade pip
+	venv/bin/pip install Cython
+	venv/bin/pip install numpy
+	venv/bin/pip install dash
+	venv/bin/pip install dash_bootstrap_components dash_mantine_components dash_iconify
+	venv/bin/pip install Pyarrow
+	venv/bin/pip install pandas
+	venv/bin/pip install pydbus
+	venv/bin/pip install dash_breakpoints dash_daq
+	venv/bin/pip install furl
+	venv/bin/pip install psutil
+	venv/bin/pip install dash-qr-manager
+	venv/bin/pip install pycairo
+	venv/bin/pip install PyGObject
 	venv/bin/python -m compileall .
 )
+	chown nodo:nodo -R /home/nodo/webui
+	chmod gu+rx /home/nodo/webui
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 showtext "Installing LibreTranslate"

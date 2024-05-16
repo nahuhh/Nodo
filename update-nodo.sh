@@ -2,7 +2,6 @@
 #Create/ammend debug file for handling update errors:
 #shellcheck source=home/nodo/common.sh
 . /home/nodo/common.sh
-cd /root/moneronodo || exit 1
 OLD_VERSION_NODO="${1:-$(getvar "versions.nodo")}"
 touch "$DEBUG_LOG"
 echo "
@@ -26,7 +25,6 @@ fi
 
 _cwd=/root/nodo
 test -z "$_cwd" && exit 1
-cd "${_cwd}" || exit 1
 
 git reset --hard HEAD
 git pull
@@ -39,26 +37,6 @@ showtext "Receiving and applying Ubuntu updates to the latest version..."
 	eval "$_APTGET" dist-upgrade
 	eval "$_APTGET" autoremove -y
 } 2>&1 | tee -a "$DEBUG_LOG"
-
-##Auto remove any obsolete packages
-
-##Clone Nodo to device from git
-showtext "Cloning Nodo to device from git..."
-# Update Link
-cd || exit 1
-git clone --single-branch https://github.com/MoneroNodo/Nodo.git
-cd Nodo || exit 1
-git reset --hard HEAD
-
-##Replace file /etc/sudoers to set global sudo permissions/rules (required to add  new permissions to www-data user for interface buttons)
-showtext "Downloading and replacing /etc/sudoers file..."
-chmod 0440 home/nodo/sudoers
-chown root home/nodo/sudoers
-cp "${_cwd}"/home/nodo/sudoers /etc/sudoers
-
-#ubuntu /dev/null odd requirment to set permissions
-chmod 777 /dev/null
-showtext "Global permissions changed"
 
 #Backup User values
 showtext "Creating backups of any settings you have customised"
@@ -79,6 +57,7 @@ showtext "User configuration restored"
 
 ##Update crontab
 showtext "Updating crontab tasks..."
+crontab -r
 crontab "${_cwd}"/var/spool/cron/crontabs/nodo 2> >(tee -a "$DEBUG_LOG" >&2)
 
 #Update system version number to new one installed

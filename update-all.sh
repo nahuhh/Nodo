@@ -4,7 +4,8 @@
 #shellcheck source=home/nodo/common.sh
 . /home/nodo/common.sh
 
-cd /home/nodo && /home/nodo/update-nodo.sh
+bash /home/nodo/update-nodo.sh
+cd /home/nodo || exit 1
 chown nodo:nodo -R nodoui monero monero-lws p2pool xmrig onion-monero-block-explorer
 mkdir -p /home/nodo/bin
 chown nodo:nodo /home/nodo/bin
