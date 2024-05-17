@@ -35,6 +35,10 @@ api: str = "https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currenci
 def get_rate(cur="usd") -> str:
     r = requests.get(api.format(cur))
     resp = r.json()
+    if "error_code" in resp["status"]:
+        print(resp["status"]["error_code"])
+        return "???.??"
+
     return resp["monero"][cur] or "???.??"
 
 
