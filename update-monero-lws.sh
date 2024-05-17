@@ -32,8 +32,10 @@ showtext "Downloading VTNerd Monero-LWS"
 {
 	git clone --recursive https://github.com/vtnerd/monero-lws.git
 	cd monero-lws || exit 1
+	# Temporary band-aid as newer commits don't seem to want to build
 	git checkout master
 	git pull
+	git reset --hard e09d3d57e9f88cb47702976965bd6e1ed813c07f
 	mkdir build
 	cd build || exit 1
 	cmake -DMONERO_SOURCE_DIR=/home/nodo/monero -DMONERO_BUILD_DIR=/home/nodo/monero/build/release ..
