@@ -91,8 +91,6 @@ showtext "Success"
 
 showtext "Setting up SSD..."
 
-bash ./setup-drive.sh
-
 ##Install log.io (Real-time service monitoring)
 #Establish Device IP
 DEVICE_IP=$(getip)

@@ -49,6 +49,8 @@ hostname MoneroNodo
 #showtext "Downloading MoneroNodo files..."
 #git clone --single-branch https://github.com/MoneroNodo/Nodo.git 2>&1 | tee -a "$DEBUG_LOG"
 
+bash "$_cwd"/setup-drive.sh
+
 showtext "setup-nodo.sh..."
 bash "$_cwd"/setup-nodo.sh
 
