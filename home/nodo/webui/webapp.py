@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from io import TextIOWrapper
-from pydbus import SystemBus
+from dasbus.connection import SystemMessageBus
 import socket
 import psutil
 import threading
@@ -155,9 +155,9 @@ time_ticker: datetime.datetime = datetime.datetime.now()
 price: str = "$" + str(get_rate())
 lockfile: str = "/home/nodo/variables/config.json.lock"
 
-bus = SystemBus()
+bus = SystemMessageBus()
 
-backend_obj = bus.get(
+backend_obj = bus.get_proxy(
     "com.monero.nodo",
     "/com/monero/nodo"
 )
@@ -191,10 +191,10 @@ def update_config():
     if not written and update_time < datetime.datetime.now():
         write_config()
     if not applied and update_time < datetime.datetime.now() - timedelta_restart:
-        bus.serviceManager("restart", "monero-lws block-explorer monerod")
+        backend_obj.serviceManager("restart", "monero-lws block-explorer monerod")
         miner: bool = conf_dict["config"]["mining"]["enabled"] == "TRUE"
-        bus.serviceManager("enable" if miner else "disable", "xmrig")
-        bus.serviceManager("start" if miner else "stop", "xmrig")
+        backend_obj.serviceManager("enable" if miner else "disable", "xmrig")
+        backend_obj.serviceManager("start" if miner else "stop", "xmrig")
         applied = True
 
 
@@ -266,18 +266,10 @@ def load_page0_values():
         proc.run(s, stdout=proc.PIPE).stdout.decode().split("=")[1]
     ]
 
-    page0_hardware_status["cpu_percentage"] = psutil.cpu_percent()
-    if "soc-thermal" in psutil.sensors_temperatures():
-        page0_hardware_status["cpu_temp"] = psutil.sensors_temperatures()[
-            "soc-thermal"
-        ][0].current
-    else:
-        page0_hardware_status["cpu_temp"] = "<unknown>"
-    page0_hardware_status["primary_storage"] = psutil.disk_usage(
-        "/media/monero"
-    ).percent
-    page0_hardware_status["backup_storage"] = psutil.disk_usage("/").percent
-    page0_hardware_status["ram_percentage"] = psutil.virtual_memory().percent
+    page0_hardware_status["cpu_percentage"] = backend_obj.getAverageCPUFreq
+    page0_hardware_status["primary_storage"] = backend_obj.getSystemStorageUsage
+    page0_hardware_status["backup_storage"] = backend_obj.getBlockchainStorageUsage
+    page0_hardware_status["ram_percentage"] = backend_obj.getRamUsage
 
 
 # ====================================================================
@@ -7588,7 +7580,7 @@ def poweroff_button(n_clicks):
         return "Click to Confirm"
     if n_clicks == 2:
         print("shutting down")
-        bus.shutdown();
+        backend_obj.shutdown();
         return "Shutting down!"
 
     return ""
@@ -7635,7 +7627,7 @@ def restart_button(n_clicks):
         return "Click to Confirm"
     if n_clicks == 2:
         print("shutting down")
-        bus.reboot()
+        backend_obj.reboot()
         return "Restarting!"
 
     return ""

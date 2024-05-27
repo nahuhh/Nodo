@@ -2,6 +2,8 @@
 
 set -e
 
+. /home/nodo/common.sh
+
 _cwd=$PWD
 test "$_cwd" = "" && exit 1
 
@@ -50,9 +52,9 @@ showtext "Installing dependencies for Web Interface..."
 usermod -a -G nodo www-data
 
 showtext "Install home contents"
-cp -r "${_cwd}"/home/nodo/* /home/nodo/
-cp -r "${_cwd}"/etc/* /etc/
-cp "${_cwd}"/update-*sh "${_cwd}"/recovery.sh /home/nodo/
+cp -r "$_cwd"/home/nodo/* /home/nodo/
+cp -r "$_cwd"/etc/* /etc/
+cp "$_cwd"/update-*sh "$_cwd"/recovery.sh /home/nodo/
 chown nodo:nodo -R /home/nodo
 
 log "manual build of gtest for Monero"
@@ -60,7 +62,7 @@ log "manual build of gtest for Monero"
 	cd /home/nodo/gtest || exit 1
 	cmake .
 	make
-	cp "${_cwd}"/libg* /usr/lib/
+	cp "$_cwd"/libg* /usr/lib/
 	cd || exit 1
 } 2>&1 | tee -a "$DEBUG_LOG"
 
@@ -77,15 +79,15 @@ showtext "SSH security config complete"
 ##Copy MoneroNodo scripts to home folder
 showtext "Moving MoneroNodo scripts into position..."
 {
-	cp -r "${_cwd}"/home/nodo/* /home/nodo/
-	cp -r "${_cwd}"/home/nodo/.profile /home/nodo/
+	cp -r "$_cwd"/home/nodo/* /home/nodo/
+	cp -r "$_cwd"/home/nodo/.profile /home/nodo/
 	chmod 777 -R /home/nodo/* #Read/write access needed by www-data to action php port, address customisation
 } 2>&1 | tee -a "$DEBUG_LOG"
 showtext "Success"
 
 showtext "Configuring apache server for access to Monero log file..."
 {
-	cp "${_cwd}"/etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default.conf
+	cp "$_cwd"/etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 	chmod 777 /etc/apache2/sites-enabled/000-default.conf
 	chown root /etc/apache2/sites-enabled/000-default.conf
 	openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/private/moneronodo.key -out /etc/ssl/certs/moneronodo.crt -sha256 -days 3650 -nodes -subj "/C=US/ST=StateName/L=CityName/O=Nodo/OU=CompanySectionName/CN=moneronodo.local" -addext "subjectAltName=DNS:moneronodo.lan,DNS:moneronodo"
@@ -105,8 +107,8 @@ showtext "Installing log.io..."
 	npm install -g log.io
 	npm install -g log.io-file-input
 	mkdir -p ~/.log.io/inputs/
-	cp "${_cwd}"/.log.io/inputs/file.json ~/.log.io/inputs/file.json
-	cp "${_cwd}"/.log.io/server.json ~/.log.io/server.json
+	cp "$_cwd"/.log.io/inputs/file.json ~/.log.io/inputs/file.json
+	cp "$_cwd"/.log.io/server.json ~/.log.io/server.json
 	sed -i "s/127.0.0.1/$DEVICE_IP/g" ~/.log.io/server.json
 	sed -i "s/127.0.0.1/$DEVICE_IP/g" ~/.log.io/inputs/file.json
 	systemctl start log-io-server.service
@@ -124,30 +126,30 @@ showtext "Installing python dependencies..."
 	showtext "Creating virtualenv, may take a minute..."
 	python3.11 -m venv venv
 	(
-	. venv/bin/activate
-	venv/bin/pip install --upgrade pip
-	venv/bin/pip install Cython
-	venv/bin/pip install numpy
-	venv/bin/pip install dash
-	venv/bin/pip install dash_bootstrap_components dash_mantine_components dash_iconify
-	venv/bin/pip install Pyarrow
-	venv/bin/pip install pandas
-	venv/bin/pip install pydbus
-	venv/bin/pip install dash_breakpoints dash_daq
-	venv/bin/pip install furl
-	venv/bin/pip install psutil
-	venv/bin/pip install dash-qr-manager
-	venv/bin/pip install pycairo
-	venv/bin/pip install PyGObject
-	venv/bin/python -m compileall .
-)
+		. venv/bin/activate
+		venv/bin/pip install --upgrade pip
+		venv/bin/pip install Cython
+		venv/bin/pip install numpy
+		venv/bin/pip install dash
+		venv/bin/pip install dash_bootstrap_components dash_mantine_components dash_iconify
+		venv/bin/pip install Pyarrow
+		venv/bin/pip install pandas
+		venv/bin/pip install dasbus
+		venv/bin/pip install dash_breakpoints dash_daq
+		venv/bin/pip install furl
+		venv/bin/pip install psutil
+		venv/bin/pip install dash-qr-manager
+		venv/bin/pip install pycairo
+		venv/bin/pip install PyGObject
+		venv/bin/python -m compileall .
+	)
 	chown nodo:nodo -R /home/nodo/webui
 	chmod gu+rx /home/nodo/webui
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 showtext "Installing LibreTranslate"
 {
-	pipx install libretranslate
+	sudo -u nodo pipx install libretranslate
 	systemctl enable --now libretranslate
 } 2>&1 | tee -a "$DEBUG_LOG"
 
@@ -155,7 +157,7 @@ showtext "Installing LibreTranslate"
 {
 	if [ -f /usr/bin/tor ]; then #Crude way of detecting tor installed
 		showtext "Updating tor hidden service settings..."
-		cp "${_cwd}"/etc/tor/torrc /etc/tor/torrc
+		cp "$_cwd"/etc/tor/torrc /etc/tor/torrc
 		showtext "Applying Settings..."
 		chmod 644 /etc/tor/torrc
 		chown root /etc/tor/torrc
@@ -187,7 +189,7 @@ ufw allow 18080:18090/tcp
 ufw allow 18080:18090/udp
 ufw allow 4200
 ufw allow 37888 #p2pool
-ufw allow 8135 #lws
+ufw allow 8135  #lws
 ufw enable
 
 chmod o+rx /home/nodo

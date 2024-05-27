@@ -47,7 +47,7 @@ showtext "User configuration saved"
 #Install Update
 
 showtext "setup-nodo.sh..."
-. "${_cwd}"/setup-nodo.sh
+bash "${_cwd}"/setup-nodo.sh
 
 showtext "Merge config.json"
 jq -s '.[0] * .[1] | {config: .config}' /home/nodo/variables/config_retain.json "${_cwd}"/home/nodo/variables/config.json > /home/nodo/variables/config.json || \
