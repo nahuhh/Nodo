@@ -35,10 +35,8 @@ showtext "Downloading Nodo UI"
 	cd nodoui || exit 1
 	git checkout master
 	git pull
-	mkdir build
-	cd build || exit 1
 	showtext "Building Nodo UI"
-	bash install.sh && putvar "versions.nodoui" "$RELEASE"
+	bash ./install.sh && putvar "versions.nodoui" "$RELEASE"
 } 2>&1 | tee -a "$DEBUG_LOG"
 cd || exit 1
 ##End debug log
