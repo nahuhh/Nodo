@@ -7,18 +7,14 @@
 # MoneroNodo scripts and custom files at my repo https://github.com/shermand100/pinode-xmr
 # PiVPN - OpenVPN server setup https://github.com/pivpn/pivpn
 
-#shellcheck source=home/nodo/common.sh
-
 if [ ! "$EUID" = 0 ]; then
 	printf '!! %s' "Please run as root"
 	exit 1
 fi
 
+_cwd="$(pwd)"
 
-
-_cwd=$PWD
-test "$_cwd" = "" && exit 1
-
+#shellcheck source=home/nodo/common.sh
 . "$_cwd"/home/nodo/common.sh
 if check_connection; then
 	showtext "Internet working fine -- starting installer"
@@ -51,10 +47,10 @@ hostname MoneroNodo
 #showtext "Downloading MoneroNodo files..."
 #git clone --single-branch https://github.com/MoneroNodo/Nodo.git 2>&1 | tee -a "$DEBUG_LOG"
 
-bash "$_cwd"/home/nodo/setup-drive.sh
-
 showtext "setup-nodo.sh..."
 bash "$_cwd"/setup-nodo.sh
+
+bash "$_cwd"/home/nodo/setup-drive.sh
 
 showtext "Setting up Monero..."
 # Install monero for the first time
