@@ -1335,23 +1335,9 @@ def make_page1_1():
                 ],
                 className="me-1 mt-1 pt-2",
             ),
-            dbc.Col(
-                dbc.Button(
-                    "Add Peer",
-                    className="buttonNodo ms-auto fa fa-send ",
-                    id="button-networks-clearnet-add-peer",
-                    n_clicks=0,
-                ),
-                width="auto",
-                className="me-1 mt-1 pt-2",
-            ),
             html.Div(html.P("", className="text-center"), style={"width": "95vw"}),
             html.Div(id="networks-clearnet-hidden-div", style={"display": "none"}),
             html.Div(id="networks-clearnet-port-hidden-div", style={"display": "none"}),
-            html.Div(id="networks-clearnet-peer-hidden-div", style={"display": "none"}),
-            html.Div(
-                id="networks-clearnet-add-peer-hidden-div", style={"display": "none"}
-            ),
             html.Br(),
             html.Br(),
             html.Div(
@@ -1479,16 +1465,6 @@ def make_page1_2():
                 ],
                 className="me-1 mt-1 pt-2",
             ),
-            dbc.Col(
-                dbc.Button(
-                    "Add Peer",
-                    className="buttonNodo ms-auto fa fa-send ",
-                    id="button-networks-tor-add-peer",
-                    n_clicks=0,
-                ),
-                width="auto",
-                className="me-1 mt-1 pt-2",
-            ),
             html.Div(html.P("", className="text-center"), style={"width": "95vw"}),
             html.Div(id="networks-tor-hidden-div", style={"display": "none"}),
             html.Div(
@@ -1496,8 +1472,6 @@ def make_page1_2():
                 style={"display": "none"},
             ),
             html.Div(id="networks-tor-port-hidden-div", style={"display": "none"}),
-            html.Div(id="networks-tor-peer-hidden-div", style={"display": "none"}),
-            html.Div(id="networks-tor-add-peer-hidden-div", style={"display": "none"}),
             html.Br(),
             html.Br(),
             html.Div(
@@ -1607,21 +1581,9 @@ def make_page1_3():
                 ],
                 className="me-1 mt-1 pt-2",
             ),
-            dbc.Col(
-                dbc.Button(
-                    "Add Peer",
-                    className="buttonNodo ms-auto fa fa-send ",
-                    id="button-networks-i2p-add-peer",
-                    n_clicks=0,
-                ),
-                width="auto",
-                className="me-1 mt-1 pt-2",
-            ),
             html.Div(html.P("", className="text-center"), style={"width": "95vw"}),
             html.Div(id="networks-i2p-hidden-div", style={"display": "none"}),
             html.Div(id="networks-i2p-port-hidden-div", style={"display": "none"}),
-            html.Div(id="networks-i2p-peer-hidden-div", style={"display": "none"}),
-            html.Div(id="networks-i2p-add-peer-hidden-div", style={"display": "none"}),
             html.Br(),
             html.Br(),
             html.Div(
@@ -6065,46 +6027,6 @@ def update_switch_networks_clearnet_peer(value):
 
 
 # ====================================================================
-# Page 1_1 Networks -> Clearnet -> Add Peer (Button)
-# Trigger by clicking the clearnet -> Add Peer (Button)
-# ====================================================================
-@app.callback(
-    Output("networks-clearnet-add-peer-hidden-div", "children"),
-    Input("button-networks-clearnet-add-peer", "n_clicks"),
-    [
-        State("input-networks-clearnet-port", "value"),
-        State("input-networks-clearnet-peer", "value"),
-    ],
-    prevent_initial_call=True,
-)
-def update_switch_networks_clearnet_add_peer(n_clicks, port, peer):
-    global page1_networks_clearnet
-    ctx = dash.callback_context
-
-    if not ctx.triggered:
-        raise PreventUpdate
-    print(
-        "(Button) callback by button-networks-clearnet-add-peer Port : "
-        + str(port)
-        + ", Peer "
-        + str(peer)
-    )
-    page1_networks_clearnet["port"] = port
-    page1_networks_clearnet["peer"] = peer
-
-    # ================================================================
-    # Add save function to write back
-    # page1_networks_clearnet["port"] into backend.
-    # page1_networks_clearnet["peer"] into backend.
-    # ...
-    # ================================================================
-    conf_dict["config"]["monero_public_port"] = port
-    save_config()
-
-    return ""
-
-
-# ====================================================================
 # Page 1_2 Networks -> Tor -> Tor (Switch)
 # Trigger by clicking the Tor (switch)
 # ====================================================================
@@ -6255,47 +6177,6 @@ def update_switch_networks_tor_peer(value):
     save_config()
 
     return ""
-
-
-# ====================================================================
-# Page 1_2 Networks -> Tor -> Add Peer (Button)
-# Trigger by clicking the Tor -> Add Peer (Button)
-# ====================================================================
-@app.callback(
-    Output("networks-tor-add-peer-hidden-div", "children"),
-    Input("button-networks-tor-add-peer", "n_clicks"),
-    [
-        State("input-networks-tor-port", "value"),
-        State("input-networks-tor-peer", "value"),
-    ],
-    prevent_initial_call=True,
-)
-def update_switch_networks_tor_add_peer(n_clicks, port, peer):
-    global page1_networks_tor
-    ctx = dash.callback_context
-
-    if not ctx.triggered:
-        raise PreventUpdate
-    print(
-        "(Button) callback by button-networks-tor-add-peer Port : "
-        + str(port)
-        + ", Peer "
-        + str(peer)
-    )
-    page1_networks_tor["port"] = port
-    page1_networks_tor["peer"] = peer
-
-    # ================================================================
-    # Add save function to write back
-    # page1_networks_tor["port"] into backend.
-    # page1_networks_tor["peer"] into backend.
-    # ...
-    # ================================================================
-    conf_dict["config"]["add_tor_peer"] = peer
-    save_config()
-
-    return ""
-
 
 # ====================================================================
 # Page 1_3 Networks -> I2P -> I2P Switch
@@ -6449,47 +6330,6 @@ def update_switch_networks_i2p_peer(value):
     save_config()
 
     return ""
-
-
-# ====================================================================
-# Page 1_3 Networks -> I2P -> Add Peer (Button)
-# Trigger by clicking the I2P -> Add Peer (Button)
-# ====================================================================
-@app.callback(
-    Output("networks-i2p-add-peer-hidden-div", "children"),
-    Input("button-networks-i2p-add-peer", "n_clicks"),
-    [
-        State("input-networks-i2p-port", "value"),
-        State("input-networks-i2p-peer", "value"),
-    ],
-    prevent_initial_call=True,
-)
-def update_switch_networks_i2p_add_peer(n_clicks, port, peer):
-    global page1_networks_i2p
-    ctx = dash.callback_context
-
-    if not ctx.triggered:
-        raise PreventUpdate
-    print(
-        "(Button) callback by button-networks-i2p-add-peer Port : "
-        + str(port)
-        + ", Peer "
-        + str(peer)
-    )
-    page1_networks_i2p["port"] = port
-    page1_networks_i2p["peer"] = peer
-
-    # ================================================================
-    # Add save function to write back
-    # page1_networks_i2p["port"] into backend.
-    # page1_networks_i2p["peer"] into backend.
-    # ...
-    # ================================================================
-    conf_dict["config"]["add_i2p_peer"] = peer
-    save_config()
-
-    return ""
-
 
 # ====================================================================
 # ====================================================================
