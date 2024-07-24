@@ -4,11 +4,6 @@
 . /home/nodo/common.sh
 OLD_VERSION_NODO="${1:-$(getvar "versions.nodo")}"
 touch "$DEBUG_LOG"
-echo "
-####################
-Start update-nodo.sh script $(date)
-####################
-" | tee -a "$DEBUG_LOG"
 
 RELEASE="$(curl -fs https://raw.githubusercontent.com/MoneroNodo/Nodo/master/release.txt)"
 #RELEASE="alpha" # TODO remove when live
@@ -67,10 +62,3 @@ crontab "${_cwd}"/var/spool/cron/crontabs/nodo 2> >(tee -a "$DEBUG_LOG" >&2)
 	#ubuntu /dev/null odd requiremnt to set permissions
 	chmod 777 /dev/null
 } 2>&1 | tee -a "$DEBUG_LOG"
-
-##End debug log
-showtext "
-####################
-End update-nodo.sh script $(date)
-####################
-"

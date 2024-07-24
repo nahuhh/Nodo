@@ -19,12 +19,6 @@ fi
 
 touch "$DEBUG_LOG"
 
-showtext "
-####################
-Start setup-update-monero-lws.sh script $(date)
-####################
-"
-
 ##Delete old version
 showtext "Delete old version"
 rm -rf /home/nodo/monero-lws 2>&1 | tee -a "$DEBUG_LOG"
@@ -45,10 +39,3 @@ showtext "Downloading VTNerd Monero-LWS"
 		putvar "versions.lws" "$RELEASE"
 } 2>&1 | tee -a "$DEBUG_LOG"
 cd || exit 1
-#Update system reference current LWS version number to New version number
-
-##End debug log
-showtext "Monero-LWS Updated
-####################
-End setup-update-monero-lws.sh script $(date)
-####################"

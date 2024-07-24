@@ -8,17 +8,8 @@ cd /home/nodo || exit 1
 OLD_VERSION="${1:-$(getvar "versions.monero")}"
 #Error Log:
 touch "$DEBUG_LOG"
-echo "
-####################
-Start update-monero.sh script $(date)
-####################
-" 2>&1 | tee -a "$DEBUG_LOG"
 
-#Download variable for current monero release version
-#FIXME: change url
-# wget -q https://raw.githubusercontent.com/monero-ecosystem/PiNode-XMR/master/release.sh -O /home/nodo/release.sh
 RELEASE=$(get_release_commit "monero-project" "monero")
-# RELEASE="release-v0.18" # TODO remove when live
 
 if [ -z "$RELEASE" ] && [ -z "$FIRSTINSTALL" ]; then # Release somehow not set or empty
 	showtext "Failed to check for update for Monero"
@@ -54,13 +45,3 @@ showtext "Building Monero..."
 # mv dl/*/monero* /usr/bin/
 # chmod a+x /usr/bin/monero*
 # } 2>&1 | tee -a "$DEBUG_LOG"
-
-#Update system version number
-# putvar "versions.monero" "$RELEASE"
-#cleanup old version number file
-
-##End debug log
-log "Monero Update Complete
-####################
-End setup-update-monero.sh script $(date)
-####################"

@@ -21,13 +21,6 @@ fi
 
 touch "$DEBUG_LOG"
 
-showtext "
-####################
-Start setup-update-xmrig.sh script $(date)
-####################
-"
-
-
 #(1) Define variables and updater functions
 
 rm -rf /home/nodo/xmrig/
@@ -47,10 +40,3 @@ showtext "Building Monero xmrig..."
 		chmod a+x /home/nodo/bin/xmrig && \
 		putvar "versions.xmrig" "$RELEASE"
 } 2>&1 | tee -a "$DEBUG_LOG"
-
-#
-##End debug log
-showtext "
-####################
-End setup-update-xmrig.sh script $(date)
-####################"

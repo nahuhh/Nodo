@@ -30,13 +30,14 @@ Start setup-update-explorer.sh script $(date)
 
 #(1) Define variables and updater functions
 
-rm -rf /home/nodo/onion-monero-blockchain-explorer/
+#rm -rf /home/nodo/onion-monero-blockchain-explorer/
 showtext "Building Monero Blockchain Explorer..."
 
 {
 	git clone -b master https://github.com/moneroexamples/onion-monero-blockchain-explorer.git
 	cd onion-monero-blockchain-explorer || exit
-	git pull
+	git reset --hard HEAD
+	git pull --rebase
 	mkdir build
 	cd build || exit
 	cmake -DMONERO_DIR=/home/nodo/monero --fresh ..
