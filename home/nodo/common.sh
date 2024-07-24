@@ -6,6 +6,22 @@ DEBUG_LOG=debug.log
 CONFIG_FILE=/home/nodo/variables/config.json
 XMRPARTLABEL="NODO_BLOCKCHAIN"
 
+gitlab_get_tag_commit() {
+	project="$(printf '%s' "$1" | sed 's/./\L&/g')"
+	repo="$(printf '%s' "$2" | sed 's/./\L&/g')"
+	githost="${3:-gitlab.com}"
+	tag=$(curl -ls "https://$githost/api/v4/projects/$project%2F$repo/repository/tags" | jq -r '.[0].commit.id')
+	printf '%s' "$tag"
+}
+
+gitlab_get_release_commit() {
+	project="$(printf '%s' "$1" | sed 's/./\L&/g')"
+	repo="$(printf '%s' "$2" | sed 's/./\L&/g')"
+	githost="${3:-gitlab.com}"
+	tag=$(curl -ls "https://$githost/api/v4/projects/$project%2F$repo/releases" | jq -r '.[0].commit.id')
+	printf '%s' "$tag"
+}
+
 get_tag_commit() {
 	project="$1"
 	repo="$2"
