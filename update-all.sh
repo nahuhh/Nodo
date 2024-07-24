@@ -15,6 +15,7 @@ sudo -u nodo bash /home/nodo/update-p2pool.sh
 sudo -u nodo bash /home/nodo/update-xmrig.sh
 sudo -u nodo bash /home/nodo/update-explorer.sh
 sudo -u nodo bash /home/nodo/update-nodoui.sh
+sudo -u nodo bash /home/nodo/update-pay.sh
 
 # Restart services afterwards,
 # otherwise the device would be nothing more than a very warm brick
