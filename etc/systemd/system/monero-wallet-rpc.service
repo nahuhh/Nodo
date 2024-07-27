@@ -1,0 +1,16 @@
+[Unit]
+Description=Monero RPC Wallet
+After=network.target
+
+[Service]
+ExecStart=/bin/bash monero-wallet-rpc.sh
+WorkingDirectory=/home/nodo/execScripts/
+Type=exec
+Restart=always
+RestartSec=30
+User=nodo
+StandardOutput=inherit
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target

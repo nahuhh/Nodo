@@ -1,0 +1,17 @@
+[Unit]
+Description=MoneroPay
+Requires=monero-wallet-rpc.service
+After=network.target monero-wallet-rpc.service
+
+[Service]
+ExecStart=/bin/bash moneropay.sh
+WorkingDirectory=/home/nodo/execScripts/
+Type=exec
+Restart=always
+RestartSec=30
+User=nodo
+StandardOutput=inherit
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target
