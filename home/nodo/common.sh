@@ -91,7 +91,7 @@ setup_drive() {
 	#append new partition to fstab
 	sed "/^UUID=$uuid/d" /etc/fstab
 	#add to fstab
-	printf "\nUUID=%s\t/media/monero\t%s\tdefaults,noatime\t0\t0" "$uuid" "$fstype" | tee -a /etc/fstab
+	printf "\nUUID=%s\t/media/monero\t%s\tdefaults,noatime,nofail,x-systemd.device-timeout=3\t0\t0" "$uuid" "$fstype" | tee -a /etc/fstab
 	#create mountpoint
 	mkdir -p /media/monero
 	#mount
