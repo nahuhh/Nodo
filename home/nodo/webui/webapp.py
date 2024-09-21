@@ -297,7 +297,7 @@ def load_page1_values():
 
     page1_networks_tor["tor_switch"] = 1 if c["tor_enabled"] == "TRUE" else 0
     page1_networks_tor["port"] = c["tor_port"]
-    page1_networks_tor["onion_addr"] = c["onion_addr"]
+    page1_networks_tor["tor_address"] = c["tor_address"]
     page1_networks_tor["peer"] = c["add_tor_peer"]
     page1_networks_tor["route_all_connections_through_tor_switch"] = (
         1 if c["torproxy_enabled"] == "TRUE" else 0
@@ -305,7 +305,7 @@ def load_page1_values():
 
     page1_networks_i2p["i2p_switch"] = 1 if c["i2p_enabled"] == "TRUE" else 0
     page1_networks_i2p["port"] = c["i2p_port"]
-    page1_networks_i2p["i2p_b32_addr"] = c["i2p_b32_addr_rpc"]
+    page1_networks_i2p["i2p_address"] = c["i2p_address_rpc"]
     page1_networks_i2p["peer"] = c["add_i2p_peer"]
 
 
@@ -1359,7 +1359,7 @@ def make_page1_2():
     route_all_connections_through_tor_switch = bool(
         page1_networks_tor["route_all_connections_through_tor_switch"] == 1
     )
-    onion_addr = page1_networks_tor["onion_addr"]
+    tor_address = page1_networks_tor["tor_address"]
     port = page1_networks_tor["port"]
     peer = page1_networks_tor["peer"]
 
@@ -1437,7 +1437,7 @@ def make_page1_2():
                         id="input-networks-tor-onion-addr",
                         type="text",
                         disabled=True,
-                        value=onion_addr,
+                        value=tor_address,
                     ),
                 ],
                 className="me-1 mt-1 pb-2",
@@ -1478,7 +1478,7 @@ def make_page1_2():
                 id="qr-code-tor",
                 children=[
                     dqm.DashQrGenerator(
-                        data=onion_addr + ":" + str(port),
+                        data=tor_address + ":" + str(port),
                         framed=True,
                     )
                 ],
@@ -1490,7 +1490,7 @@ def make_page1_2():
 def make_page1_3():
     global page1_networks_i2p
     i2p_switch = bool(page1_networks_i2p["i2p_switch"] == 1)
-    i2p_b32_addr = page1_networks_i2p["i2p_b32_addr"]
+    i2p_address = page1_networks_i2p["i2p_address"]
     port = page1_networks_i2p["port"]
     peer = page1_networks_i2p["peer"]
 
@@ -1553,7 +1553,7 @@ def make_page1_3():
                         type="text",
                         disabled=True,
                         id="input-networks-i2p-i2p-b32-addr",
-                        value=i2p_b32_addr,
+                        value=i2p_address,
                     ),
                 ],
                 className="me-1 mt-1 pb-2",
@@ -1590,7 +1590,7 @@ def make_page1_3():
                 id="qr-code-i2p",
                 children=[
                     dqm.DashQrGenerator(
-                        data=i2p_b32_addr + ":" + str(port),
+                        data=i2p_address + ":" + str(port),
                         framed=True,
                     )
                 ],
@@ -6114,7 +6114,7 @@ def update_switch_networks_tor_add_peer(n_clicks):
     # Add Save function here
     # ...
     # ================================================================
-    output_value = page1_networks_tor["onion_addr"]
+    output_value = page1_networks_tor["tor_address"]
     conf_dict["config"]["tor_address"] = output_value
     save_config()
 
@@ -6231,7 +6231,7 @@ def update_switch_networks_i2p_change(n_clicks):
     # Add load function here
     # Add Save function here
     # ...
-    output_value = page1_networks_i2p["i2p_b32_addr"]
+    output_value = page1_networks_i2p["i2p_address"]
     # ================================================================
     conf_dict["config"]["i2p_address"] = output_value
     save_config()
@@ -6257,7 +6257,7 @@ def update_qr_code_i2p(value):
     global page1_networks_i2p
 
     return dqm.DashQrGenerator(
-        data=page1_networks_tor["onion_addr"] + ":" + str(value), framed=True
+        data=page1_networks_tor["tor_address"] + ":" + str(value), framed=True
     )
 
 
@@ -6270,7 +6270,7 @@ def update_qr_code_i2p(value):
     global page1_networks_i2p
 
     return dqm.DashQrGenerator(
-        data=page1_networks_i2p["i2p_b32_addr"] + ":" + str(value), framed=True
+        data=page1_networks_i2p["i2p_address"] + ":" + str(value), framed=True
     )
 
 

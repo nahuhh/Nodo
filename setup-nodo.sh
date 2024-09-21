@@ -171,7 +171,7 @@ showtext "Installing LibreTranslate"
 	fi
 } 2>&1 | tee -a "$DEBUG_LOG"
 
-putvar 'onion_addr' "$(cat /var/lib/tor/hidden_service/hostname)"
+putvar 'tor_address' "$(cat /var/lib/tor/hidden_service/hostname)"
 
 ##Set Swappiness lower
 showtext "Decreasing swappiness..."
