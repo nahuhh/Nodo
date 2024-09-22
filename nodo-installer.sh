@@ -79,12 +79,17 @@ showtext "Setting up Monero..."
 
 	showtext "Setting up Nodo UI"
 	sudo -u nodo bash ./update-nodoui.sh
+
+	cd || exit
+	git clone https://github.com/MoneroNodo/mesa
+	cd mesa || exit
+	sudo -u nodo bash ./install_mesa.sh
 )
 showtext "Start services"
 
 systemctl daemon-reload
 systemctl enable --now tor i2pd apparmor
-systemctl enable --now monerod block-explorer monero-lws monero-lws-admin webui p2pool
+systemctl enable --now monerod block-explorer monero-lws webui p2pool
 
 services-start
 sleep 3
