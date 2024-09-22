@@ -36,8 +36,9 @@ showtext "Receiving and applying Ubuntu updates to the latest version..."
 #Backup User values
 showtext "Creating backups of any settings you have customised"
 #home dir
-mv /home/nodo/variables/config.json /home/nodo/variables/config_retain.json
 #variables dir
+_v=/home/nodo/variables
+mv "${_v}"/config.json "${_v}"/config_retain.json
 showtext "User configuration saved"
 #Install Update
 
@@ -45,8 +46,11 @@ showtext "setup-nodo.sh..."
 bash "${_cwd}"/setup-nodo.sh
 
 showtext "Merge config.json"
-jq -s '.[0] * .[1] | {config: .config}' /home/nodo/variables/config_retain.json "${_cwd}"/home/nodo/variables/config.json > /home/nodo/variables/config.json || \
-	cp -f /home/nodo/variables/config_retain.json /home/nodo/config.json
+if jq -s '.[0] * .[1] | {config: .config}' "${_v}"/config_retain.json "${_v}"/config.json > "${_v}"/config.merge.json; then
+	cp -f "${_v}"/config.merge.json "${_v}"/config.json
+else
+	cp -f "${_v}"/config_retain.json "${_v}"/config.json
+fi
 
 showtext "User configuration restored"
 
