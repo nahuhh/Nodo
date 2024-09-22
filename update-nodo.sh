@@ -6,7 +6,6 @@ OLD_VERSION_NODO="${1:-$(getvar "versions.nodo")}"
 touch "$DEBUG_LOG"
 
 RELEASE="$(curl -fs https://raw.githubusercontent.com/MoneroNodo/Nodo/master/release.txt)"
-#RELEASE="alpha" # TODO remove when live
 
 if [ -z "$RELEASE" ]; then # Release somehow not set or empty
 	showtext "Failed to check for update for Nodo"
@@ -22,7 +21,7 @@ _cwd=/root/nodo
 test -z "$_cwd" && exit 1
 
 git reset --hard HEAD
-git pull
+git pull --rebase
 
 ##Update and Upgrade systemhtac
 showtext "Receiving and applying Ubuntu updates to the latest version..."

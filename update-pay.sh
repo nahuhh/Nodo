@@ -27,7 +27,9 @@ showtext "Building Monero Blockchain Explorer..."
 	cd moneropay || exit
 	git reset --hard HEAD
 	git pull --rebase
-	go build -o moneropay cmd/moneropay/main.go && \
-		putvar "versions.exp" "$RELEASE" && \
-		cp moneropay /home/nodo/bin/
+	go build -o moneropay cmd/moneropay/main.go || exit 1
+	putvar "versions.exp" "$RELEASE" || exit 1
+	cp moneropay /home/nodo/bin/ || exit 1
+	cd || exit
+	rm -rf /home/nodo/moneropay
 } 2>&1 | tee -a "$DEBUG_LOG"

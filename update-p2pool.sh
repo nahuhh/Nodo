@@ -7,7 +7,6 @@ cd /home/nodo || exit 1
 OLD_VERSION_P2POOL="${1:-$(getvar "versions.p2pool")}"
 
 RELEASE=$(get_release_commit "SChernykh" "p2pool")
-#RELEASE="release-v0.18" # TODO remove when live
 
 if [ -z "$RELEASE" ] && [ -z "$FIRSTINSTALL" ]; then # Release somehow not set or empty
 	showtext "Failed to check for update for Monero p2pool"
@@ -27,7 +26,6 @@ Start update-p2pool.sh script $(date)
 ####################
 "
 
-rm -rf /home/nodo/p2pool/
 showtext "Building Monero p2pool..."
 
 {
@@ -39,10 +37,12 @@ showtext "Building Monero p2pool..."
 	mkdir build
 	cd build || exit
 	cmake ..
-	make -j"$(nproc --ignore=2)" && \
-		cp p2pool /home/nodo/bin/ && \
-		chmod a+x /home/nodo/bin/p2pool && \
-		putvar "versions.p2pool" "$RELEASE"
+	make -j"$(nproc --ignore=2)" || exit 1
+	cp p2pool /home/nodo/bin/ || exit 1
+	chmod a+x /home/nodo/bin/p2pool || exit 1
+	putvar "versions.p2pool" "$RELEASE" || exit 1
+	cd || exit
+	rm -rf /home/nodo/p2pool
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 #
