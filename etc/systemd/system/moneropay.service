@@ -4,6 +4,7 @@ Requires=monero-wallet-rpc.service
 After=network.target monero-wallet-rpc.service
 
 [Service]
+ExecStartPre=/bin/bash moneropay-pre.sh
 ExecStart=/bin/bash moneropay.sh
 WorkingDirectory=/home/nodo/execScripts/
 Type=exec
