@@ -191,7 +191,6 @@ ufw allow 443
 ufw allow 18080:18090/tcp
 ufw allow 18080:18090/udp
 ufw allow 4200
-ufw allow 37888 #p2pool
 ufw allow 8133  #lws
 ufw enable
 

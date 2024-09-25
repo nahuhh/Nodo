@@ -3662,17 +3662,6 @@ def make_page_5_1_and_5_2_tx_inputs_of_total_xmrs(tx):
 def make_page_5_1_tx_decode_or_prove_outputs_output(param1, param2, prove):
     tx_decode_or_prove_outputs_output = {}
 
-    # ================================================================
-    # Add query function here to load data from backend
-    # And convert datatype just like above python dictionary and dataframe type
-    #
-    # tx_decode_or_prove_outputs_output:           dictionary
-    # outputs_DataFrame:                           DataFrame
-    # ...
-    # Opening JSON file
-
-    # returns JSON object as
-    # a dictionary
     data = json.load(f)
     outputs_DataFrame = json_normalize(data["data"]["outputs"])
     outputs_DataFrame = outputs_DataFrame.reindex(
@@ -3682,23 +3671,6 @@ def make_page_5_1_tx_decode_or_prove_outputs_output(param1, param2, prove):
         columns={"output_pubkey": "output public key", "match": "output match?"},
         inplace=True,
     )
-
-    # TODO check if these are still needed
-    # tx_decode_or_prove_outputs_output["address"] = data["data"]["address"]
-    # tx_decode_or_prove_outputs_output["tx_hash"] = data["data"]["tx_hash"]
-    # tx_decode_or_prove_outputs_output["viewkey"] = data["data"]["viewkey"]
-    # tx_decode_or_prove_outputs_output[
-    #     "tx_public_key"
-    # ] = "4463830f3d76317d8e3ef6a922c8ff9c480520b49b60144d6f88f2440c978ace"
-    # tx_decode_or_prove_outputs_output["paymentid"] = "1c4d48af4a071950"
-
-    # tx_decode_or_prove_outputs_output["block"] = "2738885"
-    # tx_decode_or_prove_outputs_output["timestamp_utc"] = "2022-10-22 07:52:33"
-    # tx_decode_or_prove_outputs_output["age"] = "00:228:02:08:24"
-    # tx_decode_or_prove_outputs_output["fee"] = "99595.517"
-    # tx_decode_or_prove_outputs_output["tx_size"] = "1.50 kB"
-
-    # ================================================================
 
     description = ""
     if prove == 0:
@@ -5039,8 +5011,6 @@ def make_page6():
             html.Div(
                 [
                     "Mining is done with ",
-                    html.A("P2Pool", href="https://github.com/SChernykh/p2pool"),
-                    " and ",
                     html.A("XMRig", href="https://github.com/xmrig/xmrig"),
                     ".",
                 ]

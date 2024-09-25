@@ -71,9 +71,6 @@ showtext "Setting up Monero..."
 	showtext "Setting up Monero LWS"
 	sudo -u nodo bash ./update-monero-lws.sh
 
-	showtext "Setting up P2Pool"
-	sudo -u nodo bash ./update-p2pool.sh
-
 	showtext "Setting up XMRig"
 	sudo -u nodo bash ./update-xmrig.sh
 
@@ -89,7 +86,7 @@ showtext "Start services"
 
 systemctl daemon-reload
 systemctl enable --now tor i2pd apparmor
-systemctl enable --now monerod block-explorer monero-lws webui p2pool
+systemctl enable --now monerod block-explorer monero-lws webui
 
 services-start
 sleep 3

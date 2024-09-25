@@ -52,7 +52,8 @@ cryptocurrency game to the next level.
 
 - Monero Node (full, unpruned, optimised, dedicated)
 - Tor and I2P support
-- XMRig miner with P2Pool
+- XMRig miner
+- Point of Sale with [Moneropay](https://gitlab.com/moneropay/moneropay)
 - [LWS](https://github.com/vtnerd/monero-lws) for Light Wallets
 - [Block Explorer](https://github.com/moneroexamples/onion-monero-blockchain-explorer/)
 - 5.5" touchscreen, control your node on your device or from the web

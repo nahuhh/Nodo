@@ -59,25 +59,6 @@
 	"log-file": null,
 	"donate-level": 0,
 	"donate-over-proxy": 1,
-	"pools": [
-		{
-			"algo": null,
-			"coin": null,
-			"url": "127.0.0.1:3333",
-			"user": "x+200000",
-			"pass": null,
-			"rig-id": null,
-			"nicehash": false,
-			"keepalive": false,
-			"enabled": true,
-			"tls": false,
-			"tls-fingerprint": null,
-			"daemon": false,
-			"socks5": null,
-			"self-select": null,
-			"submit-to-origin": false
-		}
-	],
 	"retries": 5,
 	"retry-pause": 5,
 	"print-time": 60,
