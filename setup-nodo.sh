@@ -5,7 +5,7 @@ set -e
 _cwd="$(pwd)"
 test "$_cwd" = "" && exit 1
 
-. "$_cwd"/home/nodo/common.sh
+. "$_cwd"/common.sh
 
 ##Disable IPv6 (confuses Monero start script if IPv6 is present)
 #and IPv6 sucks

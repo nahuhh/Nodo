@@ -20,7 +20,7 @@ fi
 _cwd=/root/nodo
 test -z "$_cwd" && exit 1
 
-git reset --hard HEAD
+git reset --hard HEAD || git clone https://github.com/moneronodo/nodo "${_cwd}"
 git pull --rebase
 
 ##Update and Upgrade systemhtac
