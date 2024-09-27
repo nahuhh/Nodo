@@ -191,8 +191,11 @@ ufw allow 443
 ufw allow 18080:18090/tcp
 ufw allow 18080:18090/udp
 ufw allow 4200
+ufw allow 4444 # i2p http
+ufw allow 4447 # i2p socks
 ufw allow 8133  #lws
 ufw enable
 
 chmod o+rx /home/nodo
 chmod o+rx /home/nodo/execScripts
+chmod 666 /home/nodo/variables/config.json
