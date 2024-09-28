@@ -22,7 +22,6 @@ else
 	showtext "NO CONNECTION -- aborting!"
 	exit 1
 fi
-systemctl disable --now gdm.service # no gnome-shell necessary
 
 ##Create new user 'nodo'
 showtext "Creating user 'nodo'..."

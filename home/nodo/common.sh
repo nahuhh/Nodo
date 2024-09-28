@@ -2,7 +2,7 @@
 #Common variables and functions
 
 _APTGET='DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef -y --allow-downgrades --allow-remove-essential --allow-change-held-packages'
-DEBUG_LOG=debug.log
+DEBUG_LOG=/root/debug.log
 CONFIG_FILE=/home/nodo/variables/config.json
 XMRPARTLABEL="NODO_BLOCKCHAIN"
 
