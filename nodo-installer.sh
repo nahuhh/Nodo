@@ -49,7 +49,7 @@ hostname MoneroNodo
 showtext "setup-nodo.sh..."
 bash "$_cwd"/setup-nodo.sh
 
-bash "$_cwd"/home/nodo/setup-drive.sh
+bash "$_cwd"/home/nodo/setup-drive.sh "${_cwd}"
 
 showtext "Setting up Monero..."
 # Install monero for the first time

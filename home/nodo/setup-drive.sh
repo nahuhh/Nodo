@@ -1,7 +1,8 @@
 #!/bin/bash
 
+_cwd="$1"
 #shellcheck source=home/nodo/common.sh
-. /home/nodo/common.sh
+. "${_cwd}"/home/nodo/common.sh
 
 showtext "Formatting SSD..."
 {
