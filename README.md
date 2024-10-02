@@ -7,7 +7,8 @@ Monero Node.
 - Full featured including convenience with multiple Light Wallets;
 - Improve your personal security while contributing to the network;
 - Designed for 24/7 operation and 5+ years of blockchain growth;
-- 1 year warranty on manufacturing defects.
+- 2 year warranty on manufacturing defects;
+- 5 year warranty on SSD.
 
 [MoneroNodo.com](https://moneronodo.com/)
 
@@ -31,34 +32,33 @@ cryptocurrency game to the next level.
 
 ## Nodo specs
 
-| Hardware       | Description                                                                           |
-|----------------|---------------------------------------------------------------------------------------|
-| Chipset        | NanoPC-T6N                                                                            |
-| CPU            | Rockchip RK3588, octa-core, 4 high power, 4 low power cores, 64-bit, hardware AES-256 |
-| RAM            | 16 GB LPDDR4 RAM in dual channel                                                      |
-| Storage        | 2TB PCIE gen 3 M.2 SSD                                                                |
-| Backup Storage | 32GB eMMC storage, MicroSD slot                                                       |
-| GPU            | Mali-G610, quad-core                                                                  |
-| Power          | USB-C in                                                                              |
-| Connectivity   | 2.5 GBPS Ethernet, Wifi 6E, Bluetooth 5.3                                             |
-| I/O            | x2 USB-C 3.0, x1 USB-A 3.0, HDMI 2.1, 3.5mm combo audio jack                          |
-| Wi-Fi          | Intel AX210 on M.2 2230 slot                                                          |
-| Ethernet       | 2.5 Gbit                                                                              |
-| Display        | 5.5" AMOLED                                                                           |
-| OS             | Debian 12 (Bookworm)                                                                  |
-| Case           | Custom CNC machined aluminum                                                          |
+| Hardware       | Description                                                                                                            |
+|----------------|------------------------------------------------------------------------------------------------------------------------|
+| Chipset        | NanoPC N6                                                                                                              |
+| CPU            | Rockchip RK3588, octa-core, 4 high power, 4 low power cores, 64-bit, 64-bit with AES 256-bit hardware-based encryption |
+| RAM            | 32GB LPDDR5 RAM in dual channel                                                                                        |
+| Storage        | 2TB PCIE gen 3 NVMe SSD                                                                                                |
+| Backup Storage | 32GB eMMC, MicroSD slot                                                                                                |
+| GPU            | Mali-G610, quad-core                                                                                                   |
+| Power          | USB-C PD in, 24W Max                                                                                                   |
+| Connectivity   | 2.5 GBPS Ethernet, Wifi 6E                                                                                             |
+| I/O            | x2 USB-C 3.1, x1 USB-A 3.1, HDMI 2.1, 3.5mm combo audio jack                                                           |
+| Display        | 5.5" AMOLED, 1920x1080 Full HD resolution, 60Hz, Gorilla Glass 2 with anti-fingerprint                                 |
+| OS             | Debian 12 (Bookworm)                                                                                                   |
+| Case           | Anodized, CNC-machined Aluminium                                                                                       |
 
 ## Features
 
-- Monero Node (full, unpruned, optimised, dedicated)
+- Monero Node (full, unpruned) built from source
 - Tor and I2P support
-- XMRig miner
+- Monero [Light Wallet Server](https://github.com/vtnerd/monero-lws)
+- [XMRig](https://xmrig.com/) miner
 - Point of Sale with [Moneropay](https://gitlab.com/moneropay/moneropay)
-- [LWS](https://github.com/vtnerd/monero-lws) for Light Wallets
-- [Block Explorer](https://github.com/moneroexamples/onion-monero-blockchain-explorer/)
-- 5.5" touchscreen, control your node on your device or from the web
-- USB-C power
-- Wi-Fi & Ethernet
+- Curated Monero News Feeds
+- 110 Languages
+- OLED touchscreen, control your node on device or from the web
+- Low energy, 24/7 operation, fanless, passive heat sink
 - Designed to run 24/7 with zero-interaction automatic updates
+- Future-proof, designed to scale with the Monero network
 
 *The codebase is largely based off of [PiNodeXMR](https://github.com/shermand100/PiNodeXMR). All credits to the original developers.*
