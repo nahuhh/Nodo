@@ -61,25 +61,29 @@ showtext "Setting up Monero..."
 	chown nodo:nodo /home/nodo/bin
 	chmod a+rx /home/nodo/bin
 
-	showtext "Setting up Monero Daemon"
-	sudo -u nodo bash ./update-monero.sh
-
-	showtext "Setting up Block Explorer"
-	sudo -u nodo bash ./update-explorer.sh
-
-	showtext "Setting up Monero LWS"
-	sudo -u nodo bash ./update-monero-lws.sh
-
-	showtext "Setting up XMRig"
-	sudo -u nodo bash ./update-xmrig.sh
-
-	showtext "Setting up Nodo UI"
-	sudo -u nodo bash ./update-nodoui.sh
-
 	cd || exit
 	git clone https://github.com/MoneroNodo/mesa
 	cd mesa || exit
 	sudo -u nodo bash ./install_mesa.sh
+
+	showtext "Setting up Monero Daemon"
+	sudo -u nodo bash /home/nodo/update-monero.sh
+
+	showtext "Setting up Block Explorer"
+	sudo -u nodo bash /home/nodo/update-explorer.sh
+
+	showtext "Setting up Monero LWS"
+	sudo -u nodo bash /home/nodo/update-monero-lws.sh
+
+	showtext "Setting up XMRig"
+	sudo -u nodo bash /home/nodo/update-xmrig.sh
+
+	showtext "Setting up Nodo UI"
+	sudo -u nodo bash /home/nodo/update-nodoui.sh
+
+	showtext "Setting up Moneropay"
+	sudo -u nodo bash /home/nodo/update-pay.sh
+
 )
 showtext "Start services"
 
