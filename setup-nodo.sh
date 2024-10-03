@@ -23,7 +23,7 @@ touch "$DEBUG_LOG"
 chown nodo "$DEBUG_LOG"
 chmod 777 "$DEBUG_LOG"
 
-_APTGET='DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef -y --allow-downgrades --allow-remove-essential --allow-change-held-packages'
+_APTGET='DEBIAN_FRONTEND=noninteractive apt -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef -y --allow-downgrades --allow-remove-essential --allow-change-held-packages'
 
 eval "$_APTGET" install apt-transport-https lsb-release curl
 
@@ -33,7 +33,7 @@ printf  'deb-src https://repo.i2pd.xyz/debian %s main' "$(lsb_release -sc)" \
 	| tee -a /etc/apt/sources.list.d/i2pd.list
 wget -q -O - https://repo.i2pd.xyz/r4sas.gpg | apt-key add -
 
-apt-get update
+apt update
 
 eval "$_APTGET" install tor i2pd nodejs npm mariadb-client mariadb-server screen fail2ban ufw dialog jq libcurl4-openssl-dev libpthread-stubs0-dev cron exfat-fuse git chrony mingetty build-essential ccache cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libuv1-dev libhwloc-dev apparmor apparmor-utils apparmor-profiles libcairo2-dev libxt-dev libgirepository1.0-dev gobject-introspection python3-yaml python3-pyyaml-env-tag gdisk xfsprogs build-essential cmake pkg-config libssl-dev libzmq3-dev libunbound-dev libsodium-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libpgm-dev libhidapi-dev libusb-1.0-0-dev libprotobuf-dev protobuf-compiler libudev-dev libboost-chrono-dev libboost-date-time-dev libboost-filesystem-dev libboost-locale-dev libboost-program-options-dev libboost-regex-dev libboost-all-dev libboost-serialization-dev libboost-system-dev libboost-thread-dev ccache doxygen graphviz pipx apache2 shellinabox php php-common libgtest-dev xxd golang 2>&1 | tee -a "$DEBUG_LOG"
 
@@ -43,11 +43,11 @@ echo "force-confnew" >/etc/dpkg/dpkg.cfg.d/force-confnew
 ##Update and Upgrade system
 showtext "Downloading and installing OS updates..."
 {
-	apt-get update
+	apt update
 	eval "$_APTGET" dist-upgrade
 	eval "$_APTGET" upgrade
 	##Auto remove any obsolete packages
-	eval "$_APTGET" apt-get autoremove
+	eval "$_APTGET" apt autoremove
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 ##Installing dependencies for --- Web Interface
@@ -55,10 +55,10 @@ showtext "Installing dependencies for Web Interface..."
 usermod -a -G nodo www-data
 
 showtext "Install home contents"
-cp -r "$_cwd"/home/nodo/* /home/nodo/
-cp -r "$_cwd"/etc/* /etc/
+cp -vr "$_cwd"/home/nodo/* /home/nodo/
+cp -vr "$_cwd"/etc/* /etc/
 cp "$_cwd"/update-*sh "$_cwd"/recovery.sh /home/nodo/
-chown nodo:nodo -R /home/nodo
+chown -v nodo:nodo /home/nodo/*
 
 log "manual build of gtest for Monero"
 {
@@ -124,8 +124,8 @@ showtext "Installing log.io..."
 showtext "Installing python dependencies..."
 {
 	cd /home/nodo/webui || return 1
-	apt-get install -y software-properties-common
-	apt-get install -y python3.11 python3.11-dev python3-pip python3.11-venv
+	apt install -y software-properties-common
+	apt install -y python3.11 python3.11-dev python3-pip python3.11-venv
 	showtext "Creating virtualenv, may take a minute..."
 	python3.11 -m venv venv
 	(
