@@ -64,7 +64,7 @@ showtext "Setting up Monero..."
 	cd || exit
 	git clone https://github.com/MoneroNodo/mesa
 	cd mesa || exit
-	sudo -u nodo bash ./install_mesa.sh
+	sudo bash ./install_mesa.sh
 
 	showtext "Setting up Monero Daemon"
 	sudo -u nodo bash /home/nodo/update-monero.sh
