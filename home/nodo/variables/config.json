@@ -1,5 +1,6 @@
 {
 	"config": {
+		"autoupdate": "TRUE",
 		"ticker": "usd",
 		"language": "en_US",
 		"timezone": "UTC",
