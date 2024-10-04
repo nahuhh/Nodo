@@ -93,7 +93,7 @@ showtext "Configuring apache server for access to Monero log file..."
 	cp "$_cwd"/etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 	chmod 777 /etc/apache2/sites-enabled/000-default.conf
 	chown root /etc/apache2/sites-enabled/000-default.conf
-	openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/private/moneronodo.key -out /etc/ssl/certs/moneronodo.crt -sha256 -days 3650 -nodes -subj "/C=US/ST=StateName/L=CityName/O=Nodo/OU=CompanySectionName/CN=moneronodo.local" -addext "subjectAltName=DNS:moneronodo.lan,DNS:moneronodo"
+	test ! -f /etc/ssl/private/moneronodo.key && openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/private/moneronodo.key -out /etc/ssl/certs/moneronodo.crt -sha256 -days 3650 -nodes -subj "/C=US/ST=StateName/L=CityName/O=Nodo/OU=CompanySectionName/CN=moneronodo.local" -addext "subjectAltName=DNS:moneronodo.lan,DNS:moneronodo"
 	systemctl restart apache2
 } 2>&1 | tee -a "$DEBUG_LOG"
 
