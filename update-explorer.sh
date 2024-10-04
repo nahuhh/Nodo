@@ -40,7 +40,7 @@ showtext "Building Monero Blockchain Explorer..."
 	cmake -DMONERO_DIR=/home/nodo/monero --fresh ..
 	make -j"$(nproc --ignore=2)" || exit 1
 	cp xmrblocks /home/nodo/bin/ || exit 1
-	chmod a+x /usr/bin/xmrblocks || exit 1
+	chmod a+x /home/nodo/bin/xmrblocks || exit 1
 	putvar "versions.exp" "$RELEASE" || exit 1
 	cd || exit
 	rm -rf /home/nodo/onion-monero-blockchain-explorer

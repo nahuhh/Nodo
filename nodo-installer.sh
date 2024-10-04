@@ -54,17 +54,17 @@ bash "$_cwd"/home/nodo/setup-drive.sh "${_cwd}"
 showtext "Setting up Monero..."
 # Install monero for the first time
 (
-	cd /home/nodo || exit 1
-
-	export FIRSTINSTALL=1
-	mkdir -p /home/nodo/bin
-	chown nodo:nodo /home/nodo/bin
-	chmod a+rx /home/nodo/bin
-
 	cd || exit
 	git clone https://github.com/MoneroNodo/mesa
 	cd mesa || exit
 	sudo bash ./install_mesa.sh
+
+	mkdir -p /home/nodo/bin
+	chown nodo:nodo /home/nodo/bin
+	chmod a+rx /home/nodo/bin
+	cd /home/nodo || exit 1
+
+	export FIRSTINSTALL=1
 
 	showtext "Setting up Monero Daemon"
 	sudo -u nodo bash /home/nodo/update-monero.sh

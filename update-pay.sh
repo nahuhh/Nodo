@@ -30,6 +30,7 @@ showtext "Building Monero Blockchain Explorer..."
 	go build -o moneropay cmd/moneropay/main.go || exit 1
 	putvar "versions.exp" "$RELEASE" || exit 1
 	cp moneropay /home/nodo/bin/ || exit 1
+	cp -r db /home/nodo/execScripts/ || exit 1
 	cd || exit
 	rm -rf /home/nodo/moneropay
 } 2>&1 | tee -a "$DEBUG_LOG"
