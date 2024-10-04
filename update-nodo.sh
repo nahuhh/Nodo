@@ -20,6 +20,7 @@ fi
 _cwd=/root/nodo
 test -z "$_cwd" && exit 1
 
+cd "${_cwd}" || exit
 git reset --hard HEAD || git clone https://github.com/moneronodo/nodo "${_cwd}"
 git pull --rebase
 
