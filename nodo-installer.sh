@@ -101,6 +101,10 @@ mkswap "$swapfile"
 printf '%s none swap defaults 0 0' "$swapfile" | tee -a /etc/fstab
 swapon "$swapfile"
 
+sleep 5
+kill -HUP "$(pidof i2pd)"
+kill -HUP "$(pidof tor)"
+sleep 5
 putvar 'i2p_address' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmr.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
 putvar 'i2p_b32_addr_rpc' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmrRpc.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
 putvar 'tor_address' "$(cat /var/lib/tor/hidden_service/hostname)"

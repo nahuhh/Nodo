@@ -179,12 +179,16 @@ ufw allow 4200
 ufw allow 4444 # i2p http
 ufw allow 4447 # i2p socks
 ufw allow 8133  #lws
-ufw enable
+ufw --force enable
 
 chmod o+rx /home/nodo
 chmod o+rx /home/nodo/execScripts
 chmod 666 /home/nodo/variables/config.json
 
+sleep 5
+kill -HUP "$(pidof i2pd)"
+kill -HUP "$(pidof tor)"
+sleep 5
 putvar 'i2p_address' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmr.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
 putvar 'i2p_b32_addr_rpc' $(printf "%s.b32.i2p" "$(head -c 391 /var/lib/i2pd/nasXmrRpc.dat | sha256sum | xxd -r -p | base32 | sed s/=//g | tr A-Z a-z)")
 putvar 'tor_address' "$(cat /var/lib/tor/hidden_service/hostname)"
