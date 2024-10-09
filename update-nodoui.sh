@@ -2,6 +2,7 @@
 #(1) Define variables and updater functions
 #shellcheck source=home/nodo/common.sh
 . /home/nodo/common.sh
+cd /home/nodo || exit 1
 OLD_VERSION_EUI="${1:-$(getvar "versions.nodoui")}"
 
 
