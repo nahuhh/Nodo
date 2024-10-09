@@ -25,7 +25,7 @@ git reset --hard HEAD || git clone https://github.com/moneronodo/nodo "${_cwd}"
 git pull --rebase
 
 ##Update and Upgrade systemhtac
-showtext "Receiving and applying Ubuntu updates to the latest version..."
+showtext "Receiving and applying Debian updates to the latest version..."
 {
 	eval "$_APTGET" update
 	eval "$_APTGET" upgrade

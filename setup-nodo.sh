@@ -60,15 +60,6 @@ cp -vr "$_cwd"/etc/* /etc/
 cp "$_cwd"/update-*sh "$_cwd"/recovery.sh /home/nodo/
 chown -v nodo:nodo /home/nodo/*
 
-log "manual build of gtest for Monero"
-{
-	cd /home/nodo/gtest || exit 1
-	cmake .
-	make
-	cp "$_cwd"/libg* /usr/lib/
-	cd || exit 1
-} 2>&1 | tee -a "$DEBUG_LOG"
-
 ##Configure ssh security. Allows only user 'nodo'. Also 'root' login disabled via ssh, restarts config to make changes
 showtext "Configuring SSH security..."
 {
@@ -84,9 +75,7 @@ showtext "Moving MoneroNodo scripts into position..."
 {
 	cp -r "$_cwd"/home/nodo/* /home/nodo/
 	cp -r "$_cwd"/home/nodo/.profile /home/nodo/
-	chmod 777 -R /home/nodo/* #Read/write access needed by www-data to action php port, address customisation
 } 2>&1 | tee -a "$DEBUG_LOG"
-showtext "Success"
 
 showtext "Configuring apache server for access to Monero log file..."
 {
@@ -96,10 +85,6 @@ showtext "Configuring apache server for access to Monero log file..."
 	test ! -f /etc/ssl/private/moneronodo.key && openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/private/moneronodo.key -out /etc/ssl/certs/moneronodo.crt -sha256 -days 3650 -nodes -subj "/C=US/ST=StateName/L=CityName/O=Nodo/OU=CompanySectionName/CN=moneronodo.local" -addext "subjectAltName=DNS:moneronodo.lan,DNS:moneronodo"
 	systemctl restart apache2
 } 2>&1 | tee -a "$DEBUG_LOG"
-
-showtext "Success"
-
-showtext "Setting up SSD..."
 
 ##Install log.io (Real-time service monitoring)
 #Establish Device IP
