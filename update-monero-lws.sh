@@ -23,6 +23,9 @@ showtext "Delete old version"
 showtext "Downloading VTNerd Monero-LWS"
 {
 	tries=0
+	if [ -d monero-lws ]; then
+		rm -rf /home/nodo/monero-lws
+	fi
 	until git clone --recursive https://github.com/vtnerd/monero-lws.git; do
 		sleep 1
 		tries=$((tries + 1))

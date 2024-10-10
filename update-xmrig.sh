@@ -25,6 +25,9 @@ touch "$DEBUG_LOG"
 showtext "Building Monero xmrig..."
 
 {
+	if [ -d xmrig ]; then
+		rm -rf /home/nodo/xmrig
+	fi
 	tries=0
 	until git clone -b master https://github.com/xmrig/xmrig.git; do
 		sleep 1

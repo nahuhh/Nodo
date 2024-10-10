@@ -25,10 +25,14 @@ showtext "Building Monero..."
 
 {
 	tries=0
+	if [ -d monero ]; then
+		mv /home/nodo/monero /home/nodo/monero.retain
+	fi
 	until git clone --recursive https://github.com/monero-project/monero.git; do
 		sleep 1
 		tries=$((tries + 1))
 		if [ $tries -ge 5 ]; then
+			mv /home/nodo/monero.retain /home/nodo/monero
 			exit 1
 		fi
 	done

@@ -24,6 +24,9 @@ showtext "Building Monero Blockchain Explorer..."
 
 {
 	tries=0
+	if [ -d moneropay ]; then
+		rm -rf /home/nodo/moneropay
+	fi
 	until git clone -b master https://gitlab.com/moneropay/moneropay; do
 		sleep 1
 		tries=$((tries + 1))
