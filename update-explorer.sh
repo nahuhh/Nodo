@@ -32,9 +32,15 @@ Start setup-update-explorer.sh script $(date)
 showtext "Building Monero Blockchain Explorer..."
 
 {
-	git clone -b master https://github.com/moneroexamples/onion-monero-blockchain-explorer.git
+	tries=0
+	until git clone -b master https://github.com/moneroexamples/onion-monero-blockchain-explorer.git; do
+		sleep 1
+		tries=$((tries + 1))
+		if [ $tries -ge 5 ]; then
+			exit 1
+		fi
+	done
 	cd onion-monero-blockchain-explorer || exit
-	git pull --rebase
 	mkdir build
 	cd build || exit
 	cmake -DMONERO_DIR=/home/nodo/monero --fresh ..

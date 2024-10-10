@@ -23,10 +23,16 @@ touch "$DEBUG_LOG"
 showtext "Building Monero Blockchain Explorer..."
 
 {
-	git clone -b master https://gitlab.com/moneropay/moneropay/
+	tries=0
+	until git clone -b master https://gitlab.com/moneropay/moneropay; do
+		sleep 1
+		tries=$((tries + 1))
+		if [ $tries -ge 5 ]; then
+			exit 1
+		fi
+	done
 	cd moneropay || exit
-	git reset --hard HEAD
-	git pull --rebase
+	git checkout "$RELEASE"
 	go build -o moneropay cmd/moneropay/main.go || exit 1
 	putvar "versions.exp" "$RELEASE" || exit 1
 	cp moneropay /home/nodo/bin/ || exit 1

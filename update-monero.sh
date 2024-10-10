@@ -24,10 +24,15 @@ fi
 showtext "Building Monero..."
 
 {
-	git clone --recursive https://github.com/monero-project/monero.git
+	tries=0
+	until git clone --recursive https://github.com/monero-project/monero.git; do
+		sleep 1
+		tries=$((tries + 1))
+		if [ $tries -ge 5 ]; then
+			exit 1
+		fi
+	done
 	cd monero || exit 1
-	git reset --hard HEAD
-	git pull --rebase
 	git checkout "$RELEASE"
 	git submodule update --init --force
 	USE_DEVICE_TREZOR=OFF USE_SINGLE_BUILDDIR=1 make -j"$(nproc --ignore=2)" || exit 1

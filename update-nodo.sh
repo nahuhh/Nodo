@@ -5,7 +5,7 @@
 OLD_VERSION_NODO="${1:-$(getvar "versions.nodo")}"
 touch "$DEBUG_LOG"
 
-RELEASE="$(curl -fs https://raw.githubusercontent.com/MoneroNodo/Nodo/master/release.txt)"
+RELEASE="$(get_tag_commit "moneronodo" "nodo")"
 
 if [ -z "$RELEASE" ]; then # Release somehow not set or empty
 	showtext "Failed to check for update for Nodo"
@@ -21,7 +21,15 @@ _cwd=/root/nodo
 test -z "$_cwd" && exit 1
 
 cd "${_cwd}" || exit
-git reset --hard HEAD || git clone https://github.com/moneronodo/nodo "${_cwd}"
+tries=0
+git reset --hard HEAD || until git clone https://github.com/moneronodo/nodo "${_cwd}"; do
+	sleep 1
+	tries=$((tries + 1))
+	if [ $tries -ge 5 ]; then
+		exit 1
+	fi
+done
+
 git pull --rebase
 
 ##Update and Upgrade systemhtac

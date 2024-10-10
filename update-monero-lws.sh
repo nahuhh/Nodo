@@ -22,12 +22,17 @@ touch "$DEBUG_LOG"
 showtext "Delete old version"
 showtext "Downloading VTNerd Monero-LWS"
 {
-	git clone --recursive https://github.com/vtnerd/monero-lws.git
+	tries=0
+	until git clone --recursive https://github.com/vtnerd/monero-lws.git; do
+		sleep 1
+		tries=$((tries + 1))
+		if [ $tries -ge 5 ]; then
+			exit 1
+		fi
+	done
 	cd monero-lws || exit 1
 	# Temporary band-aid as newer commits don't seem to want to build
-	git checkout master
-	git pull
-	git reset --hard e09d3d57e9f88cb47702976965bd6e1ed813c07f # TODO remove when lws builds again
+	git checkout e09d3d57e9f88cb47702976965bd6e1ed813c07f # TODO remove when lws builds again
 	mkdir build
 	cd build || exit 1
 	cmake -DMONERO_SOURCE_DIR=/home/nodo/monero -DMONERO_BUILD_DIR=/home/nodo/monero/build/release ..

@@ -25,10 +25,15 @@ touch "$DEBUG_LOG"
 showtext "Building Monero xmrig..."
 
 {
-	git clone -b master https://github.com/xmrig/xmrig.git
+	tries=0
+	until git clone -b master https://github.com/xmrig/xmrig.git; do
+		sleep 1
+		tries=$((tries + 1))
+		if [ $tries -ge 5 ]; then
+			exit 1
+		fi
+	done
 	cd xmrig || exit
-	git reset --hard HEAD
-	git pull --rebase
 	git checkout "$RELEASE"
 	mkdir build
 	cd build || exit
