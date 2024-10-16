@@ -4,12 +4,6 @@
 #shellcheck source=home/nodo/common.sh
 . /home/nodo/common.sh
 
-UPD="$(jq -r '.config.autoupdate' /home/nodo/variables/config.json)"
-
-if [ "$UPD" = "FALSE" ] && [ -z "$1" ]; then
-	return 0
-fi
-
 if [ ! "$EUID" = "0" ]; then
 	exit 1
 fi

@@ -1,6 +1,5 @@
 {
 	"config": {
-		"autoupdate": "TRUE",
 		"ticker": "usd",
 		"language": "en_US",
 		"timezone": "UTC",
@@ -72,8 +71,16 @@
 			"exp": "unset",
 			"lws": "unset",
 			"xmrig": "unset",
-			"lws-admin": "unset",
-			"nodoui": "unset"
+			"nodoui": "unset",
+			"pay": "unset"
+		},
+		"autoupdate": {
+			"nodo": "TRUE",
+			"monero": "TRUE",
+			"exp": "TRUE",
+			"lws": "TRUE",
+			"xmrig": "TRUE",
+			"pay": "TRUE"
 		}
 	}
 }

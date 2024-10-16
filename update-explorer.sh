@@ -1,5 +1,11 @@
 #!/bin/bash
 
+UPD="$(jq -r '.config.autoupdate.exp' /home/nodo/variables/config.json)"
+
+if [ "$UPD" = "FALSE" ] && [ -z "$1" ]; then
+	return 0
+fi
+
 #shellcheck source=home/nodo/common.sh
 . /home/nodo/common.sh
 cd /home/nodo || exit 1
