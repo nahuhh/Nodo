@@ -67,22 +67,22 @@ showtext "Setting up Monero..."
 	export FIRSTINSTALL=1
 
 	showtext "Setting up Monero Daemon"
-	sudo -u nodo bash /home/nodo/update-monero.sh
+	sudo -u nodo bash /home/nodo/update-monero.sh 1
 
 	showtext "Setting up Block Explorer"
-	sudo -u nodo bash /home/nodo/update-explorer.sh
+	sudo -u nodo bash /home/nodo/update-explorer.sh 1
 
 	showtext "Setting up Monero LWS"
-	sudo -u nodo bash /home/nodo/update-monero-lws.sh
+	sudo -u nodo bash /home/nodo/update-monero-lws.sh 1
 
 	showtext "Setting up XMRig"
-	sudo -u nodo bash /home/nodo/update-xmrig.sh
+	sudo -u nodo bash /home/nodo/update-xmrig.sh 1
 
 	showtext "Setting up Nodo UI"
-	sudo -u nodo bash /home/nodo/update-nodoui.sh
+	sudo -u nodo bash /home/nodo/update-nodoui.sh 1
 
 	showtext "Setting up Moneropay"
-	sudo -u nodo bash /home/nodo/update-pay.sh
+	sudo -u nodo bash /home/nodo/update-pay.sh 1
 
 )
 showtext "Start services"
