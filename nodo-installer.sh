@@ -89,7 +89,7 @@ showtext "Start services"
 
 systemctl daemon-reload
 systemctl enable --now tor i2pd apparmor
-systemctl enable --now monerod block-explorer monero-lws webui
+systemctl enable --now monerod monero-lws webui
 
 services-start
 sleep 3
