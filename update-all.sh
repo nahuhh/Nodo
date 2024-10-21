@@ -12,6 +12,13 @@ if ! check_connection; then
 	exit 1
 fi
 
+if [ "$(getvar last_update)" = "null" ] || [ "$(getvar last_update)" -le "$(($(date +%s) - 86400))" ]; then
+	putvar last_update "$(date +%s)"
+	printf '%s\n' 'Checking for updates'
+else
+	exit 0
+fi
+
 bash /home/nodo/update-nodo.sh
 cd /home/nodo || exit 1
 chown nodo:nodo -R nodoui monero monero-lws xmrig onion-monero-block-explorer
