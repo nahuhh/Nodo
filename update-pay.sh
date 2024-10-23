@@ -51,4 +51,3 @@ showtext "Building Monero Blockchain Explorer..."
 	rm -rf /home/nodo/moneropay
 } 2>&1 | tee -a "$DEBUG_LOG"
 
-systemctl enable --now monero-wallet-rpc

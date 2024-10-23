@@ -31,7 +31,7 @@ sudo -u nodo bash /home/nodo/update-monero.sh && {
 sudo -u nodo bash /home/nodo/update-monero-lws.sh
 sudo -u nodo bash /home/nodo/update-explorer.sh
 } && success=1
-sudo bash /home/nodo/update-nodoui.sh && success=1
+bash /home/nodo/update-nodoui.sh && success=1
 
 # Restart services afterwards,
 # otherwise the device would be nothing more than a very warm brick

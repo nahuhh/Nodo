@@ -79,7 +79,7 @@ showtext "Setting up Monero..."
 	sudo -u nodo bash /home/nodo/update-xmrig.sh 1
 
 	showtext "Setting up Nodo UI"
-	sudo -u nodo bash /home/nodo/update-nodoui.sh 1
+	bash /home/nodo/update-nodoui.sh 1
 
 	showtext "Setting up Moneropay"
 	sudo -u nodo bash /home/nodo/update-pay.sh 1
@@ -90,6 +90,7 @@ showtext "Start services"
 systemctl daemon-reload
 systemctl enable --now tor i2pd apparmor
 systemctl enable --now monerod monero-lws webui
+systemctl enable --now monero-wallet-rpc
 
 services-start
 sleep 3
