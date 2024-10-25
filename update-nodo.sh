@@ -27,18 +27,23 @@ fi
 _cwd=/root/nodo
 test -z "$_cwd" && exit 1
 
-cd "${_cwd}" || exit
+cd /root || exit
 tries=0
-git reset --hard HEAD || until git clone https://github.com/moneronodo/nodo "${_cwd}"; do
+if [ -d "${_cwd}" ]; then
+	cd nodo || exit 1
+	git pull
+else
+	until git clone https://github.com/moneronodo/nodo "${_cwd}"; do
 	sleep 1
 	tries=$((tries + 1))
 	if [ $tries -ge 5 ]; then
 		exit 1
 	fi
 done
+	cd nodo || exit 1
+fi
 
-git pull --rebase
-
+git reset --hard "$RELEASE"
 ##Update and Upgrade systemhtac
 showtext "Receiving and applying Debian updates to the latest version..."
 {
