@@ -27,8 +27,6 @@ fi
 
 touch "$DEBUG_LOG"
 
-showtext "Building Monero Blockchain Explorer..."
-
 {
 	tries=0
 	if [ -d moneropay ]; then

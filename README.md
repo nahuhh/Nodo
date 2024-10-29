@@ -20,10 +20,7 @@ you in full Monero amount.
 Introducing our state-of-the-art Monero Node, designed for seamless integration
 and optimal performance. This full, unpruned, and dedicated node comes equipped
 with tor and i2p support, ensuring maximum privacy and security for your
-transactions. Manage your wallets effortlessly through the LWS Admin panel and
-enjoy the convenience of our built-in block explorer. The 5.5" touchscreen
-allows you to control your node directly from the device, or you can access
-it from the web for added flexibility and full block explorer functionality.
+transactions. Manage your light wallets effortlessly through the LWS Admin panel. The 5.5" touchscreen allows you to control your node directly from the device.
 Contribute to your privacy but running your own personal node while contributing
 to the Monero network. Configure the node via the embedded display with your
 custom settings, and keep the blockchain synronized at all times. Experience the

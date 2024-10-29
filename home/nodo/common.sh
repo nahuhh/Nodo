@@ -130,7 +130,7 @@ log() {
 	echo "$*" >>"$DEBUG_LOG"
 }
 
-services="monerod block-explorer monero-lws webui xmrig moneropay"
+services="monerod monero-lws webui xmrig moneropay"
 services-stop() {
 	for f in $services; do
 		systemctl stop "$f".service

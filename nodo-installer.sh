@@ -3,7 +3,6 @@
 ##Open Sources:
 # Web-UI by designmodo Flat-UI free project at https://github.com/designmodo/Flat-UI
 # Monero github https://github.com/moneroexamples/monero-compilation/blob/master/README.md
-# Monero Blockchain Explorer https://github.com/moneroexamples/onion-monero-blockchain-explorer
 # MoneroNodo scripts and custom files at my repo https://github.com/shermand100/pinode-xmr
 # PiVPN - OpenVPN server setup https://github.com/pivpn/pivpn
 
@@ -68,9 +67,6 @@ showtext "Setting up Monero..."
 
 	showtext "Setting up Monero Daemon"
 	sudo -u nodo bash /home/nodo/update-monero.sh 1
-
-	showtext "Setting up Block Explorer"
-	sudo -u nodo bash /home/nodo/update-explorer.sh 1
 
 	showtext "Setting up Monero LWS"
 	sudo -u nodo bash /home/nodo/update-monero-lws.sh 1

@@ -68,7 +68,6 @@
 		"versions": {
 			"nodo": "unset",
 			"monero": "unset",
-			"exp": "unset",
 			"lws": "unset",
 			"xmrig": "unset",
 			"nodoui": "unset",
@@ -77,7 +76,6 @@
 		"autoupdate": {
 			"nodo": "TRUE",
 			"monero": "TRUE",
-			"exp": "TRUE",
 			"lws": "TRUE",
 			"xmrig": "TRUE",
 			"pay": "TRUE"
