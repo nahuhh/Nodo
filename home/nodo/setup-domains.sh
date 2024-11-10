@@ -2,6 +2,8 @@
 
 . /home/nodo/common.sh
 
+rm -rf /var/lib/tor/hidden_service
+sleep 1
 kill -HUP "$(pidof tor)"
 sleep 1
 tries=0
@@ -15,6 +17,10 @@ done
 
 putvar 'tor_address' "$(cat /var/lib/tor/hidden_service/hostname)"
 
+rm -f /var/lib/i2pd/nasXmr.dat
+rm -f /var/lib/i2pd/nasXmrRpc.dat
+rm -f /var/lib/i2pd/nasXmrLws.dat
+sleep 1
 kill -HUP "$(pidof i2pd)"
 sleep 1
 tries=0
