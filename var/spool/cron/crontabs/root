@@ -1,1 +1,1 @@
-*/30 * * * * /home/nodo/update-all.sh
+*/30 * * * * bash /home/nodo/update-all.sh
