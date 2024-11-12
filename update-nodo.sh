@@ -74,11 +74,6 @@ fi
 
 showtext "User configuration restored"
 
-##Update crontab
-showtext "Updating crontab tasks..."
-crontab -r
-crontab "${_cwd}"/var/spool/cron/crontabs/nodo 2> >(tee -a "$DEBUG_LOG" >&2)
-
 #Update system version number to new one installed
 {
 	showtext "Updating system version number..."
