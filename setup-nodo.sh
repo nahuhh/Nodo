@@ -165,7 +165,7 @@ sysctl vm.swappiness=10 2> >(tee -a "$DEBUG_LOG" >&2)
 
 ##Install crontab
 showtext "Setting up crontab..."
-cp -vr "${_cwd}"/var/spool/cron/crontabs/root /var/spool/cron/crontabs/root 2>&1 | tee -a "$DEBUG_LOG"
+crontab "${_cwd}"/var/spool/cron/crontabs/root 2>&1 | tee -a "$DEBUG_LOG"
 
 showtext "Resetting and setting up UFW..."
 ufw --force reset
