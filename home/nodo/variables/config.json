@@ -18,7 +18,7 @@
 		"tor_tx_proxy_port": "",
 		"i2p_enabled": "TRUE",
 		"i2p_address": "",
-		"i2p_port": 18089,
+		"i2p_port": 18081,
 		"i2p_tx_proxy_port": "",
 		"lws_port": 18085,
 		"in_peers": 64,
