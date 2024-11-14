@@ -72,6 +72,8 @@ else
 	cp -f "${_v}"/config_retain.json "${_v}"/config.json
 fi
 
+chown nodo:nodo "${_v}"/config.json
+
 showtext "User configuration restored"
 
 #Update system version number to new one installed
