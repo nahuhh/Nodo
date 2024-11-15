@@ -71,9 +71,6 @@ showtext "Setting up Monero..."
 	showtext "Setting up Monero LWS"
 	sudo -u nodo bash /home/nodo/update-monero-lws.sh 1
 
-	showtext "Setting up XMRig"
-	sudo -u nodo bash /home/nodo/update-xmrig.sh 1
-
 	showtext "Setting up Nodo UI"
 	bash /home/nodo/update-nodoui.sh 1
 

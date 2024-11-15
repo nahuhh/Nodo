@@ -41,11 +41,6 @@
 			"address": "",
 			"viewkey": ""
 		},
-		"mining": {
-			"enabled": "FALSE",
-			"address": "",
-			"difficulty": 1234
-		},
 		"ethernet": {
 			"enabled": "TRUE",
 			"auto": "TRUE",
@@ -69,7 +64,6 @@
 			"nodo": "unset",
 			"monero": "unset",
 			"lws": "unset",
-			"xmrig": "unset",
 			"nodoui": "unset",
 			"pay": "unset"
 		},
@@ -77,7 +71,6 @@
 			"nodo": "TRUE",
 			"monero": "TRUE",
 			"lws": "TRUE",
-			"xmrig": "TRUE",
 			"pay": "TRUE"
 		}
 	}

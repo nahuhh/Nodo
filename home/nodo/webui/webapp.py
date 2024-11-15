@@ -193,8 +193,6 @@ def update_config():
     if not applied and update_time < datetime.datetime.now() - timedelta_restart:
         backend_obj.serviceManager("restart", "monero-lws block-explorer monerod")
         miner: bool = conf_dict["config"]["mining"]["enabled"] == "TRUE"
-        backend_obj.serviceManager("enable" if miner else "disable", "xmrig")
-        backend_obj.serviceManager("start" if miner else "stop", "xmrig")
         applied = True
 
 

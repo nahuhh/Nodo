@@ -49,7 +49,6 @@ cryptocurrency game to the next level.
 - Monero Node (full, unpruned) built from source
 - Tor and I2P support
 - Monero [Light Wallet Server](https://github.com/vtnerd/monero-lws)
-- [XMRig](https://xmrig.com/) miner
 - Point of Sale with [Moneropay](https://gitlab.com/moneropay/moneropay)
 - Curated Monero News Feeds
 - 110 Languages
