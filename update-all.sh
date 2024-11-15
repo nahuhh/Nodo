@@ -8,6 +8,10 @@ if [ ! "$EUID" = "0" ]; then
 	exit 1
 fi
 
+if [ ! -f "/home/nodo/variables/firstboot" ]; then
+	exit 1
+fi
+
 if ! check_connection; then
 	exit 1
 fi
