@@ -185,5 +185,6 @@ chmod o+rx /home/nodo
 chmod o+rx /home/nodo/execScripts
 chmod 666 /home/nodo/variables/config.json
 
+putvar 'i2p_port' '18081'
 sleep 5
 bash /home/nodo/setup-domains.sh
