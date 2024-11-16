@@ -12,8 +12,8 @@ cd /home/nodo || exit 1
 
 OLD_VERSION_EXP="${1:-$(getvar "versions.pay")}"
 
-#RELEASE=$(gitlab_get_tag_commit "moneropay" "moneropay")
-RELEASE=2d8478c
+RELEASE=$(gitlab_get_tag_commit "moneropay" "moneropay")
+#RELEASE=2d8478c
 
 if [ -z "$RELEASE" ] && [ -z "$FIRSTINSTALL" ]; then # Release somehow not set or empty
 	showtext "Failed to check for update for MoneroPay"
@@ -40,6 +40,7 @@ touch "$DEBUG_LOG"
 		fi
 	done
 	cd moneropay || exit
+	apt install -t bookworm-backports --upgrade golang-go
 	git checkout "$RELEASE"
 	go build -o moneropay cmd/moneropay/main.go || exit 1
 	putvar "versions.exp" "$RELEASE" || exit 1
