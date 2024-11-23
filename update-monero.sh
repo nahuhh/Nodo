@@ -11,6 +11,8 @@ fi
 
 cd /home/nodo || exit 1
 
+[ -d monero.retain ] && rm -rf monero.retain
+
 OLD_VERSION="${1:-$(getvar "versions.monero")}"
 #Error Log:
 touch "$DEBUG_LOG"
@@ -31,17 +33,15 @@ showtext "Building Monero..."
 
 {
 	tries=0
-	if [ -d monero ]; then
-		mv /home/nodo/monero /home/nodo/monero.retain
-	fi
-	until git clone --recursive https://github.com/monero-project/monero.git; do
+	until git clone --recursive https://github.com/monero-project/monero.git monero.new; do
 		sleep 1
 		tries=$((tries + 1))
 		if [ $tries -ge 5 ]; then
-			mv /home/nodo/monero.retain /home/nodo/monero
 			exit 1
 		fi
 	done
+	rm -rf monero
+	mv monero.new monero
 	cd monero || exit 1
 	git checkout "$RELEASE"
 	git submodule update --init --force
