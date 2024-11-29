@@ -11,7 +11,7 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-BOARD=Nano-N6
+BOARD=Nodo-N6
 
 remove_unnecessary_network_settings() {
     for f in $(ls /etc/network/interfaces.d); do
