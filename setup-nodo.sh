@@ -106,36 +106,6 @@ showtext "Installing log.io..."
 	systemctl enable log-io-file.service
 } 2>&1 | tee -a "$DEBUG_LOG"
 
-#Install webui
-showtext "Installing python dependencies..."
-{
-	cd /home/nodo/webui || return 1
-	apt install -y software-properties-common
-	apt install -y python3.11 python3.11-dev python3-pip python3.11-venv
-	showtext "Creating virtualenv, may take a minute..."
-	python3.11 -m venv venv
-	(
-		. venv/bin/activate
-		venv/bin/pip install --upgrade pip
-		venv/bin/pip install Cython
-		venv/bin/pip install numpy
-		venv/bin/pip install dash
-		venv/bin/pip install dash_bootstrap_components dash_mantine_components dash_iconify
-		venv/bin/pip install Pyarrow
-		venv/bin/pip install pandas
-		venv/bin/pip install dasbus
-		venv/bin/pip install dash_breakpoints dash_daq
-		venv/bin/pip install furl
-		venv/bin/pip install psutil
-		venv/bin/pip install dash-qr-manager
-		venv/bin/pip install pycairo
-		venv/bin/pip install PyGObject
-		venv/bin/python -m compileall .
-	)
-	chown nodo:nodo -R /home/nodo/webui
-	chmod gu+rx /home/nodo/webui
-} 2>&1 | tee -a "$DEBUG_LOG"
-
 showtext "Installing LibreTranslate"
 {
 	sudo -u nodo pipx install libretranslate

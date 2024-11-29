@@ -82,7 +82,7 @@ showtext "Start services"
 
 systemctl daemon-reload
 systemctl enable --now tor i2pd apparmor
-systemctl enable --now monerod monero-lws webui
+systemctl enable --now monerod monero-lws
 systemctl enable --now monero-wallet-rpc
 
 services-start
