@@ -67,13 +67,15 @@ fi
 
 	if [ "$BOOT_STATUS" -eq 6 ]
 then
-		#Adapted command for public free (restricted) rpc calls. No auth needed for local.
+		#TODO: Delete? you cant print_pl over restricted
+		#Adapted command for public free (restricted) rpc calls. No auth needed for local >> is auth is set, it is needed for for restricte and unrestricted
 			PRINT_PL="$(./monero/build/release/bin/monerod ${RPCu:+--rpc-login="${RPCu}:${RPCp}"} print_pl | sed '1d' | sed 's/\x1b\[[0-9;]*m//g')" && echo "$PRINT_PL" > /var/www/html/print_pl.txt;
 			date >> /var/www/html/print_pl.txt
 fi
 	if [ "$BOOT_STATUS" -eq 7 ]
 then
 		#Node Status
+		# this is the same command again?
 			PRINT_PL="$(./monero/build/release/bin/monerod ${RPCu:+--rpc-login="${RPCu}:${RPCp}"} print_pl | sed '1d' | sed 's/\x1b\[[0-9;]*m//g')" && echo "$PRINT_PL" > /var/www/html/print_pl.txt;
 			date >> /var/www/html/print_pl.txt
 fi
