@@ -48,7 +48,7 @@ if [ "$TOR_ENABLED" == "TRUE" ]; then
 fi
 
 if [ "$RPC_ENABLED" == "TRUE" ]; then
-	rpc_args="--rpc-restricted-bind-ip=\"$DEVICE_IP\" --rpc-restricted-bind-port=\"$RPC_PORT\" --rpc-login=\"$RPCu:$RPCp\" --rpc-ssl disabled "
+	rpc_args="--rpc-restricted-bind-ip=\"$DEVICE_IP\" --rpc-restricted-bind-port=\"$RPC_PORT\" --rpc-login=\"$RPCu:$RPCp\""
 fi
 
 eval /home/nodo/bin/monerod "$i2p_args$tor_args$rpc_args$cln_flags" --db-sync-mode="$SYNC_MODE" --data-dir="$DATA_DIR" --zmq-pub "tcp://$DEVICE_IP:18083" --confirm-external-bind --in-peers="$IN_PEERS" --out-peers="$OUT_PEERS" --limit-rate-up="$LIMIT_RATE_UP" --limit-rate-down="$LIMIT_RATE_DOWN" --max-log-file-size=10485760 --log-level=0 --max-log-files=1 --enable-dns-blocklist --p2p-bind-port="$MONERO_PORT" --rpc-bind-ip=0.0.0.0 --rpc-bind-port="$MONERO_PUBLIC_PORT" --non-interactive
