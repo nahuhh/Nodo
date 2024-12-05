@@ -106,12 +106,6 @@ showtext "Installing log.io..."
 	systemctl enable log-io-file.service
 } 2>&1 | tee -a "$DEBUG_LOG"
 
-showtext "Installing LibreTranslate"
-{
-	sudo -u nodo pipx install libretranslate
-	systemctl enable --now libretranslate
-} 2>&1 | tee -a "$DEBUG_LOG"
-
 #Attempt update of tor hidden service settings
 {
 	if [ -f /usr/bin/tor ]; then #Crude way of detecting tor installed
