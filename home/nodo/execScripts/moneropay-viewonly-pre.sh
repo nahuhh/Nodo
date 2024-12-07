@@ -31,10 +31,10 @@ read -r PORT
 
 HEIGHT="$(curl -ls http://127.0.0.1:"$PORT"/get_height -H 'Content-Type: application/json' | jq -r .height)"
 
-if [ -f /home/nodo/mpay.keys ]; then
-	printf %s '{"jsonrpc":"2.0","id":"0","method":"open_wallet","params":{"filename": "mpay", "password":"mpaypass"}}' | curl http://127.0.0.1:34512/json_rpc --json @-
+if [ -f /home/nodo/user.keys ]; then
+	printf %s '{"jsonrpc":"2.0","id":"0","method":"open_wallet","params":{"filename": "wallet"}}' | curl http://127.0.0.1:34512/json_rpc --json @-
 else
-printf %s '{"jsonrpc":"2.0","id":"0","method":"generate_from_keys", "params":{"restore_height": %s, "wallet_name": "mpay", "address": "%s", "viewkey": "%s", "filename": "mpay", "password": "mpaypass"}}' "$HEIGHT" "$ADDR" "$VKEY" | curl http://127.0.0.1:34512/json_rpc --json @-
+printf %s '{"jsonrpc":"2.0","id":"0","method":"generate_from_keys", "params":{"restore_height": %s, "wallet_name": "wallet", "address": "%s", "viewkey": "%s", "filename": "user"}}' "$HEIGHT" "$ADDR" "$VKEY" | curl http://127.0.0.1:34512/json_rpc --json @-
 fi
 
 printf '{"jsonrpc":"2.0","id":"0","method":"set_daemon","params": {"address":"http://localhost:%s","trusted":true}}' "$PORT" | curl localhost:34512/json_rpc --json @- &

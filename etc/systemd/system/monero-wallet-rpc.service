@@ -3,12 +3,14 @@ Description=Monero RPC Wallet
 After=network.target
 
 [Service]
-ExecStart=/bin/bash monero-wallet-rpc.sh
-WorkingDirectory=/home/nodo/execScripts/
+ExecStart=/bin/bash /home/nodo/execScripts/monero-wallet-rpc.sh
+ExecStartPre=+/bin/bash /home/nodo/execScripts/monero-wallet-rpc-pre.sh
+WorkingDirectory=/opt/moneropay
 Type=exec
 Restart=always
 RestartSec=30
-User=nodo
+User=moneropay
+Group=moneropay
 StandardOutput=inherit
 StandardError=inherit
 

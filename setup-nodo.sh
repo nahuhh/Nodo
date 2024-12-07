@@ -150,6 +150,16 @@ chmod o+rx /home/nodo/execScripts
 chmod 666 /home/nodo/variables/config.json
 
 hostname Nodo-N6
+
+if [ ! -d /opt/moneropay ]; then  # setup moneropay wallet dir
+	adduser --system --group moneropay
+	mkdir -p /opt/moneropay
+	chown -R moneropay:moneropay /opt/moneropay
+	chmod -R 600
+	systemctl enable --now monero-wallet-rpc
+	systemctl enable --now moneropay
+fi
+
 systemctl disable --now bluetooth
 
 putvar 'i2p_port' '18081'
