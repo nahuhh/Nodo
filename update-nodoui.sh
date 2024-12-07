@@ -37,16 +37,20 @@ Start setup-update-nodoui.sh script $(date)
 showtext "Delete old version"
 showtext "Downloading Nodo UI"
 {
+	remove() {
+		rm -rf /home/nodo/nodoui
+	}
+	trap remove INT HUP EXIT
 	git clone --recursive https://github.com/moneronodo/nodoui.git
 	cd nodoui || exit 1
 	git reset --hard HEAD
-	git checkout master
+	git checkout "$RELEASE"
 	git pull
 	showtext "Building Nodo UI"
 	bash ./install.sh || exit 1
 	putvar "versions.nodoui" "$RELEASE" || exit 1
 	cd || exit
-	rm  -rf /home/nodo/nodoui
+	remove
 } 2>&1 | tee -a "$DEBUG_LOG"
 cd || exit 1
 ##End debug log
