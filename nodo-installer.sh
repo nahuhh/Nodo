@@ -1,9 +1,7 @@
 #!/bin/bash
 
 ##Open Sources:
-# Web-UI by designmodo Flat-UI free project at https://github.com/designmodo/Flat-UI
 # Monero github https://github.com/moneroexamples/monero-compilation/blob/master/README.md
-# MoneroNodo scripts and custom files at my repo https://github.com/shermand100/pinode-xmr
 # PiVPN - OpenVPN server setup https://github.com/pivpn/pivpn
 
 if [ ! "$EUID" = 0 ]; then
@@ -71,10 +69,10 @@ showtext "Setting up Monero..."
 	showtext "Setting up Monero LWS"
 	sudo -u nodo bash /home/nodo/update-monero-lws.sh 1
 
-	showtext "Setting up Nodo UI"
+	showtext "Setting up NodoUI"
 	bash /home/nodo/update-nodoui.sh 1
 
-	showtext "Setting up Moneropay"
+	showtext "Setting up MoneroPay"
 	sudo -u nodo bash /home/nodo/update-pay.sh 1
 
 )
