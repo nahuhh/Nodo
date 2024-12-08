@@ -131,7 +131,7 @@ chmod o+rx /home/nodo/execScripts
 chmod 666 /home/nodo/variables/config.json
 
 hostname Nodo-N6
-sed -i 's/NanoPC-T6N/Nodo-N6/g'
+sed -i 's/NanoPC-T6N/Nodo-N6/g' /etc/hosts
 
 if [ ! -d /opt/moneropay ]; then  # setup moneropay wallet dir
 	adduser --system --group moneropay
