@@ -52,10 +52,8 @@ nodo:
 #UPDATER: Downloads
 https://raw.githubusercontent.com/MoneroNodo/Nodo/master/release.txt
 The updater script then compares this number with it's current version and only
-if the new version number is higher it will pull from the repo and apply the
-	updated files.
-It will look for new versions for monerod, monero-onion-blockchain-explorer,
-monero-lws, and build them respectively. It will then restart each service, so
+if the new version number is higher it will pull from the repo and apply the updated files.
+It will look for new versions for monerod, monero-lws, and build them respectively. It will then restart each service, so
 a very short downtime (<10s) will occur.
 
 

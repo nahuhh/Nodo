@@ -51,4 +51,4 @@ showtext "Building Monero..."
 	putvar "versions.monero" "$RELEASE" || exit 1
 } 2>&1 | tee -a "$DEBUG_LOG"
 
-# Monero codebase needs to stay because LWS and Explorer depend on it
+# Monero codebase needs to stay because LWS depends on it

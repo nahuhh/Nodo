@@ -12,24 +12,10 @@
       }
     },
     {
-      "source": "P2Pool",
-      "stream": "P2Pool_log",
-      "config": {
-        "path": "/home/nodo/p2pool/build/p2pool.log"
-      }
-    },
-    {
       "source": "Monero_LWS",
       "stream": "Monero_LWS_log",
       "config": {
         "path": "/home/nodo/monero-lws/monero-lws.log"
-      }
-    },
-    {
-      "source": "Block_Explorer",
-      "stream": "Block_Explorer_log",
-      "config": {
-        "path": "/home/nodo/onion-monero-blockchain-explorer/explorer.log"
       }
     }     
   ]

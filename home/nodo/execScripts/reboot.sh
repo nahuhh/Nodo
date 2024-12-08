@@ -1,5 +1,4 @@
 #!/bin/bash
-sudo systemctl stop block-explorer.service
 sudo systemctl stop log-io-file.service
 sudo systemctl stop log-io-server.service
 sudo systemctl stop monero-lws.service
