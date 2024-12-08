@@ -4,6 +4,6 @@ if [ ! -d /opt/moneropay ]; then
 	adduser --system --group moneropay
 	mkdir -p /opt/moneropay
 	chown -R moneropay:moneropay /opt/moneropay
-	chmod -R 600
+	chmod -R 600 /opt/moneropay
 fi
 

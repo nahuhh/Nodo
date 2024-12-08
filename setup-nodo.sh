@@ -137,7 +137,7 @@ if [ ! -d /opt/moneropay ]; then  # setup moneropay wallet dir
 	adduser --system --group moneropay
 	mkdir -p /opt/moneropay
 	chown -R moneropay:moneropay /opt/moneropay
-	chmod -R 600
+	chmod -R 600 /opt/moneropay
 	systemctl enable --now monero-wallet-rpc
 	systemctl enable --now moneropay
 fi
