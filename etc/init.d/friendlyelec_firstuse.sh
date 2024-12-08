@@ -27,29 +27,6 @@ remove_unnecessary_network_settings() {
     done
 }
 
-if [ ! -f /etc/firstuse ]; then
-    /usr/local/bin/gen-friendlyelec-release
-    . /etc/friendlyelec-release
-    /bin/echo ${BOARD} > /etc/hostname
-    /bin/sed -i "s/\(127.0.1.1\s*\).*/\1${BOARD}/g" /etc/hosts
-    /bin/hostname ${BOARD}
-
-    case ${BOARD} in
-    NanoPi-R5S*|NanoPi-R6S)
-        remove_unnecessary_network_settings 3
-        ;;
-    SOM-4418|NanoPi-R1|NanoPi-R1S-H3|NanoPi-R1S-H5|NanoPi-R4S|NanoPi-R4SE|NanoPi-R2S*|NanoPi-R2C|NanoPi-R2C-Plus|Core3328|NanoPi-R5C|NanoPC-T6*|NanoPi-R6C)
-        remove_unnecessary_network_settings 2
-        ;;
-    NanoPi-NEO-Air)
-        rm -f /etc/network/interfaces.d/eth*
-        ;;
-    *)
-        remove_unnecessary_network_settings 1
-        ;;
-    esac
-
-    ldconfig || true
-    /bin/echo "0" > /etc/firstuse
-fi
-
+remove_unnecessary_network_settings 2
+ldconfig || true
+/bin/echo "0" > /etc/firstuse
