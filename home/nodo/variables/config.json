@@ -1,5 +1,6 @@
 {
 	"config": {
+		"banlist": "FALSE",
 		"ticker": "usd",
 		"language": "en_US",
 		"timezone": "UTC",
