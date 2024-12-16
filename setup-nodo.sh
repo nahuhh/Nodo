@@ -146,6 +146,6 @@ systemctl disable --now bluetooth
 
 sudo -u nodo pipx uninstall libretranslate
 
-putvar 'i2p_port' '18081'
+putvar 'i2p_port' '18085'
 sleep 5
 bash /home/nodo/setup-domains.sh
