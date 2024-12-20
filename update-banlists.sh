@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. "$_cwd"/home/nodo/common.sh
+
 cd /media/monero/ || exit 1
 {
 	[ "$(getvar "banlists.boog900")" == "TRUE" ] && curl -LSs https://github.com/Boog900/monero-ban-list/raw/refs/heads/main/ban_list.txt
