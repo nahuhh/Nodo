@@ -53,7 +53,7 @@ if [ "$REPAIR_FILESYSTEM" != "" ]; then
 				failcounter=$((failcounter+1))
 				if [ $failcounter -gt 5 ]; then
 					bash /home/nodo/setup-drive.sh
-					exit 2
+					break 2
 				fi
 				continue
 				;;
