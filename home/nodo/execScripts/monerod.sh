@@ -28,7 +28,7 @@ read -r ZMQ_PUB
 read -r BANLIST_BOOG900_ENABLED
 read -r BANLIST_GUIXMRPM_ENABLED
 } < <(
-	jq '.config | .monero_port, .monero_public_port, .rpc_enabled, .monero_rpc_port, .rpcu, .rpcp, .in_peers, .out_peers, .limit_rate_up, .limit_rate_down, .data_dir, .torproxy_enabled, .i2p_enabled, .i2p_port, .i2p_address, .tor_enabled, .tor_port, .tor_address, .data_dir, .sync_mode, .zmq_pub, .banlists.boog900, .banlists.gui-xmr-pm' $CONFIG_FILE
+	jq '.config | .monero_port, .monero_public_port, .rpc_enabled, .monero_rpc_port, .rpcu, .rpcp, .in_peers, .out_peers, .limit_rate_up, .limit_rate_down, .data_dir, .torproxy_enabled, .i2p_enabled, .i2p_port, .i2p_address, .tor_enabled, .tor_port, .tor_address, .data_dir, .sync_mode, .zmq_pub, .banlists.boog900, .banlists."gui-xmr-pm"' $CONFIG_FILE
 )
 
 DEVICE_IP="0.0.0.0"
