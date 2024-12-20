@@ -1,6 +1,9 @@
 {
 	"config": {
-		"banlist": "FALSE",
+		"banlists": {
+			"boog900": "TRUE",
+			"gui-xmr-pm": "FALSE"
+		},
 		"ticker": "usd",
 		"language": "en_US",
 		"timezone": "UTC",
