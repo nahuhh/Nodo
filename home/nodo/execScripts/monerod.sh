@@ -50,8 +50,8 @@ if [ "$RPC_ENABLED" == "TRUE" ]; then
 	rpc_args="${RPCu:+--rpc-login=\"$RPCu:$RPCp\"} "
 fi
 
-BANLIST_ENABLED=
-if [ "$BANLIST_ENABLED" == "TRUE" ]; then
+if [ "$BANLIST_BOOG900_ENABLED" == "TRUE" ] || [ "$BANLIST_GUIXMRPM_ENABLED" == "TRUE" ]; then
+	[ -f /media/monero/banlist.txt ] || bash /home/nodo/update-banlists.sh
 	banlist_args="--ban-list /media/monero/banlist.txt "
 fi
 
