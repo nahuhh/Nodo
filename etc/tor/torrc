@@ -9,6 +9,44 @@ HiddenServicePort 18084 127.0.0.1:18084
 HiddenServicePort 18089 127.0.0.1:18089
 HiddenServicePort 8135 127.0.0.1:8135
 
+## DDOS PROTECTION
+## NOTE: HiddenService options are per onion service
+## https://community.torproject.org/onion-services/advanced/dos/
+##
+## Rate limiting at the Introduction Points
+## Intropoint protections prevents onion service DoS from becoming a DoS for the entire machine and its guard.
+HiddenServiceEnableIntroDoSDefense 1
+#HiddenServiceEnableIntroDoSRatePerSec 25       # (Default: 25)
+#HiddenServiceEnableIntroDoSBurstPerSec 200     # (Default: 200)
+##
+## Number of introduction points the hidden service will have. You can’t have more than 20.
+#HiddenServiceNumIntroductionPoints 3           # (Default: 3)
+##
+## https://tpo.pages.torproject.net/onion-services/ecosystem/technology/pow/#configuring-an-onion-service-with-the-pow-protection
+## Proof of Work (PoW) before establishing Rendezvous Circuits
+## The lower the queue and burst rates, the higher the puzzle effort tends to be for users.
+HiddenServicePoWDefensesEnabled 1
+HiddenServicePoWQueueRate 50          # (Default: 250)
+HiddenServicePoWQueueBurst 250        # (Default: 2500)
+##
+## Stream limits in the established Rendezvous Circuits
+## The maximum number of simultaneous streams (connections) per rendezvous circuit. The max value allowed is 65535. (0 = unlimited)
+HiddenServiceMaxStreams 25
+#HiddenServiceMaxStreamsCloseCircuit 1
+
 # SSH
 HiddenServiceDir /var/lib/tor/ssh/
 HiddenServicePort 22    127.0.0.1:22
+
+## DDOS PROTECTION
+HiddenServiceEnableIntroDoSDefense 1
+HiddenServiceEnableIntroDoSRatePerSec 5       # (Default: 25)
+HiddenServiceEnableIntroDoSBurstPerSec 40     # (Default: 200)
+#HiddenServiceNumIntroductionPoints 3           # (Default: 3)
+
+HiddenServicePoWDefensesEnabled 1
+HiddenServicePoWQueueRate 25          # (Default: 250)
+HiddenServicePoWQueueBurst 250        # (Default: 2500)
+
+HiddenServiceMaxStreams 25
+#HiddenServiceMaxStreamsCloseCircuit 1
