@@ -95,8 +95,6 @@ showtext "Configuring apache server for access to Monero log file..."
 		showtext "Applying Settings..."
 		chmod 644 /etc/tor/torrc
 		chown root /etc/tor/torrc
-		#Insert user specific local IP for correct hiddenservice redirect (line 73 overwrite)
-		sed -i "73s/.*/HiddenServicePort 18081 $(hostname -I | awk '{print $1}'):18081/" /etc/tor/torrc
 		showtext "Restarting tor service..."
 		service tor restart
 	fi
