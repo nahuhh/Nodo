@@ -147,12 +147,12 @@ systemctl disable --now bluetooth
 sudo -u nodo pipx uninstall libretranslate
 sudo -u nodo rm -rf /home/nodo/.local/share/argos-translate
 
-putvar 'i2p_port' '18085'
-putvar 'tor_port' '18084'
-putvar 'lws_port' '18086'
-putvar 'monero_rpc_port' '18089'
 putvar 'zmq_pub' '18083'
+putvar 'tor_port' '18084'
+putvar 'i2p_port' '18085'
+putvar 'lws_port' '18086'
 putvar 'monero_port' '18080'
 putvar 'monero_public_port' '18081'
+putvar 'monero_rpc_port' '18089'
 sleep 5
 bash /home/nodo/setup-domains.sh

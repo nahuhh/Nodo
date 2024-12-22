@@ -1,7 +1,14 @@
 SOCKSPort 9050
 ControlPort 9051
 CookieAuthentication 1
+
+# MONERO ZMQ-PUB, P2P, RESTRICTED RPC, LWS
 HiddenServiceDir /var/lib/tor/hidden_service/
-HiddenServicePort 18089 127.0.0.1:18089
+HiddenServicePort 18083 127.0.0.1:18083
 HiddenServicePort 18084 127.0.0.1:18084
-HiddenServicePort 8135  127.0.0.1:8135
+HiddenServicePort 18089 127.0.0.1:18089
+HiddenServicePort 8135 127.0.0.1:8135
+
+# SSH
+HiddenServiceDir /var/lib/tor/ssh/
+HiddenServicePort 22    127.0.0.1:22
