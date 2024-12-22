@@ -27,8 +27,9 @@ read -r SYNC_MODE
 read -r ZMQ_PUB
 read -r BANLIST_BOOG900_ENABLED
 read -r BANLIST_GUIXMRPM_ENABLED
+read -r BANLIST_DNS
 } < <(
-	jq '.config | .monero_port, .monero_public_port, .rpc_enabled, .monero_rpc_port, .rpcu, .rpcp, .in_peers, .out_peers, .limit_rate_up, .limit_rate_down, .data_dir, .torproxy_enabled, .i2p_enabled, .i2p_port, .i2p_address, .tor_enabled, .tor_port, .tor_address, .data_dir, .sync_mode, .zmq_pub, .banlists.boog900, .banlists."gui-xmr-pm"' $CONFIG_FILE
+	jq '.config | .monero_port, .monero_public_port, .rpc_enabled, .monero_rpc_port, .rpcu, .rpcp, .in_peers, .out_peers, .limit_rate_up, .limit_rate_down, .data_dir, .torproxy_enabled, .i2p_enabled, .i2p_port, .i2p_address, .tor_enabled, .tor_port, .tor_address, .data_dir, .sync_mode, .zmq_pub, .banlists.boog900, .banlists."gui-xmr-pm", .banlists.dns' $CONFIG_FILE
 )
 
 DEVICE_IP="0.0.0.0"
@@ -53,6 +54,9 @@ fi
 if [ "$BANLIST_BOOG900_ENABLED" == "TRUE" ] || [ "$BANLIST_GUIXMRPM_ENABLED" == "TRUE" ]; then
 	[ -f /media/monero/banlist.txt ] || bash /home/nodo/update-banlists.sh
 	banlist_args="--ban-list /media/monero/banlist.txt "
+else #TODO add gui option to opt-in to `enable-dns-blocklist`. Note: cannot use both at the same time.
+# elif [ $BANLIST_DNS == "TRUE" ]; then
+	banlist_args="--enable-dns-blocklist "
 fi
 
-eval /home/nodo/bin/monerod "$i2p_args$tor_args$rpc_args$cln_flags$banlist_args" --rpc-restricted-bind-ip="$DEVICE_IP" --rpc-restricted-bind-port="$RPC_PORT" --db-sync-mode="$SYNC_MODE" --data-dir="$DATA_DIR" --zmq-pub tcp://"$DEVICE_IP":"$ZMQ_PUB" --in-peers="$IN_PEERS" --out-peers="$OUT_PEERS" --limit-rate-up="$LIMIT_RATE_UP" --limit-rate-down="$LIMIT_RATE_DOWN" --max-log-file-size=10485760 --log-level=0 --max-log-files=1 --enable-dns-blocklist --p2p-bind-port="$MONERO_PORT" --non-interactive
+eval /home/nodo/bin/monerod "$i2p_args$tor_args$rpc_args$cln_flags$banlist_args" --rpc-restricted-bind-ip="$DEVICE_IP" --rpc-restricted-bind-port="$RPC_PORT" --db-sync-mode="$SYNC_MODE" --data-dir="$DATA_DIR" --zmq-pub tcp://"$DEVICE_IP":"$ZMQ_PUB" --in-peers="$IN_PEERS" --out-peers="$OUT_PEERS" --limit-rate-up="$LIMIT_RATE_UP" --limit-rate-down="$LIMIT_RATE_DOWN" --max-log-file-size=10485760 --log-level=0 --max-log-files=1 --p2p-bind-port="$MONERO_PORT" --non-interactive
