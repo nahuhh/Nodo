@@ -145,6 +145,7 @@ fi
 systemctl disable --now bluetooth
 
 sudo -u nodo pipx uninstall libretranslate
+sudo -u nodo rm -rf /home/nodo/.local/share/argos-translate
 
 putvar 'i2p_port' '18085'
 putvar 'tor_port' '18084'

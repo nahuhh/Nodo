@@ -2,7 +2,8 @@
 	"config": {
 		"banlists": {
 			"boog900": "TRUE",
-			"gui-xmr-pm": "FALSE"
+			"gui-xmr-pm": "FALSE",
+			"dns": "FALSE"
 		},
 		"ticker": "usd",
 		"language": "en_US",
