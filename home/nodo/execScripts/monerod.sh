@@ -41,7 +41,9 @@ else
 fi
 
 if [ "$TORPROXY_ENABLED" == "TRUE" ]; then
-	cln_flags="--proxy=127.0.0.1:9050 "
+	cln_flags="--proxy=127.0.0.1:9050 --p2p-bind-ip=127.0.0.1 --hide-my-port --no-igd "
+else
+	cln_flags="--p2p-bind-port=$MONERO_PORT "
 fi
 
 if [ "$I2P_ENABLED" == "TRUE" ]; then
@@ -53,7 +55,7 @@ if [ "$TOR_ENABLED" == "TRUE" ]; then
 fi
 
 if [ "$RPC_ENABLED" == "TRUE" ]; then
-	rpc_args="${RPCu:+--rpc-login=\"$RPCu:$RPCp\"} "
+	rpc_args="${RPCu:+--rpc-login=$RPCu:$RPCp} "
 fi
 
 if [ "$BANLIST_BOOG900_ENABLED" == "TRUE" ] || [ "$BANLIST_GUIXMRPM_ENABLED" == "TRUE" ]; then
@@ -64,4 +66,4 @@ else #TODO add gui option to opt-in to `enable-dns-blocklist`. Note: cannot use 
 	banlist_args="--enable-dns-blocklist "
 fi
 
-eval /home/nodo/bin/monerod "$i2p_args$tor_args$rpc_args$cln_flags$banlist_args" --rpc-restricted-bind-ip="$DEVICE_IP" --rpc-restricted-bind-port="$RPC_PORT" --db-sync-mode="$SYNC_MODE" --data-dir="$DATA_DIR" --zmq-pub tcp://"$DEVICE_IP":"$ZMQ_PUB" --in-peers="$IN_PEERS" --out-peers="$OUT_PEERS" --limit-rate-up="$LIMIT_RATE_UP" --limit-rate-down="$LIMIT_RATE_DOWN" --max-log-file-size=10485760 --log-level=0 --max-log-files=1 --p2p-bind-port="$MONERO_PORT" --non-interactive
+eval /home/nodo/bin/monerod "${i2p_args}${tor_args}${rpc_args}${cln_flags}${banlist_args}" --rpc-restricted-bind-ip="$DEVICE_IP" --rpc-restricted-bind-port="$RPC_PORT" --db-sync-mode="$SYNC_MODE" --data-dir="$DATA_DIR" --zmq-pub tcp://"$DEVICE_IP":"$ZMQ_PUB" --in-peers="$IN_PEERS" --out-peers="$OUT_PEERS" --limit-rate-up="$LIMIT_RATE_UP" --limit-rate-down="$LIMIT_RATE_DOWN" --max-log-file-size=10485760 --log-level=0 --max-log-files=1 --non-interactive
