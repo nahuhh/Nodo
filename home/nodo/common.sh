@@ -22,6 +22,23 @@ gitlab_get_release_commit_name() {
 	printf '%s' "$tag"
 }
 
+gitlab_get_tag_name_from_commit() {
+	project="$1"
+	repo="$2"
+	commit="$3"
+	githost="${4:-gitlab.com}"
+	tag="$(curl -ls "https://$githost/api/v4/projects/$project%2F$repo/releases" | jq -r "$(printf '.[] | select(.commit.id | contains("%s")) | .name' "$commit")")"
+	printf '%s' "$tag"
+}
+
+get_tag_name_from_commit() {
+	project="$1"
+	repo="$2"
+	commit="$3"
+	tag="$(curl -ls "https://api.github.com/repos/$project/$repo/tags" | jq -r "$(printf '.[] | select(.commit.sha | contains("%s")) | .name' "$commit")")"
+	printf '%s' "$tag"
+}
+
 get_tag_commit_name() {
 	project="$1"
 	repo="$2"

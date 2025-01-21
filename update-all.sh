@@ -10,6 +10,14 @@ remlockfile() {
 	rm -f "$_lockfile"
 }
 
+if [ "$(jq '.config.versions | has("names")' < /home/nodo/variables/config.json)" = "false" ]; then
+	putvar 'versions.names.nodo' "$(get_tag_name_from_commit "moneronodo" "nodo" "$(getvar "versions.nodo")")"
+	# putvar 'versions.names.lws' "$(get_tag_name_from_commit "moneronodo" "nodo" "$(getvar "versions.nodo")")"
+	putvar 'versions.names.pay' "$(get_tag_name_from_commit "moneropay" "moneropay" "$(getvar "versions.pay")")"
+	putvar 'versions.names.monero' "$(get_tag_name_from_commit "monero-project" "monero" "$(getvar "versions.monero")")"
+	putvar 'versions.names.nodoui' "$(get_tag_name_from_commit "moneronodo" "nodoui" "$(getvar "versions.nodoui")")"
+fi
+
 if [ ! "$EUID" = "0" ]; then
 	printf '%s\n' "Not root, can't update"
 	exit 1
