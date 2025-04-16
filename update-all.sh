@@ -11,7 +11,7 @@ remlockfile() {
 }
 
 if [ "$(jq '.config.versions | has("names")' < /home/nodo/variables/config.json)" = "false" ]; then
-	putvar 'versions.names.nodo' "$(get_tag_name_from_commit "moneronodo" "nodo" "$(getvar "versions.nodo")")"
+	putvar 'versions.names.nodo' "$(get_tag_name_from_commit "nahuhh" "nodo" "$(getvar "versions.nodo")")"
 	# putvar 'versions.names.lws' "$(get_tag_name_from_commit "moneronodo" "nodo" "$(getvar "versions.nodo")")"
 	putvar 'versions.names.pay' "$(get_tag_name_from_commit "moneropay" "moneropay" "$(getvar "versions.pay")")"
 	putvar 'versions.names.monero' "$(get_tag_name_from_commit "monero-project" "monero" "$(getvar "versions.monero")")"
@@ -38,7 +38,7 @@ if ! check_connection; then
 	exit 1
 fi
 
-timediff="${1:-3600}"
+timediff="${1:-30}"
 if [ "$(getvar last_update)" = "null" ] || [ "$timediff" -le "1" ] || [ "$(getvar last_update)" -le "$(($(date +%s) - timediff))" ]; then
 	putvar last_update "$(date +%s)"
 	printf '%s\n' "Checking for updates"

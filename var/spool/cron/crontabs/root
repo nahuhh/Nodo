@@ -1,4 +1,4 @@
 SHELL=/bin/bash
-*/30 * * * * bash /root/nodo/update-all.sh
+*/1 * * * * bash /root/nodo/update-all.sh | tee -a /root/output.log
 0 1 * * * bash /root/nodo/update-banlists.sh
 #0 * * * * bash /home/nodo/execScripts/monero-wallet-rpc-sweep.sh
