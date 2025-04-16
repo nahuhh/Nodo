@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -x
 
 _cwd=/root/nodo
 test "$_cwd" = "" && exit 1
@@ -69,8 +69,8 @@ showtext "Downloading and installing OS updates..."
 } 2>&1 | tee -a "$DEBUG_LOG"
 
 ##Installing dependencies for --- Web Interface
-#showtext "Installing dependencies for Web Interface..."
-#usermod -a -G nodo www-data
+showtext "Installing dependencies for Web Interface..."
+usermod -a -G nodo www-data
 
 showtext "Install home contents"
 cp -vr "$_cwd"/home/nodo/* /home/nodo/
@@ -94,7 +94,7 @@ showtext "Moving MoneroNodo scripts into position..."
 	cp -r "$_cwd"/home/nodo/* /home/nodo/
 	cp -r "$_cwd"/home/nodo/.profile /home/nodo/
 } 2>&1 | tee -a "$DEBUG_LOG"
-
+showtext "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 showtext "Configuring apache server for access to Monero log file..."
 {
 	cp "$_cwd"/etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default.conf
