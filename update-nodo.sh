@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 UPD="$(jq -r '.config.autoupdate.nodo' /home/nodo/variables/config.json)"
 
 if [ "$UPD" = "FALSE" ] && [ -z "$1" ]; then
@@ -13,7 +13,7 @@ fi
 OLD_VERSION_NODO="${1:-$(getvar "versions.nodo")}"
 touch "$DEBUG_LOG"
 
-RELNAME="$(get_tag_commit_name "moneronodo" "nodo")"
+RELNAME="$(get_tag_commit_name "nahuhh" "nodo")"
 
 RELEASE="$(printf '%s' "$RELNAME" | head -n1)"
 _NAME="$(printf '%s' "$RELNAME" | tail -n1)"
@@ -67,7 +67,7 @@ showtext "User configuration saved"
 
 showtext "setup-nodo.sh..."
 bash "${_cwd}"/setup-nodo.sh
-
+showtext "########################################"
 showtext "Merge config.json"
 if jq -s '.[0] * .[1] | {config: .config}' "${_v}"/config.json "${_v}"/config_retain.json > "${_v}"/config.merge.json; then
 	cp -f "${_v}"/config.merge.json "${_v}"/config.json
