@@ -35,17 +35,16 @@ fi
 showtext "Building Monero..."
 
 {
-	test -d monero.new && rm -rf monero.new
-	tries=0
-	until git clone --recursive https://github.com/monero-project/monero.git monero.new; do
-		sleep 1
-		tries=$((tries + 1))
-		if [ $tries -ge 5 ]; then
-			exit 1
-		fi
-	done
-	rm -rf monero
-	mv monero.new monero
+	if [ ! -d monero ]; then
+		tries=0
+		until git clone --recursive https://github.com/monero-project/monero.git; do
+			sleep 1
+			tries=$((tries + 1))
+			if [ $tries -ge 5 ]; then
+				exit 1
+			fi
+		done
+	fi
 	cd monero || exit 1
 	git checkout "$RELEASE"
 	git submodule update --init --force
